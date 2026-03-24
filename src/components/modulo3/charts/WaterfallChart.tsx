@@ -31,27 +31,30 @@ export default function WaterfallChart({ result }: WaterfallChartProps) {
     formatBRL(netResult),
   ];
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const traces: any[] = [
+    {
+      type: "waterfall",
+      orientation: "v",
+      measure: measures,
+      x,
+      y,
+      text: textLabels,
+      textposition: "outside",
+      connector: {
+        line: { color: "#3a494b", width: 1, dash: "dot" },
+      },
+      increasing: { marker: { color: "#4edea3" } },
+      decreasing: { marker: { color: "#ef4444" } },
+      totals: {
+        marker: { color: isPositive ? "#00f2ff" : "#ef4444" },
+      },
+    },
+  ];
+
   return (
     <Plot
-      data={[
-        {
-          type: "waterfall" as const,
-          orientation: "v" as const,
-          measure: measures,
-          x,
-          y,
-          text: textLabels,
-          textposition: "outside" as const,
-          connector: {
-            line: { color: "#3a494b", width: 1, dash: "dot" },
-          },
-          increasing: { marker: { color: "#4edea3" } },
-          decreasing: { marker: { color: "#ef4444" } },
-          totals: {
-            marker: { color: isPositive ? "#00f2ff" : "#ef4444" },
-          },
-        },
-      ]}
+      data={traces}
       layout={{
         paper_bgcolor: "#191c1f",
         plot_bgcolor: "#191c1f",
