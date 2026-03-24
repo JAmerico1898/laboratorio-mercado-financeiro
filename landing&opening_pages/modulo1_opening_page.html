@@ -1,0 +1,282 @@
+<!DOCTYPE html><html class="dark" lang="pt-BR"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Módulo 1: Estrutura a Termo - Financial Markets Lab</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-container-highest": "#323539",
+                        "on-tertiary-container": "#5e6064",
+                        "on-secondary-container": "#00311f",
+                        "tertiary-container": "#dadbe0",
+                        "surface-dim": "#111417",
+                        "secondary-fixed-dim": "#4edea3",
+                        "secondary-fixed": "#6ffbbe",
+                        "inverse-primary": "#00696f",
+                        "on-background": "#e1e2e7",
+                        "inverse-surface": "#e1e2e7",
+                        "tertiary": "#f7f7fd",
+                        "on-error": "#690005",
+                        "error": "#ffb4ab",
+                        "secondary-container": "#00a572",
+                        "on-primary-fixed-variant": "#004f54",
+                        "primary-fixed": "#74f5ff",
+                        "surface-tint": "#00dbe7",
+                        "surface-container-low": "#191c1f",
+                        "on-tertiary": "#2e3134",
+                        "surface-bright": "#37393d",
+                        "secondary": "#4edea3",
+                        "inverse-on-surface": "#2e3134",
+                        "tertiary-fixed": "#e1e2e7",
+                        "on-error-container": "#ffdad6",
+                        "outline": "#849495",
+                        "on-secondary": "#003824",
+                        "on-secondary-fixed-variant": "#005236",
+                        "surface": "#111417",
+                        "on-tertiary-fixed": "#191c1f",
+                        "on-secondary-fixed": "#002113",
+                        "error-container": "#93000a",
+                        "background": "#111417",
+                        "primary": "#e1fdff",
+                        "on-surface-variant": "#b9cacb",
+                        "on-tertiary-fixed-variant": "#44474b",
+                        "outline-variant": "#3a494b",
+                        "surface-container-high": "#282a2e",
+                        "surface-container": "#1d2023",
+                        "primary-container": "#00f2ff",
+                        "tertiary-fixed-dim": "#c5c6cb",
+                        "on-primary": "#00363a",
+                        "on-primary-container": "#006a71",
+                        "surface-variant": "#323539",
+                        "surface-container-lowest": "#0c0e12",
+                        "on-surface": "#e1e2e7",
+                        "primary-fixed-dim": "#00dbe7",
+                        "on-primary-fixed": "#002022"
+                    },
+                    fontFamily: {
+                        "headline": ["Manrope"],
+                        "body": ["Manrope"],
+                        "label": ["Manrope"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #111417;
+            color: #e1e2e7;
+            font-family: 'Manrope', sans-serif;
+            overflow-x: hidden;
+        }
+        .financial-flow-bg {
+            background: radial-gradient(circle at 50% 50%, rgba(0, 242, 255, 0.03) 0%, transparent 50%),
+                        linear-gradient(180deg, #111417 0%, #0c0e12 100%);
+            position: relative;
+        }
+        .glass-panel {
+            background: rgba(29, 32, 35, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(58, 73, 75, 0.15);
+        }
+        .kinetic-gradient {
+            background: linear-gradient(135deg, #e1fdff 0%, #00f2ff 100%);
+        }
+    </style>
+</head>
+<body class="financial-flow-bg min-h-screen flex flex-col">
+<!-- Top Navigation -->
+<header class="w-full z-50 bg-[#111417]/80 backdrop-blur-xl border-b border-[#3a494b]/15 shadow-[0_0_40px_rgba(0,242,255,0.06)]">
+<nav class="flex justify-center items-center px-6 py-6 max-w-none w-full">
+<span class="text-xl font-bold tracking-tighter text-[#e1fdff] font-headline" style="">Laboratório de Mercado Financeiro</span>
+</nav>
+</header>
+<main class="flex-grow">
+<!-- Hero Section -->
+<section class="relative px-6 pt-16 pb-12 md:pt-24 md:pb-16 overflow-hidden">
+<div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+<div class="z-10">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-container/10 border border-primary-container/20 mb-6">
+<span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
+<span class="text-[10px] uppercase tracking-widest font-bold text-primary-container" style="">Módulo 01: ESTRUTURA A TERMO DE TAXAS DE JUROS<br></span>
+</div>
+<h1 class="text-4xl md:text-6xl font-extrabold tracking-tighter text-primary mb-6 leading-[1.1]" style="">
+                    Modelagem da Estrutura a Termo - <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-container to-secondary" style="">Taxa DI (CDI)</span>
+</h1>
+<p class="text-lg md:text-xl text-on-surface-variant font-light leading-relaxed max-w-2xl" style="">
+                    Esta aplicação modela a estrutura a termo das taxas de juros brasileiras usando dados de contratos futuros DI1 da B3. Os contratos DI1 são derivativos da taxa DI (CDI) pós-fixada, essencialmente taxas zero-cupom com capitalização de 252 dias úteis.
+                </p>
+<div class="mt-10 flex flex-wrap gap-4">
+<button class="border border-outline-variant/30 text-on-surface px-8 py-4 rounded-xl font-bold text-sm tracking-tight hover:bg-surface-container transition-colors active:scale-95 flex items-center gap-2" style="">
+                        Escolha o Método de Interpolação <span class="material-symbols-outlined" style="">settings_input_component</span>
+</button>
+<button class="kinetic-gradient text-on-primary px-8 py-4 rounded-xl font-bold text-sm tracking-tight active:scale-95 transition-transform flex items-center gap-2" style="">
+                        Iniciar Modelagem <span class="material-symbols-outlined" style="">trending_up</span>
+</button>
+</div>
+</div>
+<!-- Decorative Kinetic Visual -->
+<div class="relative h-[400px] w-full hidden lg:block">
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="w-full h-full opacity-40 blur-[80px] bg-primary-container/20 rounded-full absolute -top-20 -right-20"></div>
+<div class="w-full h-full glass-panel rounded-3xl overflow-hidden p-8 flex flex-col justify-end">
+<div class="flex items-end gap-1 h-64">
+<div class="w-full bg-gradient-to-t from-primary-container/40 to-primary-container h-[20%] rounded-t-sm"></div>
+<div class="w-full bg-gradient-to-t from-primary-container/40 to-primary-container h-[25%] rounded-t-sm"></div>
+<div class="w-full bg-gradient-to-t from-primary-container/40 to-primary-container h-[35%] rounded-t-sm"></div>
+<div class="w-full bg-gradient-to-t from-primary-container/40 to-primary-container h-[45%] rounded-t-sm"></div>
+<div class="w-full bg-gradient-to-t from-primary-container/40 to-primary-container h-[50%] rounded-t-sm"></div>
+<div class="w-full bg-gradient-to-t from-primary-container/40 to-primary-container h-[55%] rounded-t-sm"></div>
+<div class="w-full bg-gradient-to-t from-primary-container/40 to-primary-container h-[58%] rounded-t-sm"></div>
+<div class="w-full bg-gradient-to-t from-primary-container/40 to-primary-container h-[60%] rounded-t-sm"></div>
+<div class="w-full bg-gradient-to-t from-primary-container/40 to-primary-container h-[62%] rounded-t-sm"></div>
+<div class="w-full bg-gradient-to-t from-primary-container/40 to-primary-container h-[63%] rounded-t-sm"></div>
+</div>
+<div class="mt-6 flex justify-between text-[10px] font-bold text-outline uppercase tracking-tighter">
+<span class="" style="">1 Mes</span>
+<span class="" style="">6 Meses</span>
+<span class="" style="">1 Ano</span>
+<span class="" style="">5 Anos</span>
+<span class="" style="">10 Anos</span>
+</div>
+</div>
+</div>
+<img class="absolute -bottom-10 -right-10 w-64 h-64 object-cover rounded-2xl border border-primary-container/20 shadow-2xl z-20" data-alt="abstract architectural glass building reflection with sharp lines and blue steel color palette reflecting a financial terminal aesthetic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAkH4dbOd0WsxQfWk8bmn-LPWqKA1Fxncozcv3bYWRjHBAmIONRiqXUwCs-PwCb0tu88oyLw5fuxVRARagp0t3YOCEnY90tjLEMYVfOsSWrE1p5SDvKWcBMOZVhXrps-tEmIoFXu0r4htgc611G2effYvDxNa7zZa8Na5gKx3FlstZVUpnkn_N_6OeJKUe2g5dR5efjdtWM8rHnKA9EJOMkpv0PSY23IFYEEDtjN8O1DbxFJP9Wc3AWi4FqfvPmmf0bvuPYo4UxpDc" style="">
+</div>
+</div>
+</section>
+<!-- Technical Content Section -->
+<section class="px-6 py-12 bg-surface-container-low/50">
+<div class="max-w-7xl mx-auto space-y-8">
+<!-- Full Width Preview Card -->
+<div class="p-8 glass-panel rounded-3xl min-h-[400px] flex flex-col w-full">
+<div class="flex justify-between items-center mb-8">
+<div>
+<h4 class="text-xl font-bold text-on-surface" style="">Preview da Curva Spot</h4>
+<p class="text-xs text-on-surface-variant mt-1" style="">Visualização preliminar baseada no último fechamento disponível.</p>
+</div>
+<div class="flex gap-2">
+<button class="p-2 rounded-lg bg-surface-container hover:bg-surface-container-highest transition-colors" style="">
+<span class="material-symbols-outlined text-sm" style="">download</span>
+</button>
+<button class="p-2 rounded-lg bg-surface-container hover:bg-surface-container-highest transition-colors" style="">
+<span class="material-symbols-outlined text-sm" style="">fullscreen</span>
+</button>
+</div>
+</div>
+<!-- SVG Curve -->
+<div class="flex-grow relative flex items-center justify-center">
+<svg class="w-full h-64 overflow-visible" viewBox="0 0 1000 200">
+<path d="M0,180 Q250,170 500,100 T1000,40" fill="none" stroke="url(#lineGradient)" stroke-linecap="round" stroke-width="3"></path>
+<defs>
+<linearGradient id="lineGradient" x1="0%" x2="100%" y1="0%" y2="0%">
+<stop offset="0%" style="stop-color:#4edea3;stop-opacity:1"></stop>
+<stop offset="100%" style="stop-color:#00f2ff;stop-opacity:1"></stop>
+</linearGradient>
+</defs>
+<circle cx="0" cy="180" fill="#4edea3" r="4"></circle>
+<circle cx="200" cy="175" fill="#4edea3" r="4"></circle>
+<circle cx="500" cy="100" fill="#00f2ff" r="4"></circle>
+<circle cx="800" cy="60" fill="#00f2ff" r="4"></circle>
+<circle cx="1000" cy="40" fill="#00f2ff" r="4"></circle>
+</svg>
+<div class="absolute bottom-0 left-0 text-[10px] text-outline font-bold" style="">CURTO PRAZO</div>
+<div class="absolute bottom-0 right-0 text-[10px] text-outline font-bold" style="">LONGO PRAZO</div>
+</div>
+</div>
+<!-- Remaining Cards Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Methodology Block -->
+<div class="p-8 glass-panel rounded-3xl">
+<h3 class="text-2xl font-bold text-primary mb-4 flex items-center gap-3" style="">
+<span class="material-symbols-outlined text-secondary" style="">functions</span>
+                        Metodologia
+                    </h3>
+<div class="space-y-4 text-on-surface-variant text-sm leading-relaxed">
+<p class="" style="">A extração da ETTJ baseia-se na interpolação de pontos de liquidez dos contratos futuros de DI1.</p>
+<div class="p-4 bg-surface-container-lowest rounded-xl font-mono text-primary-container text-xs" style="">
+                            PU = 100.000 / (1 + i)^(DU/252)
+                        </div>
+<ul class="space-y-2 mt-4">
+<li class="flex items-start gap-2" style="">
+<span class="material-symbols-outlined text-secondary text-lg" style="">check_circle</span>
+<span class="" style="">Capitalização Composta Diária</span>
+</li>
+<li class="flex items-start gap-2" style="">
+<span class="material-symbols-outlined text-secondary text-lg" style="">check_circle</span>
+<span class="" style="">Ajuste de Dias Úteis (Calendário B3)</span>
+</li>
+</ul>
+</div>
+</div>
+<!-- Market Status Module -->
+<div class="p-8 bg-surface-container rounded-3xl border border-outline-variant/10 flex flex-col justify-between">
+<div class="flex justify-between items-start">
+<div>
+<span class="text-[10px] font-bold text-outline uppercase tracking-widest" style="">Status do Mercado</span>
+<h4 class="text-xl font-bold text-on-surface mt-1" style="">Live B3 Feed</h4>
+</div>
+<span class="px-2 py-1 rounded bg-secondary/10 text-secondary text-[10px] font-bold" style="">CONECTADO</span>
+</div>
+<div class="mt-8">
+<div class="flex items-baseline gap-2">
+<span class="text-4xl font-extrabold text-primary tracking-tighter" style="">11.25%</span>
+<span class="text-secondary text-xs font-bold" style="">+0.02%</span>
+</div>
+<span class="text-[10px] text-outline" style="">TAXA SELIC ATUAL (META)</span>
+</div>
+</div>
+<!-- Interpolation Engine Module -->
+<div class="p-8 bg-surface-container-high rounded-3xl border border-outline-variant/10">
+<div class="flex items-center gap-3 mb-6">
+<div class="w-10 h-10 rounded-full bg-primary-container/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary-container" style="">insights</span>
+</div>
+<h4 class="font-bold text-on-surface" style="">Motor de Interpolação</h4>
+</div>
+<div class="space-y-3">
+<div class="flex justify-between items-center text-xs">
+<span class="text-on-surface-variant" style="">Método Selecionado</span>
+<span class="text-primary font-bold" style="">Cubic Spline (Flat Forward)</span>
+</div>
+<div class="h-1 bg-surface-container-lowest rounded-full overflow-hidden">
+<div class="h-full bg-secondary w-3/4"></div>
+</div>
+<div class="flex justify-between items-center text-xs">
+<span class="text-on-surface-variant" style="">Confiança do Modelo</span>
+<span class="text-secondary font-bold" style="">99.8%</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full border-t border-[#3a494b]/15 mt-16 bg-[#111417]">
+<div class="flex flex-col md:flex-row justify-between items-center px-8 py-12 gap-4">
+<div class="text-[#e1fdff]/50 text-xs font-manrope" style="">
+            © 2024 Financial Markets Lab. Dúvidas? Sugestões? Entre em contato.
+        </div>
+<div class="flex gap-8">
+<a class="text-[#e1fdff]/50 text-xs font-manrope hover:text-[#00f2ff] transition-colors" href="#" style="">Termos de Uso</a>
+<a class="text-[#e1fdff]/50 text-xs font-manrope hover:text-[#00f2ff] transition-colors" href="#" style="">Privacidade</a>
+<a class="text-[#e1fdff]/50 text-xs font-manrope hover:text-[#00f2ff] transition-colors" href="#" style="">Suporte Acadêmico</a>
+</div>
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-[#4edea3] opacity-80 hover:opacity-100 cursor-pointer" style="">share</span>
+<span class="material-symbols-outlined text-[#4edea3] opacity-80 hover:opacity-100 cursor-pointer" style="">account_balance</span>
+</div>
+</div>
+</footer>
+</body></html>

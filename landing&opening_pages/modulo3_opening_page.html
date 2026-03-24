@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="pt-br"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FIDC - Laboratório de Mercado Financeiro</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "outline-variant": "#3a494b",
+              "on-primary": "#00363a",
+              "inverse-surface": "#e1e2e7",
+              "primary-container": "#00f2ff",
+              "surface-dim": "#111417",
+              "on-secondary-fixed": "#002113",
+              "error": "#ffb4ab",
+              "on-secondary": "#003824",
+              "surface-container-highest": "#323539",
+              "on-error": "#690005",
+              "on-tertiary-container": "#5e6064",
+              "on-tertiary-fixed": "#191c1f",
+              "primary": "#e1fdff",
+              "inverse-primary": "#00696f",
+              "surface-bright": "#37393d",
+              "secondary-fixed-dim": "#4edea3",
+              "on-secondary-fixed-variant": "#005236",
+              "surface-container-low": "#191c1f",
+              "secondary-fixed": "#6ffbbe",
+              "tertiary-fixed": "#e1e2e7",
+              "surface-container-lowest": "#0c0e12",
+              "on-primary-container": "#006a71",
+              "tertiary": "#f7f7fd",
+              "on-secondary-container": "#00311f",
+              "surface-container": "#1d2023",
+              "on-surface-variant": "#b9cacb",
+              "surface": "#111417",
+              "error-container": "#93000a",
+              "background": "#111417",
+              "on-surface": "#e1e2e7",
+              "on-tertiary": "#2e3134",
+              "on-background": "#e1e2e7",
+              "inverse-on-surface": "#2e3134",
+              "tertiary-fixed-dim": "#c5c6cb",
+              "secondary": "#4edea3",
+              "surface-tint": "#00dbe7",
+              "on-error-container": "#ffdad6",
+              "primary-fixed": "#74f5ff",
+              "on-primary-fixed": "#002022",
+              "tertiary-container": "#dadbe0",
+              "secondary-container": "#00a572",
+              "primary-fixed-dim": "#00dbe7",
+              "on-tertiary-fixed-variant": "#44474b",
+              "surface-container-high": "#282a2e",
+              "on-primary-fixed-variant": "#004f54",
+              "outline": "#849495"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Manrope"],
+              "label": ["Manrope"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .glass-panel {
+        background: rgba(29, 32, 35, 0.6);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+      }
+      .kinetic-gradient {
+        background: linear-gradient(135deg, #e1fdff 0%, #00f2ff 100%);
+      }
+      .glow-shadow {
+        box-shadow: 0 0 40px rgba(0, 242, 255, 0.06);
+      }
+      .mesh-bg {
+        background-image: radial-gradient(at 0% 0%, rgba(0, 242, 255, 0.05) 0, transparent 50%), 
+                          radial-gradient(at 100% 100%, rgba(78, 222, 163, 0.05) 0, transparent 50%);
+      }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body selection:bg-primary-container selection:text-on-primary-container mesh-bg min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<nav class="w-full top-0 z-50 bg-slate-950/60 backdrop-blur-xl no-border bg-slate-900/40 shadow-[0_0_40px_rgba(0,242,255,0.06)]">
+<div class="flex justify-between items-center px-8 py-4 max-w-7xl mx-auto">
+<div class="text-xl font-bold tracking-tighter text-slate-50 font-headline" style="">
+                Laboratório de Mercado Financeiro
+            </div>
+<div class="hidden md:flex items-center space-x-8 font-manrope font-medium tracking-tight">
+<a class="text-slate-400 hover:text-slate-100 transition-all duration-300" href="#" style="">Credit Risk</a>
+<a class="text-cyan-400 border-b-2 border-cyan-400 pb-1" href="#" style="">FIDC</a>
+<a class="text-slate-400 hover:text-slate-100 transition-all duration-300" href="#" style="">BaaS</a>
+<a class="text-slate-400 hover:text-slate-100 transition-all duration-300" href="#" style="">Asset Tokenization</a>
+<a class="text-slate-400 hover:text-slate-100 transition-all duration-300" href="#" style="">Banking Regulation</a>
+</div>
+</div>
+</nav>
+<main class="max-w-7xl mx-auto px-8 py-16 flex-grow flex items-center">
+<!-- Hero Section -->
+<section class="w-full flex flex-col lg:flex-row items-center justify-between gap-12">
+<div class="max-w-3xl text-left">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-high border border-outline-variant/20 mb-6">
+<span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+<span class="text-label-sm font-semibold tracking-widest uppercase text-secondary">Módulo 3: Securitização</span>
+</div>
+<h1 class="text-6xl md:text-7xl font-extrabold font-headline tracking-tighter text-on-surface mb-6 leading-[1.1]">
+                    Fundos de Direitos Creditórios <span class="text-primary-container">(FIDC)</span>
+</h1>
+<p class="text-xl text-on-surface-variant font-light leading-relaxed mb-10">
+                    Estudo da estruturação de recebíveis e veículos de securitização como alternativa de financiamento para empresas através do mercado de capitais.
+                </p>
+<div class="flex flex-wrap gap-4">
+<button class="kinetic-gradient text-on-primary font-bold px-8 py-4 rounded-xl flex items-center gap-2 hover:surface-tint transition-all duration-300 shadow-lg shadow-primary-container/10">Iniciar Análise de Fluxo<span class="material-symbols-outlined">trending_up</span></button>
+</div>
+</div>
+<div class="flex items-center justify-center relative">
+<div class="absolute inset-0 bg-primary-container/10 blur-[100px] rounded-full"></div>
+<div class="relative z-10 p-1 rounded-2xl bg-gradient-to-br from-outline-variant/30 to-transparent shadow-2xl overflow-hidden border border-outline-variant/20 group">
+<img alt="FIDC Visualization" class="w-full max-w-[450px] aspect-square object-cover rounded-xl transition-transform duration-700 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAfZZekrM0c_URdQGfe7eVrG-rZo-vVJ6sxL8_mtiJeBhZQyoQcolhb_fw83TLihzHy4TYKPRxJ5RjugaQaC3XgWCw738brqWkTpcAZYLBgjDEu1MM4P0mjume0TqSES8HiGmw-KVcVTBj4ekthnpWQ0NVgTy3DrCNCBZ9Q9iOviytMgpZlrtUUVT555JezuHaMkrtJ-ruEGb-pqqRvXPsYDCkkRKkg002oKU8_FpbyVhohKFG3o1XZcZBlr4ZUMRXcDuttvAgmNb4"/>
+<div class="absolute inset-0 border border-white/10 rounded-xl pointer-events-none"></div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full py-6 border-t border-white/5 bg-[#0a0c10]">
+<div class="max-w-7xl mx-auto px-8 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] tracking-widest font-bold uppercase text-slate-500">
+<div class="text-center md:text-left" style="">
+                © 2026 LABORATÓRIO DE MERCADO FINANCEIRO. - PROF. JOSÉ AMÉRICO - COPPEAD-FGV-UCAM.
+            </div>
+<div class="text-center md:text-right hover:text-primary-container transition-colors cursor-pointer" style="">
+                DÚVIDAS? SUGESTÕES? ENTRE EM CONTATO!
+            </div>
+</div>
+</footer>
+</body></html>

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="pt-br"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Laboratório de Mercado Financeiro | A Ciência da Intermediação</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary-container": "#00f2ff",
+              "surface-container-low": "#191c1f",
+              "on-secondary-fixed": "#002113",
+              "on-tertiary-fixed-variant": "#44474b",
+              "secondary-fixed-dim": "#4edea3",
+              "on-primary-fixed-variant": "#004f54",
+              "outline-variant": "#3a494b",
+              "on-surface-variant": "#b9cacb",
+              "on-primary-container": "#006a71",
+              "on-secondary-fixed-variant": "#005236",
+              "on-background": "#e1e2e7",
+              "error": "#ffb4ab",
+              "outline": "#849495",
+              "on-secondary": "#003824",
+              "surface": "#111417",
+              "primary-fixed": "#74f5ff",
+              "surface-container": "#1d2023",
+              "on-surface": "#e1e2e7",
+              "primary": "#e1fdff",
+              "tertiary": "#f7f7fd",
+              "surface-container-high": "#282a2e",
+              "on-tertiary": "#2e3134",
+              "surface-dim": "#111417",
+              "on-primary": "#00363a",
+              "primary-fixed-dim": "#00dbe7",
+              "on-secondary-container": "#00311f",
+              "secondary-container": "#00a572",
+              "background": "#111417",
+              "inverse-surface": "#e1e2e7",
+              "on-primary-fixed": "#002022",
+              "surface-variant": "#323539",
+              "tertiary-container": "#dadbe0",
+              "secondary": "#4edea3",
+              "surface-container-lowest": "#0c0e12",
+              "tertiary-fixed": "#e1e2e7",
+              "tertiary-fixed-dim": "#c5c6cb",
+              "on-tertiary-container": "#5e6064",
+              "secondary-fixed": "#6ffbbe",
+              "inverse-on-surface": "#2e3134",
+              "on-tertiary-fixed": "#191c1f",
+              "error-container": "#93000a",
+              "surface-tint": "#00dbe7",
+              "on-error": "#690005",
+              "surface-bright": "#37393d",
+              "on-error-container": "#ffdad6",
+              "inverse-primary": "#00696f",
+              "surface-container-highest": "#323539"
+            },
+            fontFamily: {
+              "headline": ["Manrope", "sans-serif"],
+              "body": ["Manrope", "sans-serif"],
+              "label": ["Manrope", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #111417;
+            color: #e1e2e7;
+            overflow-x: hidden;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(29, 32, 35, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .cyber-river {
+            background: linear-gradient(135deg, rgba(17, 20, 23, 0.8) 0%, rgba(0, 242, 255, 0.05) 50%, rgba(17, 20, 23, 0.8) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .cyber-river::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background-image: radial-gradient(circle at center, rgba(0, 242, 255, 0.1) 0%, transparent 70%);
+            opacity: 0.4;
+            pointer-events: none;
+        }
+        .gradient-text {
+            background: linear-gradient(to bottom right, #e1fdff, #00f2ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="font-body selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopNavBar -->
+<nav class="relative w-full flex items-center justify-start px-6 py-8 max-w-7xl mx-auto">
+<div class="text-xl font-bold tracking-tighter text-slate-100 font-headline">
+            Laboratório de Mercado Financeiro
+        </div>
+</nav>
+<!-- Hero Section -->
+<header class="relative w-full min-h-[819px] flex flex-col items-center justify-center px-6 cyber-river overflow-hidden">
+<!-- Abstract Flowing Background Image -->
+<div class="absolute inset-0 z-0 opacity-40 mix-blend-screen pointer-events-none">
+<img alt="Digital data streams" class="w-full h-full object-cover" data-alt="Fluid glowing cyan and blue digital data streams flowing through dark space, cybernetic motion of financial information, high-end technical aesthetic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBJ1eWTAJll7K4yA_GoGWKXeoLUgtxZlgBqXeUILgANkg-tzhE4YUYrnQ65wlkMNGE2IkiN7aNvZBNZfQrz8vyLkigdDTSNxMVZtbmENiHkzLWc05GSA14al10iW1feEQtqlvalbmV2pFJT2v3nTDBzL-H0BmBhfmjfwu3FOdbacQrYM_mT8L9A-Q38E9o9c9xovsk4eEFditU32j67KJsfB8oObZDhB-4L3XSsfg5WvoVfRCwSZvtN_2r31K08koXAG3nbFa0MLg8"/>
+</div>
+<div class="relative z-10 max-w-5xl mx-auto text-center space-y-6">
+<span class="font-label text-sm uppercase tracking-[0.4em] text-secondary font-semibold opacity-80">Explorando</span>
+<h1 class="font-headline text-6xl md:text-8xl font-extrabold tracking-tight leading-[0.9] text-primary">
+                A Ciência da <br/>
+<span class="gradient-text">Intermediação</span>
+</h1>
+<p class="font-body text-on-surface-variant text-lg md:text-xl max-w-2xl mx-auto leading-relaxed opacity-80">
+                Explore os fundamentos e as inovações do mercado financeiro com análises objetivas e aplicadas.
+            </p>
+</div>
+</header>
+<!-- Content Section: Module Grid -->
+<main class="max-w-7xl mx-auto px-6 py-24">
+<div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
+<div class="max-w-xl">
+<h2 class="font-headline text-4xl font-bold text-on-surface mb-4">Módulos de Pesquisa</h2>
+<div class="h-1 w-24 bg-primary-container rounded-full"></div>
+</div>
+<p class="font-label text-xs uppercase tracking-widest text-outline-variant">Nexus Acadêmico © 2024</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Card 1 -->
+<div class="glass-panel p-8 rounded-xl border border-outline-variant/10 hover:border-primary-container/30 transition-all duration-500 group flex flex-col justify-between h-[360px]">
+<div class="space-y-4">
+<span class="material-symbols-outlined text-primary-container text-4xl" data-icon="query_stats">query_stats</span>
+<h3 class="font-headline text-2xl font-semibold text-primary leading-tight">Estrutura a Termo de Taxas de Juros</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed">Analise a curva de juros e suas implicações macroeconômicas e financeiras no cenário atual.</p>
+</div>
+<div class="flex items-center gap-2 text-secondary opacity-0 group-hover:opacity-100 transition-opacity mt-4">
+<span class="text-xs font-bold uppercase tracking-tighter">Explorar Módulo</span>
+<span class="material-symbols-outlined text-sm" data-icon="trending_flat">trending_flat</span>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="glass-panel p-8 rounded-xl border border-outline-variant/10 hover:border-primary-container/30 transition-all duration-500 group flex flex-col justify-between h-[360px]">
+<div class="space-y-4">
+<span class="material-symbols-outlined text-primary-container text-4xl" data-icon="security">security</span>
+<h3 class="font-headline text-2xl font-semibold text-primary leading-tight">Modelagem de Risco de Crédito</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed">Técnicas avançadas para mensuração e mitigação de riscos em operações de crédito.</p>
+</div>
+<div class="flex items-center gap-2 text-secondary opacity-0 group-hover:opacity-100 transition-opacity mt-4">
+<span class="text-xs font-bold uppercase tracking-tighter">Explorar Módulo</span>
+<span class="material-symbols-outlined text-sm" data-icon="trending_flat">trending_flat</span>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="glass-panel p-8 rounded-xl border border-outline-variant/10 hover:border-primary-container/30 transition-all duration-500 group flex flex-col justify-between h-[360px]">
+<div class="space-y-4">
+<span class="material-symbols-outlined text-primary-container text-4xl" data-icon="account_balance_wallet">account_balance_wallet</span>
+<h3 class="font-headline text-2xl font-semibold text-primary leading-tight">Fundos de Direitos Creditórios (FIDC)</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed">Estruturação e gestão de um dos veículos mais dinâmicos de securitização do mercado.</p>
+</div>
+<div class="flex items-center gap-2 text-secondary opacity-0 group-hover:opacity-100 transition-opacity mt-4">
+<span class="text-xs font-bold uppercase tracking-tighter">Explorar Módulo</span>
+<span class="material-symbols-outlined text-sm" data-icon="trending_flat">trending_flat</span>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="glass-panel p-8 rounded-xl border border-outline-variant/10 hover:border-primary-container/30 transition-all duration-500 group flex flex-col justify-between h-[360px]">
+<div class="space-y-4">
+<span class="material-symbols-outlined text-primary-container text-4xl" data-icon="hub">hub</span>
+<h3 class="font-headline text-2xl font-semibold text-primary leading-tight">Banking as a Service (BaaS)</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed">A revolução da infraestrutura bancária modular e o futuro das Fintechs no Brasil.</p>
+</div>
+<div class="flex items-center gap-2 text-secondary opacity-0 group-hover:opacity-100 transition-opacity mt-4">
+<span class="text-xs font-bold uppercase tracking-tighter">Explorar Módulo</span>
+<span class="material-symbols-outlined text-sm" data-icon="trending_flat">trending_flat</span>
+</div>
+</div>
+<!-- Card 5 -->
+<div class="glass-panel p-8 rounded-xl border border-outline-variant/10 hover:border-primary-container/30 transition-all duration-500 group flex flex-col justify-between h-[360px]">
+<div class="space-y-4">
+<span class="material-symbols-outlined text-primary-container text-4xl" data-icon="currency_bitcoin">currency_bitcoin</span>
+<h3 class="font-headline text-2xl font-semibold text-primary leading-tight">Tokenização de Ativos</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed">Transformando ativos reais em digitais através de blockchain e contratos inteligentes.</p>
+</div>
+<div class="flex items-center gap-2 text-secondary opacity-0 group-hover:opacity-100 transition-opacity mt-4">
+<span class="text-xs font-bold uppercase tracking-tighter">Explorar Módulo</span>
+<span class="material-symbols-outlined text-sm" data-icon="trending_flat">trending_flat</span>
+</div>
+</div>
+<!-- Card 6 -->
+<div class="glass-panel p-8 rounded-xl border border-outline-variant/10 hover:border-primary-container/30 transition-all duration-500 group flex flex-col justify-between h-[360px]">
+<div class="space-y-4">
+<span class="material-symbols-outlined text-primary-container text-4xl" data-icon="gavel">gavel</span>
+<h3 class="font-headline text-2xl font-semibold text-primary leading-tight">Regulação Bancária</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed">O arcabouço normativo do Bacen e CVM para o novo ecossistema financeiro digital.</p>
+</div>
+<div class="flex items-center gap-2 text-secondary opacity-0 group-hover:opacity-100 transition-opacity mt-4">
+<span class="text-xs font-bold uppercase tracking-tighter">Explorar Módulo</span>
+<span class="material-symbols-outlined text-sm" data-icon="trending_flat">trending_flat</span>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full border-t border-slate-800/30 bg-slate-900/50 backdrop-blur-xl flex flex-col md:flex-row justify-between items-center px-8 py-12 mt-20">
+<div class="flex flex-col gap-4">
+<div class="text-lg font-bold text-slate-200 font-headline">Laboratório de Mercado Financeiro</div>
+<p class="font-manrope text-xs uppercase tracking-widest text-slate-500">
+                © 2026 Laboratório de Mercado Financeiro.- Prof. José américo - coppead-fgv-ucam<span style="font-size: 0.75rem; letter-spacing: 0.1em;">.</span><br/></p>
+</div>
+<div class="flex gap-8 mt-8 md:mt-0">
+<p class="font-manrope text-xs uppercase tracking-widest text-slate-500">Dúvidas? Sugestões? Entre em contato!</p>
+</div>
+</footer>
+</body></html>
