@@ -24,7 +24,7 @@ def get_di1(date: str = Query(..., description="Reference date YYYY-MM-DD")):
     for attempt in range(10):
         try:
             check_date = ref_date - timedelta(days=attempt)
-            df = yd.futures(contract_code="DI1", reference_date=check_date)
+            df = yd.futures(check_date, "DI1")
             if df is not None and len(df) > 0:
                 data = df
                 actual_date = check_date
@@ -63,5 +63,5 @@ def count_bdays(
     """Count business days between two dates using Brazilian calendar."""
     start_date = datetime.strptime(start, "%Y-%m-%d").date()
     end_date = datetime.strptime(end, "%Y-%m-%d").date()
-    count = yd.count_bdays(start_date, end_date)
+    count = yd.bday.count(start_date, end_date)
     return {"start": start, "end": end, "bdays": int(count)}
