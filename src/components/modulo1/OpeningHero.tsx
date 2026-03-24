@@ -1,4 +1,3 @@
-import Link from "next/link";
 import KineticVisual from "./KineticVisual";
 
 export default function OpeningHero() {
@@ -30,21 +29,15 @@ export default function OpeningHero() {
             essencialmente taxas zero-cupom com capitalização de 252 dias úteis.
           </p>
 
-          {/* CTA Buttons */}
-          <div className="mt-10 flex flex-wrap gap-4">
-            <button className="border border-outline-variant/30 text-on-surface px-8 py-4 rounded-xl font-bold text-sm tracking-tight hover:bg-surface-container transition-colors active:scale-95 flex items-center gap-2">
-              Escolha o Método de Interpolação
-              <span className="material-symbols-outlined">
-                settings_input_component
-              </span>
-            </button>
-            <Link
-              href="/modulo/1/ettj"
-              className="bg-gradient-to-r from-primary to-primary-container text-on-primary px-8 py-4 rounded-xl font-bold text-sm tracking-tight active:scale-95 transition-transform flex items-center gap-2"
+          {/* CTA Button */}
+          <div className="mt-10">
+            <a
+              href="#modelagem"
+              className="bg-gradient-to-r from-primary to-primary-container text-on-primary px-8 py-4 rounded-xl font-bold text-sm tracking-tight active:scale-95 transition-transform flex items-center gap-2 w-fit"
             >
               Iniciar Modelagem
               <span className="material-symbols-outlined">trending_up</span>
-            </Link>
+            </a>
           </div>
         </div>
 
