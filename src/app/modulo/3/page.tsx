@@ -4,6 +4,8 @@ import { Suspense, useState, useRef, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import OpeningHero from "@/components/modulo3/OpeningHero";
 import StepperNav from "@/components/modulo3/StepperNav";
+import ViabilidadeModule from "@/components/modulo3/ViabilidadeModule";
+import ClassesModule from "@/components/modulo3/ClassesModule";
 import { STEPS } from "@/lib/fidc/constants";
 
 // Wrap in Suspense because useSearchParams requires it in Next.js 14+
@@ -46,18 +48,8 @@ function Module3Content() {
           </div>
 
           <div className="max-w-7xl mx-auto px-4 md:px-8 py-8" role="tabpanel" id={`panel-${activeStep}`}>
-            {activeStep === 0 && (
-              <div className="text-on-surface-variant text-center py-20">
-                <span className="material-symbols-outlined text-4xl text-outline-variant mb-2">trending_up</span>
-                <p>Viabilidade Econômica — em breve</p>
-              </div>
-            )}
-            {activeStep === 1 && (
-              <div className="text-on-surface-variant text-center py-20">
-                <span className="material-symbols-outlined text-4xl text-outline-variant mb-2">account_tree</span>
-                <p>Arquiteto de Classes — em breve</p>
-              </div>
-            )}
+            {activeStep === 0 && <ViabilidadeModule />}
+            {activeStep === 1 && <ClassesModule />}
             {activeStep === 2 && (
               <div className="text-on-surface-variant text-center py-20">
                 <span className="material-symbols-outlined text-4xl text-outline-variant mb-2">shield</span>
