@@ -430,6 +430,56 @@ export default function ClassesModule() {
           )}
         </div>
       </div>
+
+      {/* Educational sections */}
+      <div className="space-y-3">
+        <details className="group">
+          <summary className="flex items-center gap-2 cursor-pointer text-sm font-semibold text-primary-container hover:text-primary-container/80 transition-colors">
+            <span className="material-symbols-outlined text-lg group-open:rotate-90 transition-transform">chevron_right</span>
+            Por que a segregação patrimonial é revolucionária?
+          </summary>
+          <div className="mt-3 p-4 rounded-xl glass-panel border border-outline-variant/15 text-sm text-on-surface-variant leading-relaxed space-y-3">
+            <p>
+              Antes da CVM 175/2022, cada FIDC tinha um único CNPJ e um único pool de ativos. Se um tipo de recebível entrava em inadimplência, TODOS os investidores eram afetados — mesmo aqueles que acreditavam estar expostos apenas a uma classe diferente e mais segura de ativos.
+            </p>
+            <p>
+              A CVM 175 introduziu a segregação patrimonial: um único FIDC pode agora ter múltiplas Classes, cada uma com ativos e passivos completamente independentes. Pense em um shopping center — cada loja opera de forma independente, e a falência de uma loja não afeta as demais.
+            </p>
+          </div>
+        </details>
+
+        <details className="group mt-2">
+          <summary className="flex items-center gap-2 cursor-pointer text-sm font-semibold text-primary-container hover:text-primary-container/80 transition-colors">
+            <span className="material-symbols-outlined text-lg group-open:rotate-90 transition-transform">chevron_right</span>
+            Diferença entre Classe e Subclasse
+          </summary>
+          <div className="mt-3 p-4 rounded-xl glass-panel border border-outline-variant/15 text-sm text-on-surface-variant leading-relaxed space-y-3">
+            <p>
+              <strong className="text-on-surface">Classes</strong> representam TIPOS DE ATIVOS diferentes (ex.: recebíveis de cartão de crédito vs. financiamento de veículos). São completamente segregadas — ativos distintos, riscos distintos, investidores distintos.
+            </p>
+            <p>
+              <strong className="text-on-surface">Subclasses</strong> representam NÍVEIS DE RISCO diferentes dentro do mesmo ativo. A subclasse Sênior tem prioridade no pagamento (menor risco, menor retorno). A Subordinada absorve perdas primeiro (maior risco, maior retorno). O Mezanino fica entre as duas.
+            </p>
+          </div>
+        </details>
+
+        <details className="group mt-2">
+          <summary className="flex items-center gap-2 cursor-pointer text-sm font-semibold text-primary-container hover:text-primary-container/80 transition-colors">
+            <span className="material-symbols-outlined text-lg group-open:rotate-90 transition-transform">chevron_right</span>
+            Impacto da CVM 175 no Mercado
+          </summary>
+          <div className="mt-3 p-4 rounded-xl glass-panel border border-outline-variant/15 text-sm text-on-surface-variant leading-relaxed space-y-3">
+            <p>A Resolução CVM 175 viabilizou uma série de avanços no mercado de FIDCs:</p>
+            <p>
+              <strong className="text-on-surface">(1)</strong> FIDCs multicedentes cresceram com maior eficiência operacional;{" "}
+              <strong className="text-on-surface">(2)</strong> produtos de investimento mais sofisticados com melhor segmentação de risco;{" "}
+              <strong className="text-on-surface">(3)</strong> redução de custos operacionais por meio de infraestrutura compartilhada;{" "}
+              <strong className="text-on-surface">(4)</strong> maior acessibilidade para originadores menores;{" "}
+              <strong className="text-on-surface">(5)</strong> melhor competição com instrumentos de renda fixa tradicionais.
+            </p>
+          </div>
+        </details>
+      </div>
     </div>
   );
 }

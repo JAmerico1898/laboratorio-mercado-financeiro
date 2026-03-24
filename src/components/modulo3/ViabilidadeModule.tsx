@@ -308,6 +308,45 @@ export default function ViabilidadeModule() {
             <span className="text-sm font-bold text-red-400 tabular-nums">{formatBRL(result.totalCosts)}</span>
           </div>
         </div>
+
+        {/* Educational sections */}
+        <div className="space-y-3">
+          <details className="group">
+            <summary className="flex items-center gap-2 cursor-pointer text-sm font-semibold text-primary-container hover:text-primary-container/80 transition-colors">
+              <span className="material-symbols-outlined text-lg group-open:rotate-90 transition-transform">chevron_right</span>
+              Por que FIDCs pequenos são desafiadores?
+            </summary>
+            <div className="mt-3 p-4 rounded-xl glass-panel border border-outline-variant/15 text-sm text-on-surface-variant leading-relaxed space-y-3">
+              <p>
+                Os custos fixos de um FIDC — auditoria (~R$45k/ano), rating (~R$35k/ano), honorários jurídicos (~R$80k de setup), taxas CVM/ANBIMA — são indivisíveis: não escalam com o tamanho do fundo. Um FIDC de R$5M paga exatamente a mesma taxa de auditoria que um de R$100M.
+              </p>
+              <p>
+                Isso cria uma economia de escala natural: como percentual do PL, os custos fixos caem drasticamente à medida que o fundo cresce. Abaixo de aproximadamente R$20M de patrimônio líquido, os custos fixos isoladamente podem consumir toda a receita líquida, tornando a estrutura economicamente inviável mesmo com boas taxas de rendimento na carteira.
+              </p>
+            </div>
+          </details>
+
+          <details className="group mt-2">
+            <summary className="flex items-center gap-2 cursor-pointer text-sm font-semibold text-primary-container hover:text-primary-container/80 transition-colors">
+              <span className="material-symbols-outlined text-lg group-open:rotate-90 transition-transform">chevron_right</span>
+              Alternativas para estruturas menores
+            </summary>
+            <div className="mt-3 p-4 rounded-xl glass-panel border border-outline-variant/15 text-sm text-on-surface-variant leading-relaxed space-y-3">
+              <p>
+                Para originadores menores que não conseguem justificar um FIDC próprio, existem três caminhos alternativos:
+              </p>
+              <p>
+                <strong className="text-on-surface">(1) FIDC Multicedente</strong> — múltiplos originadores compartilham os custos fixos contribuindo recebíveis para uma única estrutura de fundo. Os encargos operacionais são rateados proporcionalmente ao volume de cada cedente.
+              </p>
+              <p>
+                <strong className="text-on-surface">(2) Cessão direta</strong> — venda direta de recebíveis a FIDCs já existentes que já arcam com os custos fixos. O cedente abre mão da estrutura própria em troca de liquidez imediata e menor complexidade operacional.
+              </p>
+              <p>
+                <strong className="text-on-surface">(3) Consórcio</strong> — arranjo em que várias empresas reúnem recursos para criar um FIDC de propriedade conjunta, diluindo os custos de estruturação e manutenção entre os participantes.
+              </p>
+            </div>
+          </details>
+        </div>
       </div>
     </div>
   );

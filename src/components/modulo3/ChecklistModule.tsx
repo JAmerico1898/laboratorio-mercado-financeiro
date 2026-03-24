@@ -686,6 +686,39 @@ export default function ChecklistModule() {
         )}
       </Stage>
 
+      {/* Educational sections */}
+      <div className="space-y-3">
+        <details className="group">
+          <summary className="flex items-center gap-2 cursor-pointer text-sm font-semibold text-primary-container hover:text-primary-container/80 transition-colors">
+            <span className="material-symbols-outlined text-lg group-open:rotate-90 transition-transform">chevron_right</span>
+            Por que tantos requisitos para o varejo?
+          </summary>
+          <div className="mt-3 p-4 rounded-xl glass-panel border border-outline-variant/15 text-sm text-on-surface-variant leading-relaxed space-y-3">
+            <p>
+              A proteção ao investidor de varejo é assimétrica por design. Investidores profissionais (patrimônio acima de R$10M) têm recursos para análise independente e capacidade de absorver perdas. O investidor de varejo precisa de proteções estruturais.
+            </p>
+            <p>
+              O rating obrigatório fornece avaliação de risco por terceiro independente; a oferta exclusiva de cotas sênior garante prioridade no recebimento; os limites de diversificação previnem concentração de risco; e os relatórios periódicos asseguram transparência. Crises históricas no mercado mostraram que investidores menos sofisticados sofreram perdas desproporcionais em produtos estruturados complexos sem essas proteções.
+            </p>
+          </div>
+        </details>
+
+        <details className="group mt-2">
+          <summary className="flex items-center gap-2 cursor-pointer text-sm font-semibold text-primary-container hover:text-primary-container/80 transition-colors">
+            <span className="material-symbols-outlined text-lg group-open:rotate-90 transition-transform">chevron_right</span>
+            Registro Automático vs. Ordinário
+          </summary>
+          <div className="mt-3 p-4 rounded-xl glass-panel border border-outline-variant/15 text-sm text-on-surface-variant leading-relaxed space-y-3">
+            <p>
+              O caminho de registro automático (com convênio ANBIMA) leva aproximadamente 90 dias, contra ~150 dias para o ordinário. A contrapartida: a ANBIMA impõe padrões adicionais de autorregulação (divulgação, governança, relatórios), mas em troca a CVM confia no processo de revisão da ANBIMA e não realiza sua própria análise detalhada.
+            </p>
+            <p>
+              Para FIDCs destinados exclusivamente a investidores profissionais, o caminho simplificado (~60 dias) tem ainda menos exigências formais, tornando o processo de lançamento significativamente mais ágil.
+            </p>
+          </div>
+        </details>
+      </div>
+
     </div>
   );
 }

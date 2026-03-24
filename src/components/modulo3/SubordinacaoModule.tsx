@@ -416,6 +416,57 @@ export default function SubordinacaoModule() {
             rupturePoints={rupturePoints}
           />
         </div>
+
+        {/* Educational sections */}
+        <div className="space-y-3">
+          <details className="group">
+            <summary className="flex items-center gap-2 cursor-pointer text-sm font-semibold text-primary-container hover:text-primary-container/80 transition-colors">
+              <span className="material-symbols-outlined text-lg group-open:rotate-90 transition-transform">chevron_right</span>
+              Por que a subordinação é essencial?
+            </summary>
+            <div className="mt-3 p-4 rounded-xl glass-panel border border-outline-variant/15 text-sm text-on-surface-variant leading-relaxed space-y-3">
+              <p>
+                A subordinação é o principal mecanismo de credit enhancement em FIDCs. Funciona como uma apólice de seguro: a cota Junior absorve perdas antes que elas atinjam os investidores Sênior. Isso torna as cotas Sênior atraentes para investidores conservadores (fundos de pensão, bancos), enquanto as cotas Junior — de maior risco — atraem investidores sofisticados em busca de retornos mais elevados.
+              </p>
+              <p>
+                O índice de subordinação determina quanto de perda o fundo consegue absorver antes que os investidores Sênior sejam afetados. Um índice de 20% significa que o fundo pode perder até 20% do seu PL sem que as cotas Sênior sofram qualquer impacto.
+              </p>
+            </div>
+          </details>
+
+          <details className="group mt-2">
+            <summary className="flex items-center gap-2 cursor-pointer text-sm font-semibold text-primary-container hover:text-primary-container/80 transition-colors">
+              <span className="material-symbols-outlined text-lg group-open:rotate-90 transition-transform">chevron_right</span>
+              Recomposição da Subordinação
+            </summary>
+            <div className="mt-3 p-4 rounded-xl glass-panel border border-outline-variant/15 text-sm text-on-surface-variant leading-relaxed space-y-3">
+              <p>
+                Quando perdas reduzem o nível de subordinação abaixo do mínimo contratual (drawdown), o fundo precisa recompor. As opções incluem:
+              </p>
+              <p>
+                <strong className="text-on-surface">(1) Retenção automática de receita</strong> — o excesso de spread é retido em vez de distribuído, reconstruindo gradualmente a subordinação;{" "}
+                <strong className="text-on-surface">(2) Aporte de capital</strong> — o originador ou os detentores Junior injetam novo capital;{" "}
+                <strong className="text-on-surface">(3) Aceleração de amortização</strong> — pagamento antecipado de cotas Sênior para restaurar o índice;{" "}
+                <strong className="text-on-surface">(4) Substituição de ativos</strong> — troca de recebíveis com baixo desempenho por ativos de melhor qualidade.
+              </p>
+            </div>
+          </details>
+
+          <details className="group mt-2">
+            <summary className="flex items-center gap-2 cursor-pointer text-sm font-semibold text-primary-container hover:text-primary-container/80 transition-colors">
+              <span className="material-symbols-outlined text-lg group-open:rotate-90 transition-transform">chevron_right</span>
+              Remuneração: Por que o Junior ganha mais?
+            </summary>
+            <div className="mt-3 p-4 rounded-xl glass-panel border border-outline-variant/15 text-sm text-on-surface-variant leading-relaxed space-y-3">
+              <p>
+                Estrutura típica de retornos: cotas Sênior rendem CDI + 1–3% (baixo risco, pagamento prioritário); Mezanino rende CDI + 4–7% (risco médio); Junior rende CDI + 8–15%+ (maior risco, absorve perdas primeiro, mas fica com o excesso de spread).
+              </p>
+              <p>
+                O detentor Junior — geralmente o próprio originador — tem incentivo direto para manter a qualidade de crédito da carteira, pois é o primeiro a perder dinheiro se a inadimplência disparar. Esse alinhamento de interesses é um dos pilares que tornam a estrutura FIDC robusta para os demais cotistas.
+              </p>
+            </div>
+          </details>
+        </div>
       </div>
     </div>
   );
