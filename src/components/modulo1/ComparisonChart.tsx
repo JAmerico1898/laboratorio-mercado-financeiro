@@ -99,18 +99,27 @@ export default function ComparisonChart({
           plot_bgcolor: "#191c1f",
           font: { color: "#e1e2e7", family: "Manrope, sans-serif" },
           hovermode: "x unified" as const,
-          title: {
-            text: `Comparação — ${methodLabel}`,
-            font: { size: 16, color: "#e1e2e7" },
-          },
-          margin: { t: 80, r: 30, b: 50, l: 60 },
+          margin: { t: 110, r: 30, b: 50, l: 60 },
           legend: {
             orientation: "h" as const,
-            y: 1.15,
+            y: 1.12,
             x: 0.5,
             xanchor: "center" as const,
             font: { size: 11 },
+            tracegroupgap: 20,
           },
+          annotations: [
+            {
+              text: `Comparação — ${methodLabel}`,
+              xref: "paper" as const,
+              yref: "paper" as const,
+              x: 0.5,
+              y: 1.22,
+              showarrow: false,
+              font: { size: 16, color: "#e1e2e7", family: "Manrope, sans-serif" },
+              xanchor: "center" as const,
+            },
+          ],
           xaxis: {
             title: "Dias Úteis",
             gridcolor: "rgba(255,255,255,0.06)",
