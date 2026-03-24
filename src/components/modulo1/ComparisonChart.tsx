@@ -99,7 +99,7 @@ export default function ComparisonChart({
           plot_bgcolor: "#191c1f",
           font: { color: "#e1e2e7", family: "Manrope, sans-serif" },
           hovermode: "x unified" as const,
-          margin: { t: 110, r: 30, b: 50, l: 60 },
+          margin: { t: 140, r: 30, b: 50, l: 60 },
           legend: {
             orientation: "h" as const,
             y: 1.12,
