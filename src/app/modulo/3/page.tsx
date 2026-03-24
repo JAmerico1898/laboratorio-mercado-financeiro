@@ -6,6 +6,7 @@ import OpeningHero from "@/components/modulo3/OpeningHero";
 import StepperNav from "@/components/modulo3/StepperNav";
 import ViabilidadeModule from "@/components/modulo3/ViabilidadeModule";
 import ClassesModule from "@/components/modulo3/ClassesModule";
+import SubordinacaoModule from "@/components/modulo3/SubordinacaoModule";
 import { STEPS } from "@/lib/fidc/constants";
 
 // Wrap in Suspense because useSearchParams requires it in Next.js 14+
@@ -50,12 +51,7 @@ function Module3Content() {
           <div className="max-w-7xl mx-auto px-4 md:px-8 py-8" role="tabpanel" id={`panel-${activeStep}`}>
             {activeStep === 0 && <ViabilidadeModule />}
             {activeStep === 1 && <ClassesModule />}
-            {activeStep === 2 && (
-              <div className="text-on-surface-variant text-center py-20">
-                <span className="material-symbols-outlined text-4xl text-outline-variant mb-2">shield</span>
-                <p>Subordinação e Risco — em breve</p>
-              </div>
-            )}
+            {activeStep === 2 && <SubordinacaoModule />}
             {activeStep === 3 && (
               <div className="text-on-surface-variant text-center py-20">
                 <span className="material-symbols-outlined text-4xl text-outline-variant mb-2">checklist</span>
