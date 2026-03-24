@@ -2,7 +2,6 @@ from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime, timedelta
 import pyield as yd
-import pandas as pd
 
 app = FastAPI(title="DI1 Data Service")
 
@@ -40,12 +39,9 @@ def get_di1(date: str = Query(..., description="Reference date YYYY-MM-DD")):
             "actual_date": None,
         }
 
-    # Convert to pandas if polars
-    if not isinstance(data, pd.DataFrame):
-        data = data.to_pandas()
-
+    # Work directly with Polars DataFrame (no pandas/pyarrow needed)
     contracts = []
-    for _, row in data.iterrows():
+    for row in data.iter_rows(named=True):
         contracts.append({
             "ticker": str(row["TickerSymbol"]),
             "expiration": str(row["ExpirationDate"]),
