@@ -18,6 +18,9 @@ build/
 # debug
 npm-debug.log*
 
+# coverage
+coverage/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
