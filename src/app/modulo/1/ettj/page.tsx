@@ -418,6 +418,44 @@ export default function ETTJPage() {
             ratesA={comparisonData.ratesA}
             ratesB={comparisonData.ratesB}
           />
+
+          <details className="glass-panel rounded-lg border border-outline-variant/10 p-4">
+            <summary className="cursor-pointer text-on-surface font-semibold text-sm">💾 Download dos Resultados</summary>
+            <div className="mt-4">
+              <button
+                onClick={() => {
+                  const header = "DiasUteis;Taxa_A_pct;Taxa_B_pct;Diferenca_pp";
+                  const rows = comparisonData.commonX.map((x, i) => {
+                    const du = Math.round(x).toString();
+                    const taxaA = (comparisonData.commonYA[i] * 100)
+                      .toFixed(4)
+                      .replace(".", ",");
+                    const taxaB = (comparisonData.commonYB[i] * 100)
+                      .toFixed(4)
+                      .replace(".", ",");
+                    const diff = ((comparisonData.commonYB[i] - comparisonData.commonYA[i]) * 100)
+                      .toFixed(4)
+                      .replace(".", ",");
+                    return `${du};${taxaA};${taxaB};${diff}`;
+                  });
+                  const csv = [header, ...rows].join("\n");
+                  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement("a");
+                  a.href = url;
+                  a.download = `comparacao_di1_${actualDate}_vs_${actualDateB}.csv`;
+                  a.click();
+                  URL.revokeObjectURL(url);
+                }}
+                className="px-4 py-2 bg-primary-container/20 border border-primary-container/30 rounded-lg text-primary-container text-sm font-medium hover:bg-primary-container/30 transition-colors"
+              >
+                Baixar CSV de Comparação
+              </button>
+              <p className="mt-2 text-outline text-xs">
+                Colunas: DiasUteis; Taxa_A (% a.a.); Taxa_B (% a.a.); Diferença (p.p.) — separador decimal: vírgula
+              </p>
+            </div>
+          </details>
         </div>
       )}
 
@@ -480,6 +518,11 @@ export default function ETTJPage() {
           </div>
         </div>
       )}
+
+      <footer className="mt-12 py-6 text-center text-outline text-sm border-t border-outline-variant/20">
+        <p>Fonte de Dados: B3 (Brasil, Bolsa, Balcão) via pyield</p>
+        <p className="mt-1">Nota: Os contratos DI1 são essencialmente taxas zero-cupom com capitalização de 252 dias úteis</p>
+      </footer>
     </div>
   );
 }
