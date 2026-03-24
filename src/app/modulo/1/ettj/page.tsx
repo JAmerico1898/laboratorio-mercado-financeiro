@@ -6,6 +6,10 @@ import YieldCurveChart from "@/components/modulo1/YieldCurveChart";
 import RateQuery from "@/components/modulo1/RateQuery";
 import QualityMetricsPanel from "@/components/modulo1/QualityMetrics";
 import FittedParams from "@/components/modulo1/FittedParams";
+import DataTable from "@/components/modulo1/DataTable";
+import ResidualsTab from "@/components/modulo1/ResidualsTab";
+import MethodEquation from "@/components/modulo1/MethodEquation";
+import DownloadTab from "@/components/modulo1/DownloadTab";
 import { applyMethod } from "@/lib/interpolation";
 import { computeMetrics } from "@/lib/metrics";
 import {
@@ -29,6 +33,7 @@ export default function ETTJPage() {
     d.setDate(d.getDate() - 30);
     return d.toISOString().split("T")[0];
   });
+  const [activeTab, setActiveTab] = useState<"data" | "residuals" | "download">("data");
   const [loading, setLoading] = useState(false);
   const [contracts, setContracts] = useState<DI1Contract[] | null>(null);
   const [actualDate, setActualDate] = useState<string | null>(null);
@@ -69,6 +74,21 @@ export default function ETTJPage() {
     if (!result || yData.length === 0) return null;
     return computeMetrics(yData, result.yFitted);
   }, [result, yData]);
+
+  // Compute residuals
+  const residuals = useMemo(() => {
+    if (!result || yData.length === 0) return [];
+    return yData.map((v, i) => v - result.yFitted[i]);
+  }, [result, yData]);
+
+  // Curve data for download
+  const curveData = useMemo(() => {
+    if (!result) return [];
+    return result.xSmooth.map((x, i) => ({
+      bdays: Math.round(x),
+      rate: result.ySmooth[i],
+    }));
+  }, [result]);
 
   const handleLoad = async () => {
     setLoading(true);
@@ -174,6 +194,42 @@ export default function ETTJPage() {
           {result.params && (
             <FittedParams params={result.params} method={method} />
           )}
+
+          <MethodEquation method={method} smoothingFactor={smoothingFactor} />
+
+          <div>
+            <div className="flex border-b border-outline-variant/30 mb-4">
+              {([
+                { key: "data" as const, label: "📋 Dados" },
+                { key: "residuals" as const, label: "📊 Resíduos" },
+                { key: "download" as const, label: "💾 Download" },
+              ]).map((tab) => (
+                <button
+                  key={tab.key}
+                  onClick={() => setActiveTab(tab.key)}
+                  className={`px-4 py-2.5 text-sm font-medium transition-colors ${
+                    activeTab === tab.key
+                      ? "text-primary-container border-b-2 border-primary-container"
+                      : "text-outline hover:text-on-surface"
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+            {activeTab === "data" && <DataTable contracts={filtered} />}
+            {activeTab === "residuals" && (
+              <ResidualsTab xData={xData} residuals={residuals} />
+            )}
+            {activeTab === "download" && (
+              <DownloadTab
+                curveData={curveData}
+                contracts={filtered}
+                date={actualDate!}
+                method={method}
+              />
+            )}
+          </div>
         </div>
       )}
     </div>
