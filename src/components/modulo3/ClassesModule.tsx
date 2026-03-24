@@ -132,6 +132,15 @@ export default function ClassesModule() {
         </p>
       </div>
 
+      {/* Diagram — full width */}
+      <div className="rounded-2xl border border-outline-variant/20 bg-surface-container/40 p-5">
+        <h3 className="text-sm font-semibold text-on-surface flex items-center gap-2 mb-4">
+          <span className="material-symbols-outlined text-base text-primary-container">account_tree</span>
+          Estrutura Hierárquica
+        </h3>
+        <ClassHierarchyDiagram nodes={nodes} edges={edges} />
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
         {/* Left Column — Controls */}
         <div className="space-y-6">
@@ -311,15 +320,6 @@ export default function ClassesModule() {
 
         {/* Right Column — Visualization */}
         <div className="space-y-6">
-          {/* Diagram */}
-          <div className="rounded-2xl border border-outline-variant/20 bg-surface-container/40 p-5">
-            <h3 className="text-sm font-semibold text-on-surface flex items-center gap-2 mb-4">
-              <span className="material-symbols-outlined text-base text-primary-container">account_tree</span>
-              Estrutura Hierárquica
-            </h3>
-            <ClassHierarchyDiagram nodes={nodes} edges={edges} />
-          </div>
-
           {/* Comparison cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Sem Segregação */}

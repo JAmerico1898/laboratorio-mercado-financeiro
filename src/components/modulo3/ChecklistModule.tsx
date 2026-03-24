@@ -1,29 +1,16 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import {
   isForbiddenCombination,
-  determineRegistrationType,
-  calculateTimeline,
   getComplianceStatus,
 } from "@/lib/fidc/checklist-logic";
 import {
   RATING_AGENCIES,
   RATING_GRADES,
   MIN_RECOMMENDED_RATING_INDEX,
-  STRUCTURING_COSTS,
-  RETAIL_EXTRA_STRUCTURING_COSTS,
-  RECURRING_COSTS,
-  RETAIL_EXTRA_RECURRING_COSTS,
 } from "@/lib/fidc/constants";
 import type { InvestorType, AssetType } from "@/lib/fidc/types";
-import TimelineChart from "./charts/TimelineChart";
-
-// ─── Helpers ────────────────────────────────────────────────────────────────
-
-function today(): string {
-  return new Date().toISOString().split("T")[0];
-}
 
 // ─── Radio Card ─────────────────────────────────────────────────────────────
 
@@ -128,34 +115,13 @@ export default function ChecklistModule() {
   const [fundType, setFundType] = useState<"aberto" | "fechado">("fechado");
   const [distributorName, setDistributorName] = useState("");
 
-  // Stage 4 state
-  const [anbimaConvenant, setAnbimaConvenant] = useState<boolean | null>(null);
-
   // ── Derived ──
 
   const stage1Complete = investorType !== null && assetType !== null;
   const forbidden = stage1Complete ? isForbiddenCombination(investorType!, assetType!) : false;
   const stage2Passes = stage1Complete && !forbidden;
 
-  const complianceStatus = useMemo(
-    () => getComplianceStatus(complianceItems),
-    [complianceItems]
-  );
-  const stage3Complete =
-    investorType === "profissional" ||
-    (stage2Passes && complianceStatus.level === "approved");
-
-  const stage4Active = stage3Complete && stage2Passes;
-
-  const registrationType = useMemo(() => {
-    if (!stage4Active || anbimaConvenant === null || !investorType) return null;
-    return determineRegistrationType(investorType, anbimaConvenant);
-  }, [stage4Active, anbimaConvenant, investorType]);
-
-  const timeline = useMemo(() => {
-    if (!registrationType) return null;
-    return calculateTimeline(registrationType, today());
-  }, [registrationType]);
+  const complianceStatus = getComplianceStatus(complianceItems);
 
   // ── Helpers ──
 
@@ -164,18 +130,6 @@ export default function ChecklistModule() {
   }
 
   const ratingOk = ratingGradeIndex <= MIN_RECOMMENDED_RATING_INDEX;
-
-  const REGISTRATION_LABELS: Record<string, string> = {
-    automatic: "Registro Automático (ANBIMA)",
-    ordinary: "Registro Ordinário com Análise CVM",
-    simplified: "Registro Simplificado",
-  };
-
-  const REGISTRATION_DESCRIPTIONS: Record<string, string> = {
-    automatic: "Protocolo via CVMWeb com validação ANBIMA. Sem análise prévia obrigatória.",
-    ordinary: "Análise detalhada pela CVM com possíveis rodadas de perguntas e comentários.",
-    simplified: "Revisão acelerada para FIDCs profissionais com menos exigências formais.",
-  };
 
   // ─── Render ────────────────────────────────────────────────────────────────
 
@@ -538,150 +492,6 @@ export default function ChecklistModule() {
 
               </div>
             )}
-          </div>
-        )}
-      </Stage>
-
-      {/* ── Stage 4: Registro & Cronograma ── */}
-      <Stage number={4} title="Registro &amp; Cronograma" icon="assignment_turned_in" active={stage4Active}>
-        {stage4Active && (
-          <div className="space-y-6" aria-live="polite">
-
-            {/* ANBIMA Covenant */}
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-wider text-on-surface-variant mb-3">
-                Convênio ANBIMA
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <RadioCard
-                  selected={anbimaConvenant === true}
-                  onClick={() => setAnbimaConvenant(true)}
-                  title="Com Convênio ANBIMA"
-                  description="Registro automático após protocolo CVMWeb. Mais rápido e sem análise prévia obrigatória."
-                  icon="speed"
-                />
-                <RadioCard
-                  selected={anbimaConvenant === false}
-                  onClick={() => setAnbimaConvenant(false)}
-                  title="Sem Convênio ANBIMA"
-                  description={
-                    investorType === "profissional"
-                      ? "Registro simplificado com revisão acelerada pela CVM."
-                      : "Registro ordinário com análise completa pela CVM. Processo mais longo."
-                  }
-                  icon="hourglass_empty"
-                />
-              </div>
-            </div>
-
-            {/* Registration type badge */}
-            {anbimaConvenant !== null && registrationType && (
-              <div className="rounded-xl border border-primary/30 bg-primary/5 p-4">
-                <div className="flex items-start gap-3">
-                  <span className="material-symbols-outlined text-primary text-xl shrink-0">badge</span>
-                  <div>
-                    <p className="text-xs text-on-surface-variant mb-0.5">Tipo de Registro Determinado</p>
-                    <p className="font-semibold text-on-surface text-sm">{REGISTRATION_LABELS[registrationType]}</p>
-                    <p className="text-xs text-on-surface-variant mt-1 leading-relaxed">
-                      {REGISTRATION_DESCRIPTIONS[registrationType]}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Timeline chart */}
-            {timeline && (
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-wider text-on-surface-variant mb-3">
-                  Cronograma Estimado
-                </p>
-                <div className="rounded-xl border border-outline-variant/20 overflow-hidden">
-                  <TimelineChart timeline={timeline} />
-                </div>
-                <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-2">
-                  {timeline.milestones.map((m, i) => {
-                    const colors = ["text-primary", "text-secondary", "text-yellow-400", "text-orange-400", "text-purple-400"];
-                    return (
-                      <div key={i} className="rounded-lg bg-surface p-2 border border-outline-variant/15">
-                        <p className={["text-xs font-semibold", colors[i % colors.length]].join(" ")}>
-                          {m.label}
-                        </p>
-                        <p className="text-xs text-on-surface-variant mt-0.5">+{m.daysFromStart}d</p>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
-            {/* Cost tables */}
-            {anbimaConvenant !== null && (
-              <div className="space-y-4">
-                <p className="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">
-                  Estimativa de Custos
-                </p>
-
-                {/* Structuring */}
-                <div>
-                  <p className="text-xs text-on-surface-variant mb-2 flex items-center gap-1">
-                    <span className="material-symbols-outlined text-sm">build</span>
-                    Custos de Estruturação
-                  </p>
-                  <div className="rounded-xl border border-outline-variant/20 overflow-hidden">
-                    <table className="w-full text-xs">
-                      <tbody>
-                        {STRUCTURING_COSTS.map((row) => (
-                          <tr key={row.label} className="border-b border-outline-variant/10 last:border-0">
-                            <td className="px-4 py-2.5 text-on-surface-variant">{row.label}</td>
-                            <td className="px-4 py-2.5 text-right font-medium text-on-surface">{row.value}</td>
-                          </tr>
-                        ))}
-                        {investorType === "varejo" && RETAIL_EXTRA_STRUCTURING_COSTS.map((row) => (
-                          <tr key={row.label} className="border-b border-outline-variant/10 last:border-0 bg-yellow-500/5">
-                            <td className="px-4 py-2.5 text-on-surface-variant">
-                              {row.label}
-                              <span className="ml-1.5 text-yellow-400 text-xs">(varejo)</span>
-                            </td>
-                            <td className="px-4 py-2.5 text-right font-medium text-on-surface">{row.value}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-
-                {/* Recurring */}
-                <div>
-                  <p className="text-xs text-on-surface-variant mb-2 flex items-center gap-1">
-                    <span className="material-symbols-outlined text-sm">repeat</span>
-                    Custos Recorrentes Anuais
-                  </p>
-                  <div className="rounded-xl border border-outline-variant/20 overflow-hidden">
-                    <table className="w-full text-xs">
-                      <tbody>
-                        {RECURRING_COSTS.map((row) => (
-                          <tr key={row.label} className="border-b border-outline-variant/10 last:border-0">
-                            <td className="px-4 py-2.5 text-on-surface-variant">{row.label}</td>
-                            <td className="px-4 py-2.5 text-right font-medium text-on-surface">{row.value}</td>
-                          </tr>
-                        ))}
-                        {investorType === "varejo" && RETAIL_EXTRA_RECURRING_COSTS.map((row) => (
-                          <tr key={row.label} className="border-b border-outline-variant/10 last:border-0 bg-yellow-500/5">
-                            <td className="px-4 py-2.5 text-on-surface-variant">
-                              {row.label}
-                              <span className="ml-1.5 text-yellow-400 text-xs">(varejo)</span>
-                            </td>
-                            <td className="px-4 py-2.5 text-right font-medium text-on-surface">{row.value}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
-            )}
-
           </div>
         )}
       </Stage>
