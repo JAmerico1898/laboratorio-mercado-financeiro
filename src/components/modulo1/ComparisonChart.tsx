@@ -103,10 +103,10 @@ export default function ComparisonChart({
             text: `Comparação — ${methodLabel}`,
             font: { size: 16, color: "#e1e2e7" },
           },
-          margin: { t: 50, r: 30, b: 50, l: 60 },
+          margin: { t: 80, r: 30, b: 50, l: 60 },
           legend: {
             orientation: "h" as const,
-            y: 1.08,
+            y: 1.15,
             x: 0.5,
             xanchor: "center" as const,
             font: { size: 11 },
