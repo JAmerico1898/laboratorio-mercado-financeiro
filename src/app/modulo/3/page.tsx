@@ -7,6 +7,7 @@ import StepperNav from "@/components/modulo3/StepperNav";
 import ViabilidadeModule from "@/components/modulo3/ViabilidadeModule";
 import ClassesModule from "@/components/modulo3/ClassesModule";
 import SubordinacaoModule from "@/components/modulo3/SubordinacaoModule";
+import ChecklistModule from "@/components/modulo3/ChecklistModule";
 import AnimacaoModule from "@/components/modulo3/AnimacaoModule";
 import { STEPS } from "@/lib/fidc/constants";
 
@@ -53,12 +54,7 @@ function Module3Content() {
             {activeStep === 0 && <ViabilidadeModule />}
             {activeStep === 1 && <ClassesModule />}
             {activeStep === 2 && <SubordinacaoModule />}
-            {activeStep === 3 && (
-              <div className="text-on-surface-variant text-center py-20">
-                <span className="material-symbols-outlined text-4xl text-outline-variant mb-2">checklist</span>
-                <p>Checklist Regulatório — em breve</p>
-              </div>
-            )}
+            {activeStep === 3 && <ChecklistModule />}
             {activeStep === 4 && <AnimacaoModule />}
 
             {/* Prev/Next buttons */}
