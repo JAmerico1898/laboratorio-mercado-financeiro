@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { modules } from "@/data/modules";
 
 interface Props {
@@ -22,6 +22,9 @@ export async function generateMetadata({ params }: Props) {
 
 export default async function ModuloPage({ params }: Props) {
   const { id } = await params;
+
+  if (id === "1") redirect("/modulo/1");
+
   const mod = modules.find((m) => m.id === Number(id));
 
   if (!mod) {
