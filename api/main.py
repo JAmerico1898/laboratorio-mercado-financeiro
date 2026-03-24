@@ -21,19 +21,30 @@ def get_di1(date: str = Query(..., description="Reference date YYYY-MM-DD")):
     data = None
     actual_date = ref_date
 
-    for attempt in range(10):
-        try:
-            check_date = ref_date - timedelta(days=attempt)
-            df = yd.futures(check_date, "DI1")
-            if df is not None and len(df) > 0:
-                data = df
-                actual_date = check_date
-                break
-        except Exception:
-            continue
+    # Search backwards first (prefer past data), then forwards
+    for attempt in range(60):
+        for direction in [-1, 1]:
+            check_date = ref_date + timedelta(days=attempt * direction)
+            # Skip forward on first iteration (attempt=0, direction=1 would duplicate)
+            if attempt == 0 and direction == 1:
+                continue
+            try:
+                df = yd.futures(check_date, "DI1")
+                if df is not None and len(df) > 0:
+                    data = df
+                    actual_date = check_date
+                    break
+            except Exception:
+                continue
+        if data is not None:
+            break
 
     if data is None:
-        return {"error": "No data available", "contracts": [], "actual_date": None}
+        return {
+            "error": f"Dados indisponíveis para {date}. A B3 disponibiliza apenas dados recentes (~30 dias úteis).",
+            "contracts": [],
+            "actual_date": None,
+        }
 
     # Convert to pandas if polars
     if not isinstance(data, pd.DataFrame):
