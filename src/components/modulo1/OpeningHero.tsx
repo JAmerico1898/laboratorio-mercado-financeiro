@@ -29,16 +29,6 @@ export default function OpeningHero() {
             essencialmente taxas zero-cupom com capitalização de 252 dias úteis.
           </p>
 
-          {/* CTA Button */}
-          <div className="mt-10">
-            <a
-              href="#modelagem"
-              className="bg-gradient-to-r from-primary to-primary-container text-on-primary px-8 py-4 rounded-xl font-bold text-sm tracking-tight active:scale-95 transition-transform flex items-center gap-2 w-fit"
-            >
-              Iniciar Modelagem
-              <span className="material-symbols-outlined">trending_up</span>
-            </a>
-          </div>
         </div>
 
         {/* Decorative Kinetic Visual */}
