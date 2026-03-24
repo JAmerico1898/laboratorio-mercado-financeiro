@@ -1,0 +1,139 @@
+"use client";
+
+import dynamic from "next/dynamic";
+
+const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
+
+interface CurveData {
+  xObs: number[];
+  yObs: number[];
+  xSmooth: number[];
+  ySmooth: number[];
+  date: string;
+}
+
+interface ComparisonChartProps {
+  dataA: CurveData;
+  dataB: CurveData;
+  methodLabel: string;
+}
+
+export default function ComparisonChart({
+  dataA,
+  dataB,
+  methodLabel,
+}: ComparisonChartProps) {
+  // Compute difference (B - A) at each smooth point
+  const diff = dataB.ySmooth.map((v, i) => v - dataA.ySmooth[i]);
+
+  return (
+    <div className="glass-panel rounded-xl p-4">
+      <Plot
+        data={[
+          // Top chart — Data A observed
+          {
+            x: dataA.xObs,
+            y: dataA.yObs,
+            mode: "markers" as const,
+            type: "scatter" as const,
+            name: `Data A (${dataA.date})`,
+            marker: { color: "#3b82f6", size: 6, opacity: 0.5 },
+            yaxis: "y",
+          },
+          // Top chart — Data A fitted
+          {
+            x: dataA.xSmooth,
+            y: dataA.ySmooth,
+            mode: "lines" as const,
+            type: "scatter" as const,
+            name: `Curva A (${dataA.date})`,
+            line: { color: "#3b82f6", width: 2 },
+            yaxis: "y",
+          },
+          // Top chart — Data B observed
+          {
+            x: dataB.xObs,
+            y: dataB.yObs,
+            mode: "markers" as const,
+            type: "scatter" as const,
+            name: `Data B (${dataB.date})`,
+            marker: { color: "#dc143c", size: 6, opacity: 0.5 },
+            yaxis: "y",
+          },
+          // Top chart — Data B fitted
+          {
+            x: dataB.xSmooth,
+            y: dataB.ySmooth,
+            mode: "lines" as const,
+            type: "scatter" as const,
+            name: `Curva B (${dataB.date})`,
+            line: { color: "#dc143c", width: 2 },
+            yaxis: "y",
+          },
+          // Bottom chart — Difference
+          {
+            x: dataA.xSmooth,
+            y: diff,
+            mode: "lines" as const,
+            type: "scatter" as const,
+            name: "Diferença (B − A)",
+            line: { color: "#f97316", width: 2 },
+            fill: "tozeroy" as const,
+            fillcolor: "rgba(249,115,22,0.15)",
+            yaxis: "y2",
+          },
+          // Bottom chart — zero reference line
+          {
+            x: [dataA.xSmooth[0], dataA.xSmooth[dataA.xSmooth.length - 1]],
+            y: [0, 0],
+            mode: "lines" as const,
+            type: "scatter" as const,
+            line: { color: "#6b7280", width: 1, dash: "dash" as const },
+            showlegend: false,
+            yaxis: "y2",
+          },
+        ]}
+        layout={{
+          height: 700,
+          paper_bgcolor: "#191c1f",
+          plot_bgcolor: "#191c1f",
+          font: { color: "#e1e2e7", family: "Manrope, sans-serif" },
+          hovermode: "x unified" as const,
+          title: {
+            text: `Comparação — ${methodLabel}`,
+            font: { size: 16, color: "#e1e2e7" },
+          },
+          margin: { t: 50, r: 30, b: 50, l: 60 },
+          legend: {
+            orientation: "h" as const,
+            y: 1.08,
+            x: 0.5,
+            xanchor: "center" as const,
+            font: { size: 11 },
+          },
+          xaxis: {
+            title: "Dias Úteis",
+            gridcolor: "rgba(255,255,255,0.06)",
+            zeroline: false,
+          },
+          yaxis: {
+            title: "Taxa (%)",
+            domain: [0.35, 1],
+            gridcolor: "rgba(255,255,255,0.06)",
+            zeroline: false,
+          },
+          yaxis2: {
+            title: "Diferença (p.p.)",
+            domain: [0, 0.3],
+            gridcolor: "rgba(255,255,255,0.06)",
+            zeroline: false,
+            anchor: "x" as const,
+          },
+        }}
+        config={{ responsive: true, displayModeBar: false }}
+        useResizeHandler
+        style={{ width: "100%" }}
+      />
+    </div>
+  );
+}

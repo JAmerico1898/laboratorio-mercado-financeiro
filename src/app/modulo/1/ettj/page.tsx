@@ -10,6 +10,9 @@ import DataTable from "@/components/modulo1/DataTable";
 import ResidualsTab from "@/components/modulo1/ResidualsTab";
 import MethodEquation from "@/components/modulo1/MethodEquation";
 import DownloadTab from "@/components/modulo1/DownloadTab";
+import ComparisonChart from "@/components/modulo1/ComparisonChart";
+import ComparisonStats from "@/components/modulo1/ComparisonStats";
+import KeyMaturitiesTable from "@/components/modulo1/KeyMaturitiesTable";
 import { applyMethod } from "@/lib/interpolation";
 import { computeMetrics } from "@/lib/metrics";
 import {
@@ -17,7 +20,22 @@ import {
   InterpolationMethod,
   METHOD_LABELS,
 } from "@/lib/types";
-import { FIVE_YEAR_HORIZON } from "@/lib/constants";
+import { FIVE_YEAR_HORIZON, KEY_MATURITIES, SMOOTH_POINTS } from "@/lib/constants";
+
+/** Linearly interpolate ys at target x, given sorted xs/ys arrays. */
+function lerpAt(xs: number[], ys: number[], target: number): number {
+  if (target <= xs[0]) return ys[0];
+  if (target >= xs[xs.length - 1]) return ys[ys.length - 1];
+  let lo = 0;
+  let hi = xs.length - 1;
+  while (hi - lo > 1) {
+    const mid = (lo + hi) >> 1;
+    if (xs[mid] <= target) lo = mid;
+    else hi = mid;
+  }
+  const t = (target - xs[lo]) / (xs[hi] - xs[lo]);
+  return ys[lo] + t * (ys[hi] - ys[lo]);
+}
 
 export default function ETTJPage() {
   const [mode, setMode] = useState<"single" | "comparison">("single");
@@ -37,6 +55,8 @@ export default function ETTJPage() {
   const [loading, setLoading] = useState(false);
   const [contracts, setContracts] = useState<DI1Contract[] | null>(null);
   const [actualDate, setActualDate] = useState<string | null>(null);
+  const [contractsB, setContractsB] = useState<DI1Contract[] | null>(null);
+  const [actualDateB, setActualDateB] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [warning, setWarning] = useState<string | null>(null);
 
@@ -45,9 +65,15 @@ export default function ETTJPage() {
     () => contracts?.filter((c) => c.bdays <= FIVE_YEAR_HORIZON) ?? [],
     [contracts]
   );
+  const filteredB = useMemo(
+    () => contractsB?.filter((c) => c.bdays <= FIVE_YEAR_HORIZON) ?? [],
+    [contractsB]
+  );
 
   const xData = useMemo(() => filtered.map((c) => c.bdays), [filtered]);
   const yData = useMemo(() => filtered.map((c) => c.rate), [filtered]);
+  const xDataB = useMemo(() => filteredB.map((c) => c.bdays), [filteredB]);
+  const yDataB = useMemo(() => filteredB.map((c) => c.rate), [filteredB]);
 
   // Stats for ControlBar
   const stats = useMemo(() => {
@@ -59,7 +85,7 @@ export default function ETTJPage() {
     };
   }, [contracts, filtered]);
 
-  // Compute interpolation
+  // Compute interpolation (single mode / data A)
   const result = useMemo(() => {
     if (xData.length < 2) return null;
     try {
@@ -68,6 +94,84 @@ export default function ETTJPage() {
       return null;
     }
   }, [method, xData, yData, smoothingFactor]);
+
+  // Compute interpolation for data B
+  const resultB = useMemo(() => {
+    if (xDataB.length < 2) return null;
+    try {
+      return applyMethod(method, xDataB, yDataB, smoothingFactor);
+    } catch {
+      return null;
+    }
+  }, [method, xDataB, yDataB, smoothingFactor]);
+
+  // Comparison: common domain smooth curves and difference stats
+  const comparisonData = useMemo(() => {
+    if (!result || !resultB) return null;
+
+    const xMinA = Math.min(...xData);
+    const xMaxA = Math.max(...xData);
+    const xMinB = Math.min(...xDataB);
+    const xMaxB = Math.max(...xDataB);
+    const xMin = Math.max(xMinA, xMinB);
+    const xMax = Math.min(xMaxA, xMaxB);
+
+    if (xMin >= xMax) return null;
+
+    // Generate common xSmooth for difference calculation
+    const commonX = Array.from(
+      { length: SMOOTH_POINTS },
+      (_, i) => xMin + (i * (xMax - xMin)) / (SMOOTH_POINTS - 1)
+    );
+
+    // Interpolate both smooth curves at common x points
+    const commonYA = commonX.map((x) => lerpAt(result.xSmooth, result.ySmooth, x));
+    const commonYB = commonX.map((x) => lerpAt(resultB.xSmooth, resultB.ySmooth, x));
+
+    // Difference in percentage points (values are decimal, multiply by 100)
+    const diffPct = commonYB.map((v, i) => (v - commonYA[i]) * 100);
+
+    const diffMean = diffPct.reduce((a, b) => a + b, 0) / diffPct.length;
+    const diffMax = Math.max(...diffPct);
+    const diffMin = Math.min(...diffPct);
+
+    // Find x where |diff| is maximum
+    let maxAbsIdx = 0;
+    let maxAbs = 0;
+    for (let i = 0; i < diffPct.length; i++) {
+      const abs = Math.abs(diffPct[i]);
+      if (abs > maxAbs) {
+        maxAbs = abs;
+        maxAbsIdx = i;
+      }
+    }
+    const duMaxDiv = Math.round(commonX[maxAbsIdx]);
+
+    // Key maturities rates
+    const keyDUs = Object.keys(KEY_MATURITIES).map(Number);
+    const ratesA = new Map<number, number>();
+    const ratesB = new Map<number, number>();
+    for (const du of keyDUs) {
+      if (du >= xMinA && du <= xMaxA) {
+        ratesA.set(du, lerpAt(result.xSmooth, result.ySmooth, du));
+      }
+      if (du >= xMinB && du <= xMaxB) {
+        ratesB.set(du, lerpAt(resultB.xSmooth, resultB.ySmooth, du));
+      }
+    }
+
+    return {
+      commonX,
+      commonYA,
+      commonYB,
+      diffMean,
+      diffMax,
+      diffMin,
+      duMaxDiv,
+      ratesA,
+      ratesB,
+    };
+  }, [result, resultB, xData, xDataB]);
 
   // Compute quality metrics
   const metrics = useMemo(() => {
@@ -95,40 +199,150 @@ export default function ETTJPage() {
     setError(null);
     setWarning(null);
 
-    try {
-      const res = await fetch(`/api/di1?date=${dateA}`);
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({ error: "Erro ao buscar dados" }));
-        setError(body.error || `Erro ${res.status}`);
-        setContracts(null);
+    if (mode === "comparison") {
+      // Validate dates are different
+      if (dateA === dateB) {
+        setWarning("Selecione duas datas diferentes para comparação.");
+        setLoading(false);
         return;
       }
 
-      const data = await res.json();
+      try {
+        const [resA, resB] = await Promise.all([
+          fetch(`/api/di1?date=${dateA}`),
+          fetch(`/api/di1?date=${dateB}`),
+        ]);
 
-      if (!data.contracts || data.contracts.length === 0) {
-        setError("Nenhum contrato DI1 encontrado para esta data.");
-        setContracts(null);
-        return;
-      }
+        if (!resA.ok) {
+          const body = await resA.json().catch(() => ({ error: "Erro ao buscar dados" }));
+          setError(`Data A: ${body.error || `Erro ${resA.status}`}`);
+          setContracts(null);
+          setContractsB(null);
+          return;
+        }
+        if (!resB.ok) {
+          const body = await resB.json().catch(() => ({ error: "Erro ao buscar dados" }));
+          setError(`Data B: ${body.error || `Erro ${resB.status}`}`);
+          setContracts(null);
+          setContractsB(null);
+          return;
+        }
 
-      setContracts(data.contracts as DI1Contract[]);
-      setActualDate(data.actual_date || dateA);
+        const dataA = await resA.json();
+        const dataB = await resB.json();
 
-      if (data.actual_date && data.actual_date !== dateA) {
-        setWarning(
-          `Data solicitada: ${dateA}. Dados disponíveis para: ${data.actual_date}.`
+        if (!dataA.contracts || dataA.contracts.length === 0) {
+          setError("Nenhum contrato DI1 encontrado para a Data A.");
+          setContracts(null);
+          setContractsB(null);
+          return;
+        }
+        if (!dataB.contracts || dataB.contracts.length === 0) {
+          setError("Nenhum contrato DI1 encontrado para a Data B.");
+          setContracts(null);
+          setContractsB(null);
+          return;
+        }
+
+        const contractsAArr = dataA.contracts as DI1Contract[];
+        const contractsBArr = dataB.contracts as DI1Contract[];
+
+        // Check overlap
+        const filtA = contractsAArr.filter((c) => c.bdays <= FIVE_YEAR_HORIZON);
+        const filtB = contractsBArr.filter((c) => c.bdays <= FIVE_YEAR_HORIZON);
+
+        if (filtA.length < 2 || filtB.length < 2) {
+          setError("Contratos insuficientes para interpolação em uma das datas.");
+          setContracts(null);
+          setContractsB(null);
+          return;
+        }
+
+        const xMinCommon = Math.max(
+          Math.min(...filtA.map((c) => c.bdays)),
+          Math.min(...filtB.map((c) => c.bdays))
         );
+        const xMaxCommon = Math.min(
+          Math.max(...filtA.map((c) => c.bdays)),
+          Math.max(...filtB.map((c) => c.bdays))
+        );
+
+        if (xMinCommon >= xMaxCommon) {
+          setError("Sem sobreposição de prazos entre as duas datas.");
+          setContracts(null);
+          setContractsB(null);
+          return;
+        }
+
+        setContracts(contractsAArr);
+        setActualDate(dataA.actual_date || dateA);
+        setContractsB(contractsBArr);
+        setActualDateB(dataB.actual_date || dateB);
+
+        const warnings: string[] = [];
+        if (dataA.actual_date && dataA.actual_date !== dateA) {
+          warnings.push(
+            `Data A solicitada: ${dateA}. Dados disponíveis para: ${dataA.actual_date}.`
+          );
+        }
+        if (dataB.actual_date && dataB.actual_date !== dateB) {
+          warnings.push(
+            `Data B solicitada: ${dateB}. Dados disponíveis para: ${dataB.actual_date}.`
+          );
+        }
+        if (warnings.length > 0) {
+          setWarning(warnings.join(" "));
+        }
+      } catch {
+        setError(
+          "Não foi possível conectar ao serviço de dados. Verifique se o microserviço Python está ativo."
+        );
+        setContracts(null);
+        setContractsB(null);
+      } finally {
+        setLoading(false);
       }
-    } catch {
-      setError(
-        "Não foi possível conectar ao serviço de dados. Verifique se o microserviço Python está ativo."
-      );
-      setContracts(null);
-    } finally {
-      setLoading(false);
+    } else {
+      // Single mode (original logic)
+      try {
+        const res = await fetch(`/api/di1?date=${dateA}`);
+        if (!res.ok) {
+          const body = await res.json().catch(() => ({ error: "Erro ao buscar dados" }));
+          setError(body.error || `Erro ${res.status}`);
+          setContracts(null);
+          return;
+        }
+
+        const data = await res.json();
+
+        if (!data.contracts || data.contracts.length === 0) {
+          setError("Nenhum contrato DI1 encontrado para esta data.");
+          setContracts(null);
+          return;
+        }
+
+        setContracts(data.contracts as DI1Contract[]);
+        setActualDate(data.actual_date || dateA);
+        setContractsB(null);
+        setActualDateB(null);
+
+        if (data.actual_date && data.actual_date !== dateA) {
+          setWarning(
+            `Data solicitada: ${dateA}. Dados disponíveis para: ${data.actual_date}.`
+          );
+        }
+      } catch {
+        setError(
+          "Não foi possível conectar ao serviço de dados. Verifique se o microserviço Python está ativo."
+        );
+        setContracts(null);
+      } finally {
+        setLoading(false);
+      }
     }
   };
+
+  const isComparison = mode === "comparison" && contracts && contractsB && result && resultB && comparisonData;
 
   return (
     <div className="min-h-screen bg-surface-container-low">
@@ -174,7 +388,41 @@ export default function ETTJPage() {
         </div>
       )}
 
-      {contracts && result && (
+      {/* Comparison mode */}
+      {isComparison && (
+        <div className="px-4 py-4 space-y-6">
+          <ComparisonChart
+            dataA={{
+              xObs: xData,
+              yObs: yData.map((v) => v * 100),
+              xSmooth: result.xSmooth,
+              ySmooth: result.ySmooth.map((v) => v * 100),
+              date: actualDate!,
+            }}
+            dataB={{
+              xObs: xDataB,
+              yObs: yDataB.map((v) => v * 100),
+              xSmooth: resultB.xSmooth,
+              ySmooth: resultB.ySmooth.map((v) => v * 100),
+              date: actualDateB!,
+            }}
+            methodLabel={METHOD_LABELS[method]}
+          />
+          <ComparisonStats
+            diffMean={comparisonData.diffMean}
+            diffMax={comparisonData.diffMax}
+            diffMin={comparisonData.diffMin}
+            duMaxDiv={comparisonData.duMaxDiv}
+          />
+          <KeyMaturitiesTable
+            ratesA={comparisonData.ratesA}
+            ratesB={comparisonData.ratesB}
+          />
+        </div>
+      )}
+
+      {/* Single mode */}
+      {!isComparison && contracts && result && (
         <div className="px-4 py-4 space-y-6">
           <YieldCurveChart
             xObserved={xData}
