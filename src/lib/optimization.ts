@@ -1,4 +1,4 @@
-import levenbergMarquardt from "ml-levenberg-marquardt";
+import { levenbergMarquardt } from "ml-levenberg-marquardt";
 
 export interface FitResult {
   params: number[];
