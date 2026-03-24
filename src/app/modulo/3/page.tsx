@@ -7,6 +7,7 @@ import StepperNav from "@/components/modulo3/StepperNav";
 import ViabilidadeModule from "@/components/modulo3/ViabilidadeModule";
 import ClassesModule from "@/components/modulo3/ClassesModule";
 import SubordinacaoModule from "@/components/modulo3/SubordinacaoModule";
+import AnimacaoModule from "@/components/modulo3/AnimacaoModule";
 import { STEPS } from "@/lib/fidc/constants";
 
 // Wrap in Suspense because useSearchParams requires it in Next.js 14+
@@ -58,12 +59,7 @@ function Module3Content() {
                 <p>Checklist Regulatório — em breve</p>
               </div>
             )}
-            {activeStep === 4 && (
-              <div className="text-on-surface-variant text-center py-20">
-                <span className="material-symbols-outlined text-4xl text-outline-variant mb-2">animation</span>
-                <p>Animação — em breve</p>
-              </div>
-            )}
+            {activeStep === 4 && <AnimacaoModule />}
 
             {/* Prev/Next buttons */}
             <div className="flex justify-between mt-12 pt-6 border-t border-outline-variant/15">
