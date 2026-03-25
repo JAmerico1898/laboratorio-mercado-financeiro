@@ -24,7 +24,7 @@ function highlightCode(code: string): React.ReactNode[] {
 
     // Split code part into tokens to highlight keywords and strings
     const parts: React.ReactNode[] = [];
-    let remaining = codePart;
+    const remaining = codePart;
     let partIdx = 0;
 
     // Build a regex that matches keywords, string literals, or non-matching chunks

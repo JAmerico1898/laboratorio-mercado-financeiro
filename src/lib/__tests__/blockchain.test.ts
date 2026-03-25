@@ -6,7 +6,7 @@ import {
   addBlock,
   isChainValid,
 } from "../tokenization/blockchain";
-import type { Block } from "../tokenization/types";
+
 
 describe("calculateHash", () => {
   it("returns a 64-character hex string", async () => {
