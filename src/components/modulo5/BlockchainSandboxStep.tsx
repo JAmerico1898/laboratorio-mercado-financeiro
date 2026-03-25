@@ -3,40 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import type { Block, MiningState } from "@/lib/tokenization/types";
 import { createGenesisBlock, addBlock } from "@/lib/tokenization/blockchain";
-
-interface SliderFieldProps {
-  label: string;
-  value: number;
-  min: number;
-  max: number;
-  step: number;
-  displayValue: string;
-  onChange: (v: number) => void;
-}
-
-function SliderField({ label, value, min, max, step, displayValue, onChange }: SliderFieldProps) {
-  return (
-    <div className="flex flex-col gap-1">
-      <div className="flex justify-between items-center">
-        <span className="text-sm text-on-surface-variant font-medium">{label}</span>
-        <span className="text-sm font-semibold text-primary-container tabular-nums">{displayValue}</span>
-      </div>
-      <input
-        type="range"
-        min={min}
-        max={max}
-        step={step}
-        value={value}
-        onChange={(e) => onChange(Number(e.target.value))}
-        className="w-full h-1.5 rounded-full appearance-none bg-surface-container-highest cursor-pointer accent-primary-container"
-      />
-      <div className="flex justify-between text-xs text-outline-variant">
-        <span>{min}</span>
-        <span>{max}</span>
-      </div>
-    </div>
-  );
-}
+import SliderField from "@/components/modulo5/SliderField";
 
 interface BlockCardProps {
   block: Block;
@@ -165,6 +132,7 @@ export default function BlockchainSandboxStep() {
   const [txData, setTxData] = useState("Transação Inicial");
   const [difficulty, setDifficulty] = useState(2);
   const [selectedBlock, setSelectedBlock] = useState<Block | null>(null);
+  const [miningError, setMiningError] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
@@ -174,6 +142,7 @@ export default function BlockchainSandboxStep() {
   const handleMine = async () => {
     const controller = new AbortController();
     abortRef.current = controller;
+    setMiningError(null);
     setMiningState({ isMining: true, currentNonce: 0, elapsedMs: 0 });
     try {
       const newChain = await addBlock(
@@ -186,7 +155,7 @@ export default function BlockchainSandboxStep() {
       setBlockchain(newChain);
     } catch (e) {
       if (e instanceof Error && e.message.includes("timeout")) {
-        // Timeout — difficulty too high
+        setMiningError("Mineração cancelada — tente reduzir a dificuldade");
       }
     } finally {
       setMiningState({ isMining: false, currentNonce: 0, elapsedMs: 0 });
@@ -270,6 +239,16 @@ export default function BlockchainSandboxStep() {
               Reiniciar
             </button>
           </div>
+
+          {miningError && (
+            <div className="flex items-center gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-sm text-red-400">
+              <span className="material-symbols-outlined text-base">error</span>
+              <span className="flex-1">{miningError}</span>
+              <button onClick={() => setMiningError(null)} className="text-red-400 hover:text-red-300">
+                <span className="material-symbols-outlined text-base">close</span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
 

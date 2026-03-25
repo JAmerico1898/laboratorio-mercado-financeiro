@@ -37,7 +37,7 @@ export function simulateRealEstate(
     dividends.push(newPrice * yieldRate);
   }
 
-  months.push(...Array.from({ length: totalMonths }, (_, i) => i + 1));
+  months.push(...Array.from({ length: totalMonths }, (_, i) => i));
 
   const totalDividends = dividends.reduce((sum, d) => sum + d, 0);
   const capitalGain = prices[prices.length - 1] - prices[0];
