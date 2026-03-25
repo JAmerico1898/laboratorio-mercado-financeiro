@@ -1,26 +1,38 @@
-from fastapi import FastAPI, Query
-from fastapi.middleware.cors import CORSMiddleware
+from http.server import BaseHTTPRequestHandler
+from urllib.parse import urlparse, parse_qs
 from datetime import datetime, timedelta
+import json
 import pyield as yd
 
-app = FastAPI(title="DI1 Data Service")
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["GET"],
-    allow_headers=["*"],
-)
+class handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        query = parse_qs(urlparse(self.path).query)
+        date = query.get("date", [None])[0]
+
+        if not date:
+            self._json_response({"error": "date parameter required"}, 400)
+            return
+
+        try:
+            result = fetch_di1(date)
+            self._json_response(result)
+        except Exception as e:
+            self._json_response({"error": str(e)}, 500)
+
+    def _json_response(self, data, status=200):
+        self.send_response(status)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.end_headers()
+        self.wfile.write(json.dumps(data, ensure_ascii=False).encode("utf-8"))
 
 
-@app.get("/di1")
-def get_di1(date: str = Query(..., description="Reference date YYYY-MM-DD")):
-    """Fetch DI1 futures data from B3 via pyield."""
+def fetch_di1(date: str):
     ref_date = datetime.strptime(date, "%Y-%m-%d").date()
     data = None
     actual_date = ref_date
 
-    # Search backwards only, up to 10 calendar days (covers weekends + short holidays)
     for attempt in range(10):
         check_date = ref_date - timedelta(days=attempt)
         try:
@@ -39,7 +51,6 @@ def get_di1(date: str = Query(..., description="Reference date YYYY-MM-DD")):
             "actual_date": None,
         }
 
-    # Work directly with Polars DataFrame (no pandas/pyarrow needed)
     contracts = []
     for row in data.iter_rows(named=True):
         contracts.append({
@@ -54,15 +65,3 @@ def get_di1(date: str = Query(..., description="Reference date YYYY-MM-DD")):
         "actual_date": str(actual_date),
         "requested_date": date,
     }
-
-
-@app.get("/bdays")
-def count_bdays(
-    start: str = Query(..., description="Start date YYYY-MM-DD"),
-    end: str = Query(..., description="End date YYYY-MM-DD"),
-):
-    """Count business days between two dates using Brazilian calendar."""
-    start_date = datetime.strptime(start, "%Y-%m-%d").date()
-    end_date = datetime.strptime(end, "%Y-%m-%d").date()
-    count = yd.bday.count(start_date, end_date)
-    return {"start": start, "end": end, "bdays": int(count)}
