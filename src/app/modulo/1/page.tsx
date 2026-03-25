@@ -272,7 +272,7 @@ export default function Module1Page() {
         }
         if (warnings.length > 0) setWarning(warnings.join(" "));
       } catch {
-        setError("Não foi possível conectar ao serviço de dados. Verifique se o microserviço Python está ativo.");
+        setError("Não foi possível conectar ao serviço de dados. Tente novamente em alguns instantes.");
         setContracts(null);
         setContractsB(null);
       } finally {
@@ -305,7 +305,7 @@ export default function Module1Page() {
           setWarning(`Data solicitada: ${dateA}. Dados disponíveis para: ${data.actual_date}.`);
         }
       } catch {
-        setError("Não foi possível conectar ao serviço de dados. Verifique se o microserviço Python está ativo.");
+        setError("Não foi possível conectar ao serviço de dados. Tente novamente em alguns instantes.");
         setContracts(null);
       } finally {
         setLoading(false);
