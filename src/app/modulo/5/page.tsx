@@ -6,6 +6,7 @@ import OpeningHero from "@/components/modulo5/OpeningHero";
 import StepperNav from "@/components/modulo5/StepperNav";
 import FundamentosStep from "@/components/modulo5/FundamentosStep";
 import MecanicaStep from "@/components/modulo5/MecanicaStep";
+import BlockchainSandboxStep from "@/components/modulo5/BlockchainSandboxStep";
 import { STEPS } from "@/lib/tokenization/constants";
 
 // Wrap in Suspense because useSearchParams requires it in Next.js 14+
@@ -50,11 +51,7 @@ function Module5Content() {
           <div className="max-w-7xl mx-auto px-4 md:px-8 py-8" role="tabpanel" id={`panel-${activeStep}`}>
             {activeStep === 0 && <FundamentosStep />}
             {activeStep === 1 && <MecanicaStep />}
-            {activeStep === 2 && (
-              <div className="text-on-surface-variant text-center py-20">
-                Blockchain — em construção
-              </div>
-            )}
+            {activeStep === 2 && <BlockchainSandboxStep />}
             {activeStep === 3 && (
               <div className="text-on-surface-variant text-center py-20">
                 Ciclo de Vida — em construção
