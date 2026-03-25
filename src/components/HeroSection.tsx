@@ -8,7 +8,7 @@ export default function HeroSection() {
           src="https://lh3.googleusercontent.com/aida-public/AB6AXuBJ1eWTAJll7K4yA_GoGWKXeoLUgtxZlgBqXeUILgANkg-tzhE4YUYrnQ65wlkMNGE2IkiN7aNvZBNZfQrz8vyLkigdDTSNxMVZtbmENiHkzLWc05GSA14al10iW1feEQtqlvalbmV2pFJT2v3nTDBzL-H0BmBhfmjfwu3FOdbacQrYM_mT8L9A-Q38E9o9c9xovsk4eEFditU32j67KJsfB8oObZDhB-4L3XSsfg5WvoVfRCwSZvtN_2r31K08koXAG3nbFa0MLg8"
           alt="Digital data streams"
           fill
-          className="object-cover"
+          className="object-cover animate-hero-drift"
           priority
         />
       </div>
