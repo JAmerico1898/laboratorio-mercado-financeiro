@@ -1,10 +1,4 @@
 {
-  "functions": {
-    "api/*.py": {
-      "runtime": "@vercel/python@6.28.0",
-      "maxDuration": 30
-    }
-  },
   "rewrites": [
     { "source": "/api/di1", "destination": "/api/di1" },
     { "source": "/api/bdays", "destination": "/api/bdays" }
