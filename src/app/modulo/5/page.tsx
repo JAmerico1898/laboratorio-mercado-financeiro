@@ -8,6 +8,7 @@ import FundamentosStep from "@/components/modulo5/FundamentosStep";
 import MecanicaStep from "@/components/modulo5/MecanicaStep";
 import BlockchainSandboxStep from "@/components/modulo5/BlockchainSandboxStep";
 import CicloVidaStep from "@/components/modulo5/CicloVidaStep";
+import RiscosCasosStep from "@/components/modulo5/RiscosCasosStep";
 import { STEPS } from "@/lib/tokenization/constants";
 
 // Wrap in Suspense because useSearchParams requires it in Next.js 14+
@@ -54,11 +55,7 @@ function Module5Content() {
             {activeStep === 1 && <MecanicaStep />}
             {activeStep === 2 && <BlockchainSandboxStep />}
             {activeStep === 3 && <CicloVidaStep />}
-            {activeStep === 4 && (
-              <div className="text-on-surface-variant text-center py-20">
-                Riscos & Casos — em construção
-              </div>
-            )}
+            {activeStep === 4 && <RiscosCasosStep />}
             {activeStep === 5 && (
               <div className="text-on-surface-variant text-center py-20">
                 Contratos & Quiz — em construção
