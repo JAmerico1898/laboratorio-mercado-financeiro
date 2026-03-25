@@ -24,6 +24,7 @@ export default async function ModuloPage({ params }: Props) {
   const { id } = await params;
 
   if (id === "3") redirect("/modulo/3");
+  if (id === "6") redirect("/modulo/6");
 
   const mod = modules.find((m) => m.id === Number(id));
 
