@@ -1,6 +1,6 @@
 "use client";
 
-import FidcKinetic from "./FidcKinetic";
+import HeroImage from "@/components/HeroImage";
 
 interface OpeningHeroProps {
   onStartJourney: () => void;
@@ -51,7 +51,10 @@ export default function OpeningHero({ onStartJourney }: OpeningHeroProps) {
           </button>
         </div>
 
-        <FidcKinetic />
+        <HeroImage
+          src="https://images.unsplash.com/photo-1709626011485-6fe000ea2dbc?w=1200&q=80"
+          alt="Blocos geométricos em camadas representando estrutura de tranches"
+        />
       </div>
     </section>
   );

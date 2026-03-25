@@ -19,20 +19,23 @@ export default function Footer() {
           <Link
             key={link.href}
             href={link.href}
-            className="text-xs uppercase tracking-widest text-slate-500 hover:text-primary transition-colors"
+            className="text-xs uppercase tracking-widest text-slate-300 hover:text-primary transition-colors"
           >
             {link.label}
           </Link>
         ))}
       </nav>
       <div className="flex flex-col md:flex-row justify-between items-center w-full gap-4">
-        <p className="text-xs uppercase tracking-widest text-slate-500">
+        <p className="text-xs uppercase tracking-widest text-slate-300">
           &copy; 2026 Laboratório de Mercado Financeiro &mdash; Prof. José
           Américo &mdash; COPPEAD-FGV-UCAM
         </p>
-        <p className="text-xs uppercase tracking-widest text-slate-500">
+        <Link
+          href="/contato"
+          className="text-xs uppercase tracking-widest text-slate-300 hover:text-primary transition-colors"
+        >
           Dúvidas? Sugestões? Entre em contato!
-        </p>
+        </Link>
       </div>
     </footer>
   );

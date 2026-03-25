@@ -1,4 +1,4 @@
-import KineticVisual from "./KineticVisual";
+import HeroImage from "@/components/HeroImage";
 
 export default function OpeningHero() {
   return (
@@ -31,8 +31,10 @@ export default function OpeningHero() {
 
         </div>
 
-        {/* Decorative Kinetic Visual */}
-        <KineticVisual />
+        <HeroImage
+          src="https://images.unsplash.com/photo-1535320903710-d993d3d77d29?w=1200&q=80"
+          alt="Monitor exibindo gráfico financeiro"
+        />
       </div>
     </section>
   );

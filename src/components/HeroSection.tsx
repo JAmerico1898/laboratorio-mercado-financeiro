@@ -17,8 +17,8 @@ export default function HeroSection() {
           Explorando
         </span>
         <h1 className="font-headline text-6xl md:text-8xl font-extrabold tracking-tight leading-[0.9] text-primary">
-          A Ciência da <br />
-          <span className="gradient-text">Intermediação</span>
+          A (Des)Intermediação <br />
+          <span className="gradient-text">Financeira</span>
         </h1>
         <p className="font-body text-on-surface-variant text-lg md:text-xl max-w-2xl mx-auto leading-relaxed opacity-80">
           Explore os fundamentos e as inovações do mercado financeiro com

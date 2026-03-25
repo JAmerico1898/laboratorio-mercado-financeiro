@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import OpeningHero from "@/components/modulo2/OpeningHero";
 import ControlBar from "@/components/modulo2/ControlBar";
 import TabContainer from "@/components/modulo2/TabContainer";
@@ -48,7 +48,9 @@ export default function Module2Page() {
   const [modelLoading, setModelLoading] = useState(false);
 
   // UI state
+  const [analysisStarted, setAnalysisStarted] = useState(false);
   const [activeTab, setActiveTab] = useState<"analysis" | "production" | "reference">("analysis");
+  const setupRef = useRef<HTMLDivElement>(null);
 
   // Load data on mount
   useEffect(() => {
@@ -201,6 +203,13 @@ export default function Module2Page() {
     }, 50);
   }, [trainingData, productionData, selectedFeatures, cutoff]);
 
+  const handleStartAnalysis = useCallback(() => {
+    setAnalysisStarted(true);
+    setTimeout(() => {
+      setupRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 50);
+  }, []);
+
   // Data stats for ControlBar
   const dataStats = useMemo(() => {
     if (!trainingData || !productionData) return null;
@@ -212,34 +221,38 @@ export default function Module2Page() {
 
   return (
     <div className="min-h-screen">
-      <OpeningHero />
+      <OpeningHero onStartAnalysis={handleStartAnalysis} />
 
-      <div>
-        <ControlBar
-          features={FEATURES}
-          selectedFeatures={selectedFeatures}
-          onFeaturesChange={setSelectedFeatures}
-          cutoff={cutoff}
-          onCutoffChange={setCutoff}
-          onRun={runModel}
-          loading={modelLoading}
-          dataLoading={dataLoading}
-          dataError={dataError}
-          dataStats={dataStats}
-        />
-      </div>
+      {analysisStarted && (
+        <>
+          <div ref={setupRef}>
+            <ControlBar
+              features={FEATURES}
+              selectedFeatures={selectedFeatures}
+              onFeaturesChange={setSelectedFeatures}
+              cutoff={cutoff}
+              onCutoffChange={setCutoff}
+              onRun={runModel}
+              loading={modelLoading}
+              dataLoading={dataLoading}
+              dataError={dataError}
+              dataStats={dataStats}
+            />
+          </div>
 
-      {modelResults && productionResults && (
-        <TabContainer
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-          modelResults={modelResults}
-          productionResults={productionResults}
-          cutoff={cutoff}
-          selectedFeatures={selectedFeatures}
-          trainingData={trainingData}
-          productionData={productionData}
-        />
+          {modelResults && productionResults && (
+            <TabContainer
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
+              modelResults={modelResults}
+              productionResults={productionResults}
+              cutoff={cutoff}
+              selectedFeatures={selectedFeatures}
+              trainingData={trainingData}
+              productionData={productionData}
+            />
+          )}
+        </>
       )}
     </div>
   );

@@ -1,5 +1,7 @@
 "use client";
 
+import HeroImage from "@/components/HeroImage";
+
 interface OpeningHeroProps {
   onStartJourney: () => void;
 }
@@ -44,18 +46,10 @@ export default function OpeningHero({ onStartJourney }: OpeningHeroProps) {
           </button>
         </div>
 
-        {/* Decorative right panel */}
-        <div className="hidden lg:flex items-center justify-center">
-          <div className="relative w-80 h-80">
-            <div className="absolute inset-0 rounded-full bg-primary-container/5 blur-2xl" />
-            <div className="absolute inset-8 rounded-full bg-secondary/5 blur-xl" />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="material-symbols-outlined text-[120px] text-primary-container/30">
-                account_balance
-              </span>
-            </div>
-          </div>
-        </div>
+        <HeroImage
+          src="https://images.unsplash.com/photo-1604869515882-4d10fa4b0492?w=1200&q=80"
+          alt="Fibras ópticas iluminadas representando infraestrutura digital"
+        />
       </div>
     </section>
   );

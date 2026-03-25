@@ -1,5 +1,7 @@
 "use client";
 
+import HeroImage from "@/components/HeroImage";
+
 interface OpeningHeroProps {
   onStartJourney: () => void;
 }
@@ -49,36 +51,11 @@ export default function OpeningHero({ onStartJourney }: OpeningHeroProps) {
           </button>
         </div>
 
-        {/* Decorative kinetic element */}
-        <div className="hidden lg:flex items-center justify-center">
-          <div className="relative animate-float">
-            {/* Outer glow ring */}
-            <div className="absolute -inset-4 rounded-3xl bg-gradient-to-br from-primary-container/20 to-secondary/10 blur-xl" />
-            {/* Glass panel */}
-            <div className="relative w-64 h-64 rounded-3xl bg-surface-container/40 backdrop-blur-xl border border-outline-variant/15 flex flex-col items-center justify-center gap-4 shadow-[0_8px_32px_rgba(0,0,0,0.3)]">
-              <span className="material-symbols-outlined text-7xl text-primary-container">
-                verified_user
-              </span>
-              <span className="text-on-surface-variant text-sm font-semibold tracking-wide uppercase">
-                Basileia I–IV
-              </span>
-              {/* Accent bar */}
-              <div className="w-16 h-1 rounded-full bg-gradient-to-r from-primary-container to-secondary" />
-            </div>
-          </div>
-        </div>
+        <HeroImage
+          src="https://images.unsplash.com/photo-1763854492985-13bcba47e5be?w=1200&q=80"
+          alt="Edifício neoclássico com colunas iluminadas à noite"
+        />
       </div>
-
-      {/* Float animation */}
-      <style jsx>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-12px); }
-        }
-        .animate-float {
-          animation: float 4s ease-in-out infinite;
-        }
-      `}</style>
     </section>
   );
 }

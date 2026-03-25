@@ -1,6 +1,6 @@
 "use client";
 
-import TokenKinetic from "./TokenKinetic";
+import HeroImage from "@/components/HeroImage";
 
 interface OpeningHeroProps {
   onStartJourney: () => void;
@@ -49,7 +49,10 @@ export default function OpeningHero({ onStartJourney }: OpeningHeroProps) {
           </button>
         </div>
 
-        <TokenKinetic />
+        <HeroImage
+          src="https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=1200&q=80"
+          alt="Cubos de blockchain em fundo escuro"
+        />
       </div>
     </section>
   );
