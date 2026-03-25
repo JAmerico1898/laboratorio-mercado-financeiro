@@ -23,6 +23,7 @@ export async function generateMetadata({ params }: Props) {
 export default async function ModuloPage({ params }: Props) {
   const { id } = await params;
 
+  if (id === "1") redirect("/modulo/1");
   if (id === "3") redirect("/modulo/3");
   if (id === "4") redirect("/modulo/4");
   if (id === "6") redirect("/modulo/6");
