@@ -30,7 +30,7 @@ export default function QuizModule() {
           Quiz Final &amp; Recursos
         </h2>
         <p className="text-on-surface-variant mt-2">
-          Parabens por chegar ate aqui! Teste seu conhecimento:
+          Parabéns por chegar até aqui! Teste seu conhecimento:
         </p>
       </div>
 
@@ -129,7 +129,7 @@ export default function QuizModule() {
             {score === total ? "emoji_events" : score > 0 ? "trending_up" : "sentiment_dissatisfied"}
           </span>
           <p className={`text-2xl font-bold ${scoreColor}`}>
-            Voce acertou {score}/{total}!
+            Você acertou {score}/{total}!
           </p>
         </div>
       )}
@@ -156,7 +156,7 @@ export default function QuizModule() {
               Site oficial do BIS
             </span>
             <span className="text-on-surface-variant text-sm block mt-1">
-              Documentacao oficial dos Acordos de Basileia
+              Documentação oficial dos Acordos de Basileia
             </span>
           </a>
 
@@ -170,7 +170,7 @@ export default function QuizModule() {
               Resumo Basel III - BCB
             </span>
             <span className="text-on-surface-variant text-sm block mt-1">
-              Implementacao brasileira pelo Banco Central
+              Implementação brasileira pelo Banco Central
             </span>
           </a>
         </div>

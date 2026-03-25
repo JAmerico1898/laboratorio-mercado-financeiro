@@ -88,10 +88,10 @@ export default function BankDashboard({ metrics }: BankDashboardProps) {
 
       {/* Metric cards */}
       <div className="grid grid-cols-2 gap-2">
-        <MetricCard label="Capital" value={metrics.capital} unit="R$ " />
-        <MetricCard label="Ativos Totais" value={metrics.assets} unit="R$ " />
-        <MetricCard label="RWA" value={metrics.rwa} unit="R$ " />
-        <MetricCard label="Provisões" value={metrics.provisions} unit="R$ " />
+        <MetricCard label="Capital" value={metrics.capital} unit="$" />
+        <MetricCard label="Ativos Totais" value={metrics.assets} unit="$" />
+        <MetricCard label="RWA" value={metrics.rwa} unit="$" />
+        <MetricCard label="Provisões" value={metrics.provisions} unit="$" />
       </div>
 
       {/* Status */}
