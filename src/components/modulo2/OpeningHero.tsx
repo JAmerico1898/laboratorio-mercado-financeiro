@@ -1,5 +1,4 @@
 import Link from "next/link";
-import HeroImage from "@/components/HeroImage";
 
 interface OpeningHeroProps {
   onStartAnalysis: () => void;
@@ -22,8 +21,8 @@ export default function OpeningHero({ onStartAnalysis }: OpeningHeroProps) {
         Voltar
       </Link>
 
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10">
-        <div>
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-5 gap-12 items-center relative z-10">
+        <div className="lg:col-span-2">
           {/* Module badge */}
           <div className="flex items-center gap-2 mb-6">
             <span className="px-3 py-1 rounded-sm bg-surface-container-highest text-secondary text-[10px] font-bold tracking-widest uppercase">
@@ -46,7 +45,7 @@ export default function OpeningHero({ onStartAnalysis }: OpeningHeroProps) {
           {/* Description with terminal accent */}
           <p className="text-lg md:text-xl text-on-surface-variant font-light leading-relaxed max-w-3xl border-l-2 border-primary-container pl-6 mb-8">
             Desenvolvimento de frameworks estatísticos para avaliação de
-            probabilidade de default (PD) e perda dado o descumprimento (LGD).
+            probabilidade de default (PD).
           </p>
 
           <button
@@ -60,10 +59,17 @@ export default function OpeningHero({ onStartAnalysis }: OpeningHeroProps) {
           </button>
         </div>
 
-        <HeroImage
-          src="https://images.unsplash.com/photo-1644088379091-d574269d422f?w=1200&q=80"
-          alt="Rede de nós interconectados representando modelagem estatística"
-        />
+        <div className="hidden lg:block lg:col-span-3 relative w-full aspect-video rounded-2xl overflow-hidden border border-outline-variant/10">
+          <video
+            src="/videos/hero-risco-credito.mp4"
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-surface/60 via-transparent to-transparent pointer-events-none" />
+        </div>
       </div>
     </section>
   );

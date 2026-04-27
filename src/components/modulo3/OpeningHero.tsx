@@ -1,7 +1,5 @@
 "use client";
 
-import HeroImage from "@/components/HeroImage";
-
 interface OpeningHeroProps {
   onStartJourney: () => void;
 }
@@ -14,8 +12,8 @@ export default function OpeningHero({ onStartJourney }: OpeningHeroProps) {
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary/5 rounded-full blur-3xl" />
       </div>
 
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10">
-        <div>
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-5 gap-12 items-center relative z-10">
+        <div className="lg:col-span-2">
           <div className="flex items-center gap-2 mb-6">
             <span className="px-3 py-1 rounded-sm bg-surface-container-highest text-secondary text-[10px] font-bold tracking-widest uppercase">
               Módulo 3
@@ -51,10 +49,17 @@ export default function OpeningHero({ onStartJourney }: OpeningHeroProps) {
           </button>
         </div>
 
-        <HeroImage
-          src="https://images.unsplash.com/photo-1709626011485-6fe000ea2dbc?w=1200&q=80"
-          alt="Blocos geométricos em camadas representando estrutura de tranches"
-        />
+        <div className="hidden lg:block lg:col-span-3 relative w-full aspect-video rounded-2xl overflow-hidden border border-outline-variant/10">
+          <video
+            src="/videos/hero-fidc.mp4"
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-surface/60 via-transparent to-transparent pointer-events-none" />
+        </div>
       </div>
     </section>
   );

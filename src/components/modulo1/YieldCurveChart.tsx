@@ -61,11 +61,13 @@ export default function YieldCurveChart({
           gridcolor: "#3a494b",
         },
         legend: {
-          x: 1,
-          y: 1,
-          xanchor: "right" as const,
+          orientation: "h" as const,
+          x: 0.5,
+          y: 1.08,
+          xanchor: "center" as const,
+          yanchor: "bottom" as const,
         },
-        margin: { l: 60, r: 30, t: 50, b: 50 },
+        margin: { l: 70, r: 30, t: 90, b: 50 },
       }}
       config={{ responsive: true, displayModeBar: false }}
       style={{ width: "100%" }}
