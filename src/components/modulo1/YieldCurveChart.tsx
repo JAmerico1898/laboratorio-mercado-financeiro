@@ -45,6 +45,9 @@ export default function YieldCurveChart({
         title: {
           text: `ETTJ — ${methodLabel} — ${date}`,
           font: { color: "#e1e2e7" },
+          y: 0.97,
+          yref: "container" as const,
+          yanchor: "top" as const,
         },
         paper_bgcolor: "#191c1f",
         plot_bgcolor: "#191c1f",
@@ -63,11 +66,11 @@ export default function YieldCurveChart({
         legend: {
           orientation: "h" as const,
           x: 0.5,
-          y: 1.08,
+          y: 1.04,
           xanchor: "center" as const,
           yanchor: "bottom" as const,
         },
-        margin: { l: 70, r: 30, t: 90, b: 50 },
+        margin: { l: 70, r: 30, t: 110, b: 50 },
       }}
       config={{ responsive: true, displayModeBar: false }}
       style={{ width: "100%" }}
