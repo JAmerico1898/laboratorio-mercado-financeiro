@@ -2,7 +2,7 @@ export default function HeroSection() {
   return (
     <header className="relative w-full overflow-hidden bg-black h-[100svh] max-h-screen">
       <video
-        src="/videos/draft-desktop.mp4"
+        src="/videos/hero-landing-page.mp4"
         autoPlay
         muted
         loop
