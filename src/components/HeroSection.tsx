@@ -7,7 +7,7 @@ export default function HeroSection() {
             Explorando
           </span>
           <h1 className="mt-4 font-headline text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-[0.95] text-primary break-words">
-            A (Des)Intermediação{" "}
+            Intermediação e Desintermediação{" "}
             <span className="gradient-text">Financeira</span>
           </h1>
           <p className="mt-6 font-body text-on-surface-variant text-base md:text-lg leading-relaxed opacity-80 max-w-xl lg:max-w-none mx-auto lg:mx-0">
