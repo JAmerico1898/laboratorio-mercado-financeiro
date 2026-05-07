@@ -33,31 +33,38 @@ def fetch_di1(date: str):
     data = None
     actual_date = ref_date
 
+    last_error = None
     for attempt in range(10):
         check_date = ref_date - timedelta(days=attempt)
         try:
-            df = yd.futures(check_date, "DI1")
+            df = yd.futuro.historico(check_date, "DI1")
             if df is not None and len(df) > 0:
                 data = df
                 actual_date = check_date
                 break
-        except Exception:
+        except Exception as e:
+            last_error = f"{type(e).__name__}: {e}"
             continue
 
     if data is None:
         return {
             "error": f"Dados indisponíveis para {date}. A B3 disponibiliza apenas dados recentes (~30 dias úteis). Selecione uma data mais próxima do dia atual.",
+            "debug": last_error,
             "contracts": [],
             "actual_date": None,
         }
 
     contracts = []
     for row in data.iter_rows(named=True):
+        rate = row.get("taxa_ajuste")
+        bdays = row.get("dias_uteis")
+        if rate is None or bdays is None:
+            continue
         contracts.append({
-            "ticker": str(row["TickerSymbol"]),
-            "expiration": str(row["ExpirationDate"]),
-            "bdays": int(row["BDaysToExp"]),
-            "rate": float(row["SettlementRate"]),
+            "ticker": str(row["codigo_negociacao"]),
+            "expiration": str(row["data_vencimento"]),
+            "bdays": int(bdays),
+            "rate": float(rate),
         })
 
     return {

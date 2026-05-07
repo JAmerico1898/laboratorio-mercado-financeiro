@@ -18,7 +18,7 @@ class handler(BaseHTTPRequestHandler):
         try:
             start_date = datetime.strptime(start, "%Y-%m-%d").date()
             end_date = datetime.strptime(end, "%Y-%m-%d").date()
-            count = yd.bday.count(start_date, end_date)
+            count = yd.du.contar(start_date, end_date)
             self._json_response({"start": start, "end": end, "bdays": int(count)})
         except Exception as e:
             self._json_response({"error": str(e)}, 500)
