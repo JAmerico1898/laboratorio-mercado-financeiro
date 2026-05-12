@@ -44,8 +44,8 @@ export default function OpeningHero({ onStartAnalysis }: OpeningHeroProps) {
 
           {/* Description with terminal accent */}
           <p className="text-lg md:text-xl text-on-surface-variant font-light leading-relaxed max-w-3xl border-l-2 border-primary-container pl-6 mb-8">
-            Desenvolvimento de frameworks estatísticos para avaliação de
-            probabilidade de default (PD).
+            Desenvolvimento de frameworks estatísticos para avaliação da
+            perda esperada (PE).
           </p>
 
           <button
