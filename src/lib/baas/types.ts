@@ -46,7 +46,7 @@ export interface SectionConfig {
 export interface ServiceInfo {
   icon: string;
   name: string;
-  status: "Previsto" | "Em Discussão" | "Em Avaliação" | "Futuro";
+  status: "Autorizada" | "Autorizado" | "Vedado";
   statusColor: string;
   description: string;
 }
