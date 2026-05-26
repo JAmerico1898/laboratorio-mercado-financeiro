@@ -99,6 +99,7 @@ export interface FlowEdge {
   from: string;
   to: string;
   label: string;
+  via?: { x: number; y: number };
 }
 
 export interface StructureModel {

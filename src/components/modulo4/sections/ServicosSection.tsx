@@ -1,12 +1,13 @@
 "use client";
 import { forwardRef } from "react";
-import { SERVICES_DATA, DISCUSSION_TOPICS } from "@/lib/baas/constants";
+import { SERVICES_DATA } from "@/lib/baas/constants";
 
 const BADGE_CLASSES: Record<string, string> = {
   emerald: "bg-secondary/20 text-secondary",
   amber: "bg-[#f59e0b]/20 text-[#f59e0b]",
   cyan: "bg-primary-container/20 text-primary-container",
   violet: "bg-[#8b5cf6]/20 text-[#8b5cf6]",
+  rose: "bg-[#f43f5e]/20 text-[#f43f5e]",
 };
 
 const ServicosSection = forwardRef<HTMLElement>(function ServicosSection(_, ref) {
@@ -44,27 +45,6 @@ const ServicosSection = forwardRef<HTMLElement>(function ServicosSection(_, ref)
         ))}
       </div>
 
-      {/* Divider */}
-      <div className="border-t border-outline-variant/10 my-8" />
-
-      {/* Temas em Discussão */}
-      <h3 className="text-lg font-bold text-on-surface mb-4">Temas em Discussão</h3>
-      <div className="space-y-3">
-        {DISCUSSION_TOPICS.map((topic) => (
-          <details key={topic.title} className="group">
-            <summary className="glass-panel flex items-center gap-3 p-4 rounded-xl border border-outline-variant/10 cursor-pointer hover:border-outline-variant/30 transition-colors list-none">
-              <span className="text-xl">{topic.icon}</span>
-              <span className="font-semibold text-on-surface flex-1">{topic.title}</span>
-              <span className="material-symbols-outlined text-on-surface-variant text-base transition-transform duration-200 group-open:rotate-90">
-                chevron_right
-              </span>
-            </summary>
-            <div className="mt-2 px-4 pb-4 glass-panel rounded-b-xl border border-t-0 border-outline-variant/10">
-              <p className="pt-3 text-sm text-on-surface-variant leading-relaxed">{topic.content}</p>
-            </div>
-          </details>
-        ))}
-      </div>
     </section>
   );
 });

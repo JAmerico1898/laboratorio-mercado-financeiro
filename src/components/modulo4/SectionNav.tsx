@@ -12,15 +12,21 @@ export default function SectionNav({ activeSection, onSectionClick }: SectionNav
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const activeButtonRef = useRef<HTMLButtonElement>(null);
 
-  // Auto-scroll active pill into view
+  // Auto-scroll active pill into view — horizontal only, inside the nav row
+  // (avoid scrollIntoView: it walks up to the document and, because the nav
+  // is sticky, ends up scrolling the page back to the nav's natural position)
   useEffect(() => {
-    if (activeButtonRef.current) {
-      activeButtonRef.current.scrollIntoView({
-        behavior: "smooth",
-        inline: "center",
-        block: "nearest",
-      });
-    }
+    const container = scrollContainerRef.current;
+    const button = activeButtonRef.current;
+    if (!container || !button) return;
+
+    const containerRect = container.getBoundingClientRect();
+    const buttonRect = button.getBoundingClientRect();
+    const offset =
+      buttonRect.left - containerRect.left
+      - (containerRect.width / 2 - buttonRect.width / 2);
+
+    container.scrollBy({ left: offset, behavior: "smooth" });
   }, [activeSection]);
 
   return (

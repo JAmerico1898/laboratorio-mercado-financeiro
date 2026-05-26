@@ -43,7 +43,7 @@ export const ESTRUTURA_OPTIONS = [
 
 export const SERVICOS_OPTIONS = [
   "Conta de Pagamento", "Pix", "Cartão de Débito",
-  "Cartão de Crédito", "Crédito/Empréstimo", "Câmbio (eFX)",
+  "Cartão de Crédito", "Crédito/Empréstimo",
 ] as const;
 
 export const DEFAULT_SERVICOS = ["Conta de Pagamento", "Pix", "Cartão de Débito"];
@@ -94,20 +94,20 @@ export const FLOW_EDGES: FlowEdge[] = [
   { from: "banco",  to: "middleware", label: "APIs" },
   { from: "middleware", to: "tomador", label: "Serviços" },
   { from: "tomador", to: "cliente",  label: "UX" },
-  { from: "banco",  to: "tomador",  label: "Supervisão" },
+  { from: "banco",  to: "tomador",  label: "API (direto)", via: { x: 0.5, y: 0.95 } },
 ];
 
 // === CONTENT DATA ===
 export const SERVICES_DATA: ServiceInfo[] = [
-  { icon: "💳", name: "Contas de Pagamento", status: "Previsto", statusColor: "emerald", description: "Contas correntes, poupança e pré-pagas." },
-  { icon: "⚡", name: "Pix", status: "Previsto", statusColor: "emerald", description: "Pagamento instantâneo: QR Code, Saque, Troco." },
-  { icon: "💎", name: "Cartões", status: "Previsto", statusColor: "emerald", description: "Débito, crédito e pré-pagos." },
-  { icon: "📤", name: "TED/TEF", status: "Previsto", statusColor: "emerald", description: "Transferências bancárias tradicionais." },
-  { icon: "📈", name: "Crédito", status: "Em Discussão", statusColor: "amber", description: "Oferta e contratação de empréstimos." },
-  { icon: "🏪", name: "Credenciamento", status: "Em Discussão", statusColor: "amber", description: "Aceitação de pagamentos. Subcredenciadores." },
-  { icon: "🔄", name: "ITP", status: "Em Avaliação", statusColor: "cyan", description: "Iniciação via Open Finance." },
-  { icon: "🌎", name: "eFX", status: "Em Avaliação", statusColor: "cyan", description: "Pagamentos internacionais." },
-  { icon: "📊", name: "Investimentos", status: "Futuro", statusColor: "violet", description: "CDBs, fundos e previdência." },
+  { icon: "💳", name: "Contas de Pagamento", status: "Autorizada", statusColor: "emerald", description: "Contas correntes, poupança e pré-pagas." },
+  { icon: "⚡", name: "Pix", status: "Autorizado", statusColor: "emerald", description: "Pagamento instantâneo: QR Code, Saque, Troco." },
+  { icon: "💎", name: "Cartões", status: "Autorizado", statusColor: "emerald", description: "Débito, crédito e pré-pagos." },
+  { icon: "📤", name: "TED/TEF", status: "Autorizado", statusColor: "emerald", description: "Transferências bancárias tradicionais." },
+  { icon: "📈", name: "Crédito", status: "Autorizado", statusColor: "emerald", description: "Oferta e contratação de empréstimos." },
+  { icon: "🏪", name: "Credenciamento", status: "Autorizado", statusColor: "emerald", description: "Aceitação de pagamentos. Subcredenciadores." },
+  { icon: "🔓", name: "Open Finance", status: "Vedado", statusColor: "rose", description: "Compartilhamento de dados e iniciação de pagamento via Open Finance." },
+  { icon: "🏢", name: "Correspondentes no País", status: "Vedado", statusColor: "rose", description: "Atuação como correspondente bancário no país." },
+  { icon: "☁️", name: "Processamento e Nuvem", status: "Vedado", statusColor: "rose", description: "Serviços de processamento e infraestrutura em nuvem." },
 ];
 
 export const PARTICIPANTS: ParticipantInfo[] = [

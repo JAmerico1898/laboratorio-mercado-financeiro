@@ -19,27 +19,33 @@ export default function FlowDiagram() {
   const edgeTraces: any[] = FLOW_EDGES.map((edge) => {
     const from = nodeMap[edge.from];
     const to = nodeMap[edge.to];
-    const mx = (from.x + to.x) / 2;
-    const my = (from.y + to.y) / 2;
+    const xs = edge.via ? [from.x, edge.via.x, to.x] : [from.x, to.x];
+    const ys = edge.via ? [from.y, edge.via.y, to.y] : [from.y, to.y];
     return {
       type: "scatter",
       mode: "lines",
-      x: [from.x, to.x],
-      y: [from.y, to.y],
-      line: { color: "rgba(100,116,139,0.4)", width: 2, dash: "dot" },
+      x: xs,
+      y: ys,
+      line: {
+        color: "rgba(100,116,139,0.4)",
+        width: 2,
+        dash: "dot",
+        shape: edge.via ? "spline" : "linear",
+      },
       hoverinfo: "none",
       showlegend: false,
-      _midpoint: { x: mx, y: my, label: edge.label },
     };
   });
 
-  // Annotations for edge labels (midpoints)
+  // Annotations for edge labels (at via waypoint when present, else midpoint)
   const annotations = FLOW_EDGES.map((edge) => {
     const from = nodeMap[edge.from];
     const to = nodeMap[edge.to];
+    const x = edge.via ? edge.via.x : (from.x + to.x) / 2;
+    const y = edge.via ? edge.via.y : (from.y + to.y) / 2;
     return {
-      x: (from.x + to.x) / 2,
-      y: (from.y + to.y) / 2,
+      x,
+      y,
       text: edge.label,
       showarrow: false,
       font: { size: 10, color: "#94a3b8", family: "Manrope, sans-serif" },
@@ -69,10 +75,7 @@ export default function FlowDiagram() {
   }));
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const traces: any[] = [
-    ...edgeTraces.map(({ _midpoint: _mp, ...rest }) => rest),
-    ...nodeTraces,
-  ];
+  const traces: any[] = [...edgeTraces, ...nodeTraces];
 
   return (
     <Plot
