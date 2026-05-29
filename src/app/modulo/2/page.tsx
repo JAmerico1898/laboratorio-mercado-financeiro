@@ -34,7 +34,10 @@ import {
 export default function Module2Page() {
   // Data state
   const [trainingData, setTrainingData] = useState<CreditRecord[] | null>(null);
+  // Produção INPUT: testing_sample (no labels) — what the model scores
   const [productionData, setProductionData] = useState<CreditRecord[] | null>(null);
+  // Produção ANSWER KEY: testing_sample_true (true labels) — used to grade
+  const [productionTrueData, setProductionTrueData] = useState<CreditRecord[] | null>(null);
   const [dataLoading, setDataLoading] = useState(true);
   const [dataError, setDataError] = useState<string | null>(null);
 
@@ -58,13 +61,15 @@ export default function Module2Page() {
     async function load() {
       try {
         setDataLoading(true);
-        const [training, production] = await Promise.all([
+        const [training, production, productionTrue] = await Promise.all([
           loadDataset("training_sample.json"),
           loadDataset("testing_sample.json"),
+          loadDataset("testing_sample_true.json"),
         ]);
         if (!cancelled) {
           setTrainingData(training);
           setProductionData(production);
+          setProductionTrueData(productionTrue);
           setDataError(null);
         }
       } catch (err) {
@@ -83,7 +88,13 @@ export default function Module2Page() {
 
   // Run model
   const runModel = useCallback(() => {
-    if (!trainingData || !productionData || selectedFeatures.length === 0) return;
+    if (
+      !trainingData ||
+      !productionData ||
+      !productionTrueData ||
+      selectedFeatures.length === 0
+    )
+      return;
 
     setModelLoading(true);
 
@@ -143,10 +154,16 @@ export default function Module2Page() {
         setModelResults(results);
 
         // --- Production scoring ---
-        const { X: XProd, y: yProd, ids: prodIds } = extractFeatures(
+        // Score the UNLABELED set (testing_sample): the model never sees outcomes.
+        const { X: XProd, ids: prodIds } = extractFeatures(
           productionData,
           selectedFeatures
         );
+        // True outcomes come from testing_sample_true, joined by id (the answer key).
+        const trueLabelById = new Map<number, number>(
+          productionTrueData.map((r) => [r.id, r.loan_status])
+        );
+        const yProd = prodIds.map((id) => trueLabelById.get(id) ?? 0);
         const xProdStd = transform(XProd, stdParams);
         const prodProbabilities = predictProbability(xProdStd, model);
         const prodPredictions = predictClass(prodProbabilities, cutoff);
@@ -201,7 +218,7 @@ export default function Module2Page() {
         setModelLoading(false);
       }
     }, 50);
-  }, [trainingData, productionData, selectedFeatures, cutoff]);
+  }, [trainingData, productionData, productionTrueData, selectedFeatures, cutoff]);
 
   const handleStartAnalysis = useCallback(() => {
     setAnalysisStarted(true);
@@ -249,7 +266,7 @@ export default function Module2Page() {
               cutoff={cutoff}
               selectedFeatures={selectedFeatures}
               trainingData={trainingData}
-              productionData={productionData}
+              productionData={productionTrueData}
             />
           )}
         </>

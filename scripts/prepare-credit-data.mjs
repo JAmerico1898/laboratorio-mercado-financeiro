@@ -1,20 +1,24 @@
 /**
- * One-time script to fetch credit risk CSVs from GitHub,
- * trim to curated features, and export as JSON to public/data/.
+ * One-time script to convert the credit-risk CSVs served in public/data/
+ * into compact columnar JSON consumed by the Module 2 app.
+ *
+ * Mapping (leakage-free, mirrors a real credit pipeline):
+ *   training_sample.csv      -> training_sample.json       (labeled, used to TRAIN)
+ *   testing_sample.csv       -> testing_sample.json        (NO label, the produção INPUT)
+ *   testing_sample_true.csv  -> testing_sample_true.json   (true labels, used to GRADE)
+ *
+ * The two 50k test files are the same applicants (identical `id`s); the JSON
+ * outputs are intersected by `id` so produção scores and true labels align row-for-row.
  */
-import { writeFileSync, mkdirSync } from "fs";
+import { readFileSync, writeFileSync, mkdirSync, statSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const OUTPUT_DIR = join(__dirname, "..", "public", "data");
+const DATA_DIR = join(__dirname, "..", "public", "data");
 
-const BASE_URL =
-  "https://raw.githubusercontent.com/JAmerico1898/gerenciamento_riscos/main";
-
-const KEEP_COLUMNS = [
-  "id",
-  "loan_status",
+// id + loan_status + 12 predictor features
+const FEATURE_COLUMNS = [
   "loan_amnt",
   "int_rate",
   "log_annual_inc",
@@ -28,17 +32,22 @@ const KEEP_COLUMNS = [
   "mort_acc",
   "num_actv_rev_tl",
 ];
+const LABELED_COLUMNS = ["id", "loan_status", ...FEATURE_COLUMNS];
+const FEATURE_ONLY_COLUMNS = ["id", ...FEATURE_COLUMNS];
 
-function parseCSV(text) {
-  const lines = text.trim().split("\n");
-  const headers = lines[0].split(",").map((h) => h.trim().replace(/"/g, "").toLowerCase());
+/**
+ * Parse a CSV into records keyed by the requested columns. Rows with a missing
+ * or non-numeric value in any requested column are dropped.
+ */
+function parseCSV(text, keepColumns) {
+  const lines = text.trim().split(/\r?\n/);
+  const headers = lines[0]
+    .split(",")
+    .map((h) => h.trim().replace(/"/g, "").toLowerCase());
 
-  const colIndices = KEEP_COLUMNS.map((col) => {
+  const colIndices = keepColumns.map((col) => {
     const idx = headers.indexOf(col);
-    if (idx === -1) {
-      // Try without exact match (handle "Unnamed: 0" etc.)
-      console.warn(`  Column "${col}" not found in headers`);
-    }
+    if (idx === -1) console.warn(`  Column "${col}" not found in headers`);
     return idx;
   });
 
@@ -50,7 +59,7 @@ function parseCSV(text) {
     const record = {};
     let hasNaN = false;
 
-    for (let j = 0; j < KEEP_COLUMNS.length; j++) {
+    for (let j = 0; j < keepColumns.length; j++) {
       const idx = colIndices[j];
       if (idx === -1) {
         hasNaN = true;
@@ -58,72 +67,73 @@ function parseCSV(text) {
       }
       const raw = values[idx]?.trim().replace(/"/g, "");
       const num = Number(raw);
-      if (raw === "" || isNaN(num)) {
+      if (raw === "" || raw === undefined || isNaN(num)) {
         hasNaN = true;
         break;
       }
-      // Round to 4 decimal places to reduce JSON size
-      record[KEEP_COLUMNS[j]] = Math.round(num * 10000) / 10000;
+      // Round to 4 decimals to keep JSON small
+      record[keepColumns[j]] = Math.round(num * 10000) / 10000;
     }
 
-    if (!hasNaN) {
-      records.push(record);
-    } else {
-      dropped++;
-    }
+    if (!hasNaN) records.push(record);
+    else dropped++;
   }
 
   return { records, dropped };
 }
 
-async function fetchCSV(filename) {
-  const url = `${BASE_URL}/${filename}`;
-  console.log(`Fetching ${url}...`);
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error(`Failed to fetch ${filename}: ${response.status}`);
-  }
-  return response.text();
+function toColumnar(records, columns) {
+  return { columns, data: records.map((r) => columns.map((c) => r[c])) };
 }
 
-async function main() {
-  mkdirSync(OUTPUT_DIR, { recursive: true });
-
-  // Fetch and process training data
-  const trainingCSV = await fetchCSV("training_sample.csv");
-  const training = parseCSV(trainingCSV);
-  console.log(
-    `Training: ${training.records.length} records kept, ${training.dropped} dropped`
-  );
-
-  // Fetch and process production/testing data
-  const testingCSV = await fetchCSV("testing_sample_true.csv");
-  const testing = parseCSV(testingCSV);
-  console.log(
-    `Testing: ${testing.records.length} records kept, ${testing.dropped} dropped`
-  );
-
-  // Write as columnar format: { columns: [...], data: [[row1], [row2], ...] }
-  // This is much more compact than array-of-objects
-  function toColumnar(records) {
-    const columns = KEEP_COLUMNS;
-    const data = records.map((r) => columns.map((c) => r[c]));
-    return { columns, data };
-  }
-
-  const trainingPath = join(OUTPUT_DIR, "training_sample.json");
-  const testingPath = join(OUTPUT_DIR, "testing_sample.json");
-
-  writeFileSync(trainingPath, JSON.stringify(toColumnar(training.records)));
-  writeFileSync(testingPath, JSON.stringify(toColumnar(testing.records)));
-
-  // Report file sizes
-  const { statSync } = await import("fs");
-  const trainingSize = (statSync(trainingPath).size / 1024 / 1024).toFixed(2);
-  const testingSize = (statSync(testingPath).size / 1024 / 1024).toFixed(2);
-  console.log(`\nOutput:`);
-  console.log(`  ${trainingPath} (${trainingSize} MB)`);
-  console.log(`  ${testingPath} (${testingSize} MB)`);
+function readCSV(filename) {
+  return readFileSync(join(DATA_DIR, filename), "utf8");
 }
 
-main().catch(console.error);
+function writeJSON(filename, payload) {
+  const path = join(DATA_DIR, filename);
+  writeFileSync(path, JSON.stringify(payload));
+  const sizeMB = (statSync(path).size / 1024 / 1024).toFixed(2);
+  console.log(`  wrote ${filename} (${sizeMB} MB)`);
+}
+
+function main() {
+  mkdirSync(DATA_DIR, { recursive: true });
+
+  // 1. Training set (labeled) ------------------------------------------------
+  const training = parseCSV(readCSV("training_sample.csv"), LABELED_COLUMNS);
+  console.log(
+    `training_sample: ${training.records.length} kept, ${training.dropped} dropped`
+  );
+  writeJSON("training_sample.json", toColumnar(training.records, LABELED_COLUMNS));
+
+  // 2. Produção input (features only) + 3. true labels, intersected by id ----
+  const testFeatures = parseCSV(readCSV("testing_sample.csv"), FEATURE_ONLY_COLUMNS);
+  const testTrue = parseCSV(readCSV("testing_sample_true.csv"), LABELED_COLUMNS);
+  console.log(
+    `testing_sample: ${testFeatures.records.length} kept, ${testFeatures.dropped} dropped`
+  );
+  console.log(
+    `testing_sample_true: ${testTrue.records.length} kept, ${testTrue.dropped} dropped`
+  );
+
+  const trueById = new Map(testTrue.records.map((r) => [r.id, r]));
+  const featuresAligned = [];
+  const trueAligned = [];
+  for (const rec of testFeatures.records) {
+    const truth = trueById.get(rec.id);
+    if (truth) {
+      featuresAligned.push(rec);
+      trueAligned.push(truth);
+    }
+  }
+  console.log(`aligned produção rows (present in both): ${featuresAligned.length}`);
+
+  writeJSON("testing_sample.json", toColumnar(featuresAligned, FEATURE_ONLY_COLUMNS));
+  writeJSON(
+    "testing_sample_true.json",
+    toColumnar(trueAligned, LABELED_COLUMNS)
+  );
+}
+
+main();

@@ -38,3 +38,6 @@ __pycache__/
 
 # test coverage
 coverage/
+
+# Playwright MCP artifacts
+.playwright-mcp/
