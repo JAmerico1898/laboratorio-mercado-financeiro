@@ -67,8 +67,8 @@ export default function ConfusionMatrixChart({
         ...DARK_LAYOUT,
         title: { text: title, font: { color: "#e1e2e7", size: 14 } },
         annotations,
-        xaxis: { side: "bottom" as const },
-        yaxis: { autorange: "reversed" as const },
+        xaxis: { side: "bottom" as const, automargin: true },
+        yaxis: { autorange: "reversed" as const, automargin: true },
       }}
       config={{ responsive: true }}
       style={{ width: "100%", height: "450px" }}
