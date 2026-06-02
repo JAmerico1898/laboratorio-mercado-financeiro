@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { NAV_LINKS } from "@/data/nav-links";
@@ -18,8 +19,16 @@ export default function NavBar() {
     <nav className="relative w-full flex items-center justify-between px-6 py-8 max-w-7xl mx-auto">
       <Link
         href="/"
-        className="text-xl font-bold tracking-tighter text-slate-100 font-headline"
+        className="flex items-center gap-3 text-xl font-bold tracking-tighter text-slate-100 font-headline"
       >
+        <Image
+          src="/logo/finlab-logo-white.jpg"
+          alt="FinLab"
+          width={250}
+          height={212}
+          priority
+          className="h-9 w-auto rounded-md"
+        />
         Laboratório de Mercado Financeiro
       </Link>
 
