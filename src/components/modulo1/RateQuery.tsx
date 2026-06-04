@@ -98,7 +98,7 @@ export default function RateQuery({
           <button
             type="button"
             onClick={handleDateQuery}
-            className="bg-primary-container text-[#111417] font-semibold px-3 py-1.5 rounded-md text-sm hover:opacity-90 transition-opacity"
+            className="bg-primary-container text-on-primary font-semibold px-3 py-1.5 rounded-md text-sm hover:opacity-90 transition-opacity"
           >
             Consultar
           </button>
@@ -137,7 +137,7 @@ export default function RateQuery({
           <button
             type="button"
             onClick={handleBdaysQuery}
-            className="bg-primary-container text-[#111417] font-semibold px-3 py-1.5 rounded-md text-sm hover:opacity-90 transition-opacity"
+            className="bg-primary-container text-on-primary font-semibold px-3 py-1.5 rounded-md text-sm hover:opacity-90 transition-opacity"
           >
             Consultar
           </button>

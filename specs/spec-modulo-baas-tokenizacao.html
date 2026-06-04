@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Especificação — Módulo BaaS e Tokenização (S7) · Laboratório de Tesouraria de Empresas</title>
+<style>
+  :root{
+    --bg:#f6f7f8; --card:#ffffff; --border:#e3e7ea; --radius:15px;
+    --navy:#103049; --teal:#1c8c6b; --teal-dark:#176f55;
+    --keyfact:#eaf3ee; --ok-bg:#e9f6ef; --ok-border:#bfe6d2;
+    --current:#dcebf8; --risk:#b23a2e; --rust:#c2592e;
+    --ink:#1f2a30; --muted:#5b6b73; --code-bg:#0f2230; --code-ink:#d6e6f2;
+    --mint:#d8f0e4;
+    --serif:Georgia,"Iowan Old Style","Times New Roman",serif;
+    --sans:"Segoe UI",-apple-system,"Helvetica Neue",Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+    font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:980px;margin:0 auto;padding:0 22px 120px}
+  header.top{background:var(--navy);color:#fff;padding:46px 22px 38px;margin-bottom:34px}
+  header.top .inner{max-width:980px;margin:0 auto}
+  header.top .eyebrow{font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+    color:#9ec7e0;font-weight:700;margin-bottom:14px}
+  header.top h1{font-family:var(--serif);font-size:38px;line-height:1.12;margin:0 0 12px;font-weight:700}
+  header.top p{margin:0;color:#cfe0ec;max-width:760px;font-size:16px}
+  header.top .meta{margin-top:20px;display:flex;flex-wrap:wrap;gap:10px}
+  header.top .meta span{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);
+    padding:6px 12px;border-radius:999px;font-size:13px}
+  h2{font-family:var(--serif);font-size:26px;color:var(--navy);margin:48px 0 6px;
+    padding-bottom:8px;border-bottom:2px solid var(--border)}
+  h2 .num{color:var(--teal);font-size:18px;font-weight:700;font-family:var(--sans)}
+  h3{font-family:var(--serif);font-size:20px;color:var(--navy);margin:30px 0 8px}
+  h4{font-size:15px;color:var(--teal-dark);margin:22px 0 6px;letter-spacing:.02em;
+    text-transform:uppercase;font-weight:700}
+  p{margin:10px 0}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  strong{color:var(--navy)}
+  em{color:var(--teal-dark);font-style:italic}
+  a{color:var(--teal-dark)}
+  .lead{font-size:17px;color:#33424a}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+    padding:22px 24px;margin:16px 0}
+  .toc{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+    padding:18px 22px;margin:6px 0 10px}
+  .toc ol{columns:2;column-gap:34px;margin:6px 0 0;padding-left:20px}
+  .toc a{text-decoration:none}
+  .toc a:hover{text-decoration:underline}
+  code{background:#eef1f3;border:1px solid #e0e5e8;border-radius:5px;padding:1px 6px;
+    font-family:"SF Mono",Menlo,Consolas,monospace;font-size:13.5px;color:#0c3b54}
+  pre{background:var(--code-bg);color:var(--code-ink);border-radius:12px;padding:18px 20px;
+    overflow:auto;font-family:"SF Mono",Menlo,Consolas,monospace;font-size:13px;line-height:1.65}
+  pre code{background:none;border:none;color:inherit;padding:0}
+  .pill{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.08em;
+    text-transform:uppercase;padding:4px 11px;border-radius:999px}
+  .pill.inter{background:var(--mint);color:var(--teal-dark)}
+  .pill.avanc{background:var(--navy);color:#fff}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14.5px;background:#fff;
+    border:1px solid var(--border);border-radius:10px;overflow:hidden}
+  th,td{text-align:left;padding:10px 13px;border-bottom:1px solid var(--border);vertical-align:top}
+  th{background:#f0f3f5;color:var(--navy);font-weight:700;font-size:12.5px;
+    letter-spacing:.04em;text-transform:uppercase}
+  tr:last-child td{border-bottom:none}
+  .keyfacts{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:11px;margin:14px 0}
+  .kf{background:var(--keyfact);border:1px solid #d3e6da;border-radius:12px;padding:13px 15px}
+  .kf .lbl{font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:#5c7a6c;font-weight:700}
+  .kf .val{font-size:17px;font-weight:800;color:var(--navy);margin-top:3px}
+  .kf.warn .val{color:var(--rust)}
+  .opt{border:1px solid var(--border);border-radius:12px;padding:12px 15px;margin:9px 0;background:#fff}
+  .opt.correct{border-color:var(--ok-border);background:var(--ok-bg)}
+  .opt .otext{font-weight:600;color:var(--navy)}
+  .opt .mem{margin-top:7px;font-size:14px;color:#3a4850}
+  .opt.correct .badge{color:var(--teal-dark);font-weight:800}
+  .opt.err .badge{color:var(--risk);font-weight:800}
+  .branch{border:1px solid var(--border);border-radius:12px;padding:15px 18px;margin:11px 0;background:#fff}
+  .branch h5{margin:0 0 4px;font-size:16px;color:var(--navy);font-family:var(--serif)}
+  .deltas{display:flex;flex-wrap:wrap;gap:8px;margin:9px 0}
+  .delta{font-size:12.5px;font-weight:700;padding:5px 11px;border-radius:8px}
+  .delta.pos{background:#e9f6ef;color:var(--teal-dark)}
+  .delta.neg{background:#fbeeec;color:var(--risk)}
+  .delta.neu{background:#eef1f3;color:#44525a}
+  .delta.risk{background:#fbeeec;color:var(--risk);border:1px dashed #e3b4ac}
+  .note{background:#fff8f0;border:1px solid #f0ddc2;border-left:4px solid var(--rust);
+    border-radius:10px;padding:12px 16px;margin:12px 0;font-size:14.5px}
+  .note strong{color:var(--rust)}
+  .scenario-head{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+    padding:20px 24px;margin:18px 0 6px;border-top:5px solid var(--teal)}
+  .scenario-head.adv{border-top-color:var(--navy)}
+  .scenario-head .code{font-size:12px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--muted);font-weight:700}
+  .scenario-head h3{margin:6px 0 8px}
+  .qkey{background:#eef5f1;border-radius:8px;padding:8px 13px;font-size:14px;margin:8px 0;
+    border:1px solid #d7e8df}
+  .swatch{display:inline-flex;align-items:center;gap:8px;margin:4px 12px 4px 0;font-size:13px}
+  .swatch i{width:20px;height:20px;border-radius:5px;border:1px solid rgba(0,0,0,.1);display:inline-block}
+  .etapa-tag{display:inline-block;background:var(--navy);color:#fff;font-size:11px;font-weight:800;
+    border-radius:6px;padding:3px 9px;letter-spacing:.05em;margin-right:8px}
+  .small{font-size:13.5px;color:var(--muted)}
+  hr.soft{border:none;border-top:1px solid var(--border);margin:30px 0}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="inner">
+    <div class="eyebrow">Especificação técnica · Para construção via Claude Code</div>
+    <h1>Módulo S7 — BaaS e Tokenização</h1>
+    <p>Novo módulo do <strong style="color:#fff">Laboratório de Tesouraria de Empresas</strong>: quatro cenários interativos sobre <em style="color:#bfe6d2">Banking as a Service</em> e <em style="color:#bfe6d2">tokenização</em>, no mesmo padrão pedagógico do módulo S6 (Regulação Bancária) e do cenário-referência “Indústria Alfa”. O aluno escolhe opções, o app valida e mostra a memória de cálculo; tudo que resolve cada etapa está em KeyFacts; o volumoso (unit economics, rotas de funding, fluxo de liquidação) fica em uma caixa ocultável.</p>
+    <div class="meta">
+      <span>4 cenários · S7.1 a S7.4</span>
+      <span>Pontuação /85</span>
+      <span>Next.js (App Router) + TypeScript</span>
+      <span>Renderização data-driven (<code style="color:#cfe0ec;background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.2)">scenarios-s7.ts</code>)</span>
+      <span>Idioma pt-BR</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+<div class="toc">
+  <strong style="color:var(--navy)">Sumário</strong>
+  <ol>
+    <li><a href="#visao">Visão geral do módulo</a></li>
+    <li><a href="#premissas">Premissas, parâmetros e diferenças vs. S6</a></li>
+    <li><a href="#ia">Arquitetura de informação e rotas</a></li>
+    <li><a href="#estados">Máquina de estados</a></li>
+    <li><a href="#componentes">Componentes de UI</a></li>
+    <li><a href="#modelo">Modelo de dados (TypeScript)</a></li>
+    <li><a href="#pontuacao">Pontuação e persistência</a></li>
+    <li><a href="#design">Sistema de design (tokens)</a></li>
+    <li><a href="#convencoes">Convenções de conteúdo</a></li>
+    <li><a href="#qa">Checklist de QA</a></li>
+    <li><a href="#s71">S7.1 — Banco Trilho · revenue sharing (template canônico)</a></li>
+    <li><a href="#s72">S7.2 — VarejoX · embedded finance</a></li>
+    <li><a href="#s73">S7.3 — AgroNova · tokenização de recebíveis</a></li>
+    <li><a href="#s74">S7.4 — Tesouraria Mérito · liquidação atômica</a></li>
+    <li><a href="#anexo">Anexo — exemplo de <code>scenarios-s7.ts</code></a></li>
+  </ol>
+</div>
+
+<!-- ============================ 1 ============================ -->
+<h2 id="visao"><span class="num">1.</span> Visão geral do módulo</h2>
+<p class="lead">O módulo <strong>BaaS e Tokenização</strong> cobre quatro casos de infraestrutura financeira moderna. Os dois primeiros olham a <strong>mesma parceria de BaaS pelos dois lados</strong> (o banco licenciado e a marca distribuidora); os dois últimos isolam <strong>duas fontes distintas de valor da tokenização</strong> (custo de funding e liquidez/risco de liquidação).</p>
+
+<table>
+  <thead><tr><th>Código</th><th>Protagonista fictício</th><th>Lente</th><th>Eixo isolado</th><th>Dificuldade</th><th>Tempo</th></tr></thead>
+  <tbody>
+    <tr><td><strong>S7.1</strong></td><td>Banco Trilho S.A.</td><td>BaaS — provedor</td><td>Revenue sharing e break-even do banco licenciado</td><td><span class="pill inter">Intermediário</span></td><td>20 min</td></tr>
+    <tr><td><strong>S7.2</strong></td><td>VarejoX (marca)</td><td>BaaS — distribuidor</td><td>Ganhos de embedded finance (receita + funil + LTV)</td><td><span class="pill inter">Intermediário</span></td><td>20 min</td></tr>
+    <tr><td><strong>S7.3</strong></td><td>AgroNova S.A.</td><td>Tokenização</td><td>Custo de funding (desintermediação + fracionamento)</td><td><span class="pill avanc">Avançado</span></td><td>24 min</td></tr>
+    <tr><td><strong>S7.4</strong></td><td>Tesouraria Mérito</td><td>Tokenização</td><td>Liquidez e risco de liquidação (DvP atômico)</td><td><span class="pill avanc">Avançado</span></td><td>24 min</td></tr>
+  </tbody>
+</table>
+
+<p>A grade do módulo (cards estilo S1.x/S6.x) e a página de cada cenário replicam o layout do cenário-referência: header com <code>← Início</code>, contador <strong>PONTUAÇÃO X / 85</strong>, breadcrumb <code>Código · Protagonista · Dificuldade</code>, barra de progresso, box <strong>CONTEXTO</strong> com narrativa + tiles de KeyFact + box ocultável <strong>DADOS DETALHADOS</strong> (botão “+”).</p>
+
+<!-- ============================ 2 ============================ -->
+<h2 id="premissas"><span class="num">2.</span> Premissas, parâmetros e diferenças vs. S6</h2>
+<p>Este módulo segue o S6 em estrutura, mas com três diferenças explícitas:</p>
+<ol>
+  <li><strong>Sem chip global.</strong> O S6 tinha uma regra única (IB ≥ 10,5%) exibida como faixa fixa. O S7 <u>não tem regra única</u>; cada cenário tem seus próprios parâmetros, que ficam nos KeyFacts. <em>Não implementar o <code>GlobalRuleChip</code> neste módulo.</em></li>
+  <li><strong>Caixa ocultável renomeada para “DADOS DETALHADOS”</strong> (não “Demonstrações Financeiras”): o conteúdo varia entre unit economics, rotas de funding e fluxos de liquidação.</li>
+  <li><strong>Sem tabela de FPR.</strong> O eixo de cálculo aqui é econômico (margem, take rate, taxa de funding, carry), não regulatório-prudencial.</li>
+</ol>
+
+<div class="note"><strong>Parâmetros a marcar como “verificar”:</strong> os valores de <strong>intercâmbio</strong> (sujeito a teto do BCB para débito e a regras por bandeira) e o <strong>CDI</strong> usado nos cenários são ilustrativos e sensíveis ao tempo. Tratar como premissa de aula; conferir os números vigentes antes de publicar. Os spreads de tokenização e os efeitos de embedded finance são igualmente ilustrativos.</div>
+
+<!-- ============================ 3 ============================ -->
+<h2 id="ia"><span class="num">3.</span> Arquitetura de informação e rotas</h2>
+<pre><code>app/
+ └─ modulo-7/
+     ├─ page.tsx            // grade de cenários (cards S7.1–S7.4)
+     └─ [scenarioId]/
+         └─ page.tsx        // jornada de um cenário (máquina de estados)
+data/
+ └─ scenarios-s7.ts         // conteúdo tipado dos 4 cenários (fonte única)
+components/                  // reaproveitar os componentes existentes do app</code></pre>
+<ul>
+  <li><code>scenarioId</code> = <code>"s7-1" | "s7-2" | "s7-3" | "s7-4"</code>.</li>
+  <li>A grade mapeia o array de cenários para <code>ScenarioCard</code>. <strong>Nenhum texto hard-coded</strong> em componente — tudo vem de <code>scenarios-s7.ts</code>.</li>
+  <li>Card do módulo na home: ícone sugerido (blocos/rede ou elo), título <strong>“BaaS e Tokenização”</strong>, descrição: “Revenue sharing de BaaS, ganhos de embedded finance, custo de funding tokenizado e liquidação atômica.”, progresso <code>0/4 concluídos</code>.</li>
+</ul>
+
+<!-- ============================ 4 ============================ -->
+<h2 id="estados"><span class="num">4.</span> Máquina de estados (jornada do cenário)</h2>
+<pre><code>card → contexto → etapas (3, sequenciais) → encruzilhada → resultado(caminho) → reflexão → conclusão</code></pre>
+<ol>
+  <li><strong>contexto</strong> — narrativa com termos destacados + KeyFacts + caixa ocultável “Dados detalhados”.</li>
+  <li><strong>etapas</strong> — 3 múltiplas escolhas com <strong>revelação progressiva</strong>: a Etapa N+1 só abre após acerto da N. Cada opção exibe memória de cálculo (verde se certa, vermelha se errada). Erro não pontua e permite nova tentativa. Pontua na <strong>1ª seleção correta</strong>.</li>
+  <li><strong>encruzilhada</strong> — 3 cards de decisão (A/B/C); <em>não há “certo”</em>. 0 pontos.</li>
+  <li><strong>resultado(caminho)</strong> — headline + caption + tiles de variação (deltas) + explicação do trade-off.</li>
+  <li><strong>reflexão</strong> — 1 MC sobre o risco residual (25 pts).</li>
+  <li><strong>conclusão</strong> — “PONTUAÇÃO FINAL X / 85” + “Tentar outro cenário” / “Finalizar e voltar”.</li>
+</ol>
+<p class="small">Barra de progresso = 3 etapas. Transição 0/85 → 60/85 (fim das etapas) → 85/85 (após reflexão).</p>
+
+<!-- ============================ 5 ============================ -->
+<h2 id="componentes"><span class="num">5.</span> Componentes de UI</h2>
+<p>Reaproveitar os componentes do módulo S6, com duas alterações: <strong>remover o <code>GlobalRuleChip</code></strong> e usar o título <strong>“DADOS DETALHADOS”</strong> no box ocultável.</p>
+<table>
+  <thead><tr><th>Componente</th><th>Função</th></tr></thead>
+  <tbody>
+    <tr><td><code>ScoreHeader</code></td><td>Barra superior: “← Início”, label “PONTUAÇÃO”, contador <code>score/85</code> com mini-barra.</td></tr>
+    <tr><td><code>Breadcrumb</code></td><td><code>código · protagonista · &lt;pílula dificuldade&gt;</code>.</td></tr>
+    <tr><td><code>ProgressBar</code></td><td>3 segmentos; segmento ativo em rust <code>#c2592e</code>.</td></tr>
+    <tr><td><code>ContextPanel</code></td><td>Box CONTEXTO: narrativa + grade de KeyFacts + <code>DetailBox</code>.</td></tr>
+    <tr><td><code>KeyFactTile</code></td><td>Tile verde-claro: label + valor. Tom <code>warning</code> deixa o valor em rust.</td></tr>
+    <tr><td><code>DetailBox</code></td><td>Box ocultável <strong>“DADOS DETALHADOS”</strong> com botão “+”. Contém tabelas (unit economics, rotas de funding, fluxo de liquidação).</td></tr>
+    <tr><td><code>EtapaBlock</code> / <code>OptionButton</code> / <code>FeedbackBox</code></td><td>Idênticos ao S6: etapa com 4 opções; estados neutro/atual (azul, tag “RESPOSTA ATUAL”)/correta(verde)/errada(vermelha); memória de cálculo sempre com a conta.</td></tr>
+    <tr><td><code>Encruzilhada</code> / <code>BranchCard</code> / <code>ResultadoPanel</code> / <code>DeltaTile</code></td><td>Idênticos ao S6: 3 caminhos com resultado divergente, deltas e trade-off.</td></tr>
+    <tr><td><code>ReflexaoBlock</code></td><td>1 MC, 25 pts.</td></tr>
+    <tr><td><code>Conclusao</code></td><td>“PONTUAÇÃO FINAL X / 85” + ações.</td></tr>
+  </tbody>
+</table>
+
+<!-- ============================ 6 ============================ -->
+<h2 id="modelo"><span class="num">6.</span> Modelo de dados (TypeScript)</h2>
+<p>Mesmos tipos do S6. A única diferença é semântica: <code>statements</code> é renderizado sob o título “Dados detalhados” e não há constante de regra global.</p>
+<pre><code>interface KeyFact { label: string; value: string; tone?: "default" | "positive" | "warning"; }
+
+interface DetailTable {            // renderizada dentro do DetailBox ("DADOS DETALHADOS")
+  id: string; title: string; columns: string[];
+  rows: { label: string; values: string[]; emphasis?: boolean }[];
+  note?: string;
+}
+
+interface Option { id: string; text: string; correct: boolean; feedback: string; } // feedback = memória de cálculo
+
+interface Etapa { id: string; label: string; prompt: string; options: Option[]; points: number; } // 4 opções, 1 correta, 20 pts
+
+interface DeltaMetric { label: string; value: string; tone: "positive" | "negative" | "neutral" | "risk"; }
+interface Resultado { headline: string; caption: string; metrics: DeltaMetric[]; explanation: string; }
+interface Branch { id: "A" | "B" | "C"; title: string; summary: string; resultado: Resultado; }
+interface Reflexao { prompt: string; options: Option[]; points: number; } // 25
+
+interface Scenario {
+  id: string; code: string; order: number;
+  title: string; protagonist: string;       // "Banco Trilho S.A." / "VarejoX" ...
+  difficulty: "intermediario" | "avancado"; estMinutes: number;
+  blurb: string; archetype: string; context: string;
+  keyFacts: KeyFact[];
+  details: DetailTable[];                     // antes "statements"; título do box = "Dados detalhados"
+  etapas: Etapa[];                            // 3
+  encruzilhada: { prompt: string; branches: Branch[] };
+  reflexao: Reflexao;
+  maxScore: number;                           // 85
+}</code></pre>
+
+<!-- ============================ 7 ============================ -->
+<h2 id="pontuacao"><span class="num">7.</span> Pontuação e persistência</h2>
+<ul>
+  <li><strong>3 etapas × 20 + reflexão 25 = 85.</strong> Encruzilhada = decisão (0 pts).</li>
+  <li>Pontua na <strong>1ª seleção correta</strong>; erros anteriores não descontam nem readicionam pontos.</li>
+  <li>Estado por cenário: <code>{ phase, currentEtapaIndex, answers, chosenBranch, score, completed }</code>; persistir em <code>localStorage</code> por <code>scenarioId</code>.</li>
+  <li>Progresso do módulo (<code>x/4 concluídos</code>) deriva de <code>completed</code>.</li>
+</ul>
+
+<!-- ============================ 8 ============================ -->
+<h2 id="design"><span class="num">8.</span> Sistema de design (tokens)</h2>
+<div class="card">
+  <div class="swatch"><i style="background:#f6f7f8"></i> Fundo <code>#f6f7f8</code></div>
+  <div class="swatch"><i style="background:#103049"></i> Navy <code>#103049</code></div>
+  <div class="swatch"><i style="background:#1c8c6b"></i> Teal <code>#1c8c6b</code></div>
+  <div class="swatch"><i style="background:#eaf3ee"></i> KeyFact <code>#eaf3ee</code></div>
+  <div class="swatch"><i style="background:#e9f6ef;border-color:#bfe6d2"></i> Feedback correto <code>#e9f6ef</code>/<code>#bfe6d2</code></div>
+  <div class="swatch"><i style="background:#dcebf8"></i> Resposta atual <code>#dcebf8</code></div>
+  <div class="swatch"><i style="background:#b23a2e"></i> Risco/negativo <code>#b23a2e</code></div>
+  <div class="swatch"><i style="background:#c2592e"></i> Progresso (rust) <code>#c2592e</code></div>
+</div>
+<ul>
+  <li>Cards brancos, borda <code>#e3e7ea</code>, raio 14–16px. Badge INTERMEDIÁRIO = pílula verde-menta; AVANÇADO = pílula navy.</li>
+  <li>Display serifado nos títulos; sans humanista no corpo; números em peso forte.</li>
+</ul>
+
+<!-- ============================ 9 ============================ -->
+<h2 id="convencoes"><span class="num">9.</span> Convenções de conteúdo</h2>
+<ul>
+  <li><strong>Autossuficiência:</strong> tudo que resolve as etapas está nos KeyFacts; tabelas volumosas (unit economics, rotas, fluxo) vão na caixa “Dados detalhados”.</li>
+  <li><strong>Memória de cálculo SEMPRE com a conta</strong> (fórmula + números). No acerto, reforça o conceito; no erro, aponta o equívoco específico. Cada opção incorreta tem sua memória de erro.</li>
+  <li><strong>Padrão E1 → E2 → E3:</strong> E1 = leitura/medida; E2 = mecanismo (o que muda e por quê); E3 = cálculo-síntese que fecha o caso.</li>
+  <li><strong>Cuidado de acrônimo:</strong> em tokenização, “RWA” no mercado significa <em>real-world assets</em>; no app, RWA é <em>ativos ponderados pelo risco</em> (módulo S6). <u>Neste módulo, usar sempre “ativos do mundo real / tokenizados” e nunca o acrônimo RWA.</u></li>
+  <li>Valores em R$; consistentes e implementáveis literalmente.</li>
+</ul>
+
+<!-- ============================ 10 ============================ -->
+<h2 id="qa"><span class="num">10.</span> Checklist de QA</h2>
+<ul>
+  <li>Os KeyFacts bastam para resolver as etapas? O resto está em “Dados detalhados”?</li>
+  <li>Cada etapa tem 4 opções plausíveis, 1 correta e memória com a conta (inclusive nas erradas)?</li>
+  <li>Os 3 caminhos da encruzilhada divergem (deltas e trade-offs distintos)?</li>
+  <li>A pontuação soma 85 (3×20 + 25)? Transição 0 → 60 → 85 confere?</li>
+  <li><strong>Sem</strong> <code>GlobalRuleChip</code>? Caixa ocultável rotulada <strong>“DADOS DETALHADOS”</strong>?</li>
+  <li>Acrônimo RWA evitado nos cenários de tokenização?</li>
+  <li>Intercâmbio e CDI marcados como premissa “verificar”?</li>
+  <li>Progressão de dificuldade (S7.1/S7.2 intermediário → S7.3/S7.4 avançado)?</li>
+</ul>
+
+<hr class="soft">
+
+<!-- ============================ S7.1 ============================ -->
+<h2 id="s71"><span class="num">11.</span> Cenário S7.1 — Banco Trilho <span class="pill inter" style="vertical-align:middle">Intermediário · template canônico</span></h2>
+<p class="small">Template canônico: vem com as 4 opções por etapa e a memória de erro de cada incorreta. S7.2–S7.4 seguem a mesma estrutura.</p>
+
+<div class="scenario-head">
+  <div class="code">S7.1 · Banco Trilho S.A. · Intermediário · 20 min</div>
+  <h3>BaaS: revenue sharing e o break-even do banco licenciado</h3>
+  <p><strong>Blurb (card):</strong> O Banco Trilho fornece a infraestrutura bancária (licença, conta, cartão, crédito) para a marca de varejo VarejoX. Como a economia de cada conta se divide entre os dois — e a partir de quantas contas o banco cobre seus custos?</p>
+  <div class="qkey"><strong>Pergunta-chave:</strong> como se divide a economia de uma conta BaaS entre o banco licenciado e a marca, e quanto o banco de fato fica?</div>
+</div>
+
+<h4>Contexto (narrativa)</h4>
+<div class="card">O <strong>Banco Trilho S.A.</strong> é um banco licenciado que oferece <em>Banking as a Service</em>: a marca <strong>VarejoX</strong> embute conta, cartão e crédito no seu app, mas quem detém a <em>licença, o balanço, o capital e o risco de crédito</em> é o Banco Trilho. Em troca, repassa à marca uma fatia da receita (<strong>rev-share</strong>). Você é da tesouraria do banco e precisa medir a economia por conta, entender por que o split não é simétrico e calcular a escala mínima para o negócio fechar a conta.</div>
+
+<h4>KeyFacts</h4>
+<div class="keyfacts">
+  <div class="kf"><div class="lbl">Intercâmbio / conta / ano</div><div class="val">R$ 120</div></div>
+  <div class="kf"><div class="lbl">Float / conta / ano</div><div class="val">R$ 80</div></div>
+  <div class="kf"><div class="lbl">Spread de crédito / conta / ano</div><div class="val">R$ 270</div></div>
+  <div class="kf"><div class="lbl">Tarifas / conta / ano</div><div class="val">R$ 30</div></div>
+  <div class="kf"><div class="lbl">Custo infra + compliance / conta</div><div class="val">R$ 150</div></div>
+  <div class="kf warn"><div class="lbl">PDD esperada / conta / ano</div><div class="val">R$ 60</div></div>
+  <div class="kf"><div class="lbl">Share da marca (rev-share)</div><div class="val">40%</div></div>
+  <div class="kf"><div class="lbl">Custo fixo de plataforma</div><div class="val">R$ 9 mi/ano</div></div>
+</div>
+
+<h4>Dados detalhados (ocultável)</h4>
+<div class="card">
+  <table>
+    <thead><tr><th>Unit economics (R$ / conta / ano)</th><th>Valor</th></tr></thead>
+    <tbody>
+      <tr><td>Intercâmbio</td><td>120</td></tr>
+      <tr><td>Float</td><td>80</td></tr>
+      <tr><td>Spread de crédito embarcado</td><td>270</td></tr>
+      <tr><td>Tarifas</td><td>30</td></tr>
+      <tr><td><strong>Receita bruta</strong></td><td><strong>500</strong></td></tr>
+      <tr><td>(–) Repasse à marca (40%)</td><td>(200)</td></tr>
+      <tr><td>(–) Infra + compliance</td><td>(150)</td></tr>
+      <tr><td>(–) PDD esperada</td><td>(60)</td></tr>
+      <tr><td><strong>Net do banco / conta</strong></td><td><strong>90</strong></td></tr>
+    </tbody>
+  </table>
+  <table>
+    <thead><tr><th>Plataforma (R$)</th><th>Valor</th></tr></thead>
+    <tbody>
+      <tr><td>Custo fixo anual (tech, compliance, licença)</td><td>9.000.000</td></tr>
+      <tr><td>Net por conta</td><td>90</td></tr>
+      <tr><td><strong>Break-even (contas ativas)</strong></td><td><strong>100.000</strong></td></tr>
+    </tbody>
+    <tfoot></tfoot>
+  </table>
+</div>
+
+<h4><span class="etapa-tag">Etapa 1</span> Leitura — receita bruta por conta <span class="small">(20 pts)</span></h4>
+<p><strong>Prompt:</strong> Qual a receita bruta por conta ativa ao ano?</p>
+<div class="opt correct"><span class="otext">A) R$ 500</span> <span class="badge">✓ Correto</span>
+  <div class="mem">Receita bruta = intercâmbio + float + spread + tarifas = 120 + 80 + 270 + 30 = <strong>R$ 500</strong>.</div></div>
+<div class="opt err"><span class="otext">B) R$ 200</span> <span class="badge">✗</span>
+  <div class="mem">Erro: R$ 200 é o que vai à marca (40% × 500). A receita bruta por conta é a soma das fontes = 500.</div></div>
+<div class="opt err"><span class="otext">C) R$ 290</span> <span class="badge">✗</span>
+  <div class="mem">Erro: 290 é a contribuição antes do split (500 − 150 − 60). A receita bruta é a soma das 4 fontes = 500.</div></div>
+<div class="opt err"><span class="otext">D) R$ 470</span> <span class="badge">✗</span>
+  <div class="mem">Erro: esqueceu as tarifas (30). 120 + 80 + 270 + 30 = 500.</div></div>
+
+<h4><span class="etapa-tag">Etapa 2</span> Mecanismo — por que o split não é 50/50 <span class="small">(20 pts)</span></h4>
+<p><strong>Prompt:</strong> Por que o rev-share não é simétrico entre banco e marca?</p>
+<div class="opt correct"><span class="otext">A) O banco detém licença, capital e risco de crédito; a marca detém distribuição/CAC. O split remunera papéis assimétricos.</span> <span class="badge">✓ Correto</span>
+  <div class="mem">O banco aporta balanço, compliance e absorve a PDD (60) e o capital regulatório; a marca aporta a base de clientes. Como os papéis são assimétricos, o split também é.</div></div>
+<div class="opt err"><span class="otext">B) É 50/50 por padrão de mercado.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: não há padrão fixo; o split é negociado e reflete quem carrega risco/capital (banco) vs. distribuição (marca).</div></div>
+<div class="opt err"><span class="otext">C) A marca fica com mais porque assume o risco de crédito.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: invertido — quem carrega o risco de crédito (PDD 60) e o capital é o banco, não a marca.</div></div>
+<div class="opt err"><span class="otext">D) O banco fica com mais porque processa os pagamentos.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: processar é um custo (infra 150), não a razão do split. O que justifica a fatia do banco é licença/capital/risco.</div></div>
+
+<h4><span class="etapa-tag">Etapa 3</span> Síntese — net e break-even <span class="small">(20 pts)</span></h4>
+<p><strong>Prompt:</strong> Qual o net do banco por conta e o break-even em contas ativas?</p>
+<div class="opt correct"><span class="otext">A) Net R$ 90/conta; break-even 100.000 contas.</span> <span class="badge">✓ Correto</span>
+  <div class="mem">Net = 60% × 500 − 150 − 60 = 300 − 210 = <strong>R$ 90</strong>. Break-even = custo fixo / net = 9.000.000 / 90 = <strong>100.000 contas</strong>.</div></div>
+<div class="opt err"><span class="otext">B) Net R$ 290; break-even 31.034 contas.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: não descontou o repasse à marca (200). Net = 500 − 200 − 150 − 60 = 90 → break-even 100.000.</div></div>
+<div class="opt err"><span class="otext">C) Net R$ 90; break-even 100 contas.</span> <span class="badge">✗</span>
+  <div class="mem">Erro de escala: 9.000.000 / 90 = 100.000 (não 100).</div></div>
+<div class="opt err"><span class="otext">D) Net R$ 150; break-even 60.000 contas.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: esqueceu a PDD (60). Net = 500 − 200 − 150 − 60 = 90 → break-even 100.000.</div></div>
+
+<h4>Encruzilhada <span class="small">(decisão · 0 pts)</span></h4>
+<p><strong>Prompt:</strong> Que modelo de contrato adotar com a marca?</p>
+<div class="branch">
+  <h5>Caminho A — Pure rev-share (40% à marca)</h5>
+  <div class="deltas"><span class="delta neu">Net R$ 90/conta</span><span class="delta neu">Break-even 100k contas</span><span class="delta pos">Alinhamento alto</span><span class="delta risk">Exposto a contas inativas</span></div>
+  <p class="small">Trade-off: alinha incentivos e escala junto com a marca, mas a rentabilidade depende de contas ativas — contas dormentes não cobrem o custo fixo.</p>
+</div>
+<div class="branch">
+  <h5>Caminho B — Fee fixo por conta + por transação</h5>
+  <div class="deltas"><span class="delta pos">Receita previsível ao banco</span><span class="delta neg">Banco abre mão do upside (float/spread)</span><span class="delta neu">Risco de volume na marca</span></div>
+  <p class="small">Trade-off: protege o banco do risco de volume e dá receita previsível, mas entrega o upside de crescimento à marca.</p>
+</div>
+<div class="branch">
+  <h5>Caminho C — Híbrido (fee fixo menor + rev-share)</h5>
+  <div class="deltas"><span class="delta pos">Piso de receita + upside</span><span class="delta neu">Equilíbrio risco/retorno</span><span class="delta risk">Contrato complexo</span></div>
+  <p class="small">Trade-off: combina piso previsível com participação no crescimento, ao custo de um contrato mais difícil de administrar.</p>
+</div>
+
+<h4>Reflexão — risco residual <span class="small">(25 pts)</span></h4>
+<p><strong>Prompt:</strong> Qual risco residual o modelo de rev-share NÃO resolve para o banco?</p>
+<div class="opt correct"><span class="otext">A) O banco carrega o risco regulatório e reputacional (KYC/AML, falhas da marca) e fica concentrado num parceiro — se a marca sai, a base evapora.</span> <span class="badge">✓ Correto</span>
+  <div class="mem">O rev-share alinha receita, mas não transfere o risco de compliance/reputação (que é do licenciado) nem dilui a dependência de um único distribuidor.</div></div>
+<div class="opt err"><span class="otext">B) Nenhum: o rev-share alinha tudo.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: alinha receita, não elimina o risco regulatório/reputacional nem a concentração no parceiro.</div></div>
+<div class="opt err"><span class="otext">C) Só falta cobrar mais por transação.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: preço não cobre risco regulatório/reputacional nem a concentração de parceiro.</div></div>
+<div class="opt err"><span class="otext">D) O risco é só o custo de infra subir.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: o risco central é regulatório/reputacional e de concentração, não o custo de infra.</div></div>
+
+<hr class="soft">
+
+<!-- ============================ S7.2 ============================ -->
+<h2 id="s72">Cenário S7.2 — VarejoX <span class="pill inter" style="vertical-align:middle">Intermediário</span></h2>
+
+<div class="scenario-head">
+  <div class="code">S7.2 · VarejoX (marca) · Intermediário · 20 min</div>
+  <h3>Embedded finance: o ganho da marca ao embarcar finanças</h3>
+  <p><strong>Blurb (card):</strong> A VarejoX (a mesma marca do S7.1) embute conta, wallet e crédito no seu app. Quanto isso adiciona à receita — e de onde vem o ganho: do produto financeiro em si ou do efeito no funil core?</p>
+  <div class="qkey"><strong>Pergunta-chave:</strong> quanto uma marca não-bancária ganha ao embarcar finanças, e de onde vem o ganho?</div>
+</div>
+
+<h4>Contexto (narrativa)</h4>
+<div class="card">A <strong>VarejoX</strong> é um marketplace com <strong>R$ 500 milhões de GMV</strong> e <em>take rate</em> de 12%. Ela passa a embutir finanças (wallet, pagamentos e <em>BNPL</em>) usando um parceiro BaaS. A diretoria quer saber o <strong>ganho incremental</strong> e — mais importante — <em>de onde ele vem</em>: da nova receita financeira, do aumento do GMV pela conversão, ou da retenção. Sua tarefa: medir a receita base, mapear as fontes do ganho e quantificá-lo.</div>
+
+<h4>KeyFacts</h4>
+<div class="keyfacts">
+  <div class="kf"><div class="lbl">GMV anual</div><div class="val">R$ 500 mi</div></div>
+  <div class="kf"><div class="lbl">Take rate</div><div class="val">12%</div></div>
+  <div class="kf"><div class="lbl">Base de clientes</div><div class="val">1 mi</div></div>
+  <div class="kf"><div class="lbl">CAC</div><div class="val">R$ 40</div></div>
+  <div class="kf"><div class="lbl">Retenção atual</div><div class="val">60%</div></div>
+  <div class="kf"><div class="lbl">Intercâmbio (novo)</div><div class="val">R$ 1,0 mi</div></div>
+  <div class="kf"><div class="lbl">Float (novo)</div><div class="val">R$ 0,5 mi</div></div>
+  <div class="kf"><div class="lbl">Spread BNPL (novo)</div><div class="val">R$ 2,5 mi</div></div>
+  <div class="kf"><div class="lbl">Lift de GMV pela conversão</div><div class="val">+10%</div></div>
+</div>
+
+<h4>Dados detalhados (ocultável)</h4>
+<div class="card">
+  <table>
+    <thead><tr><th>Receita atual (R$ mi)</th><th>Valor</th></tr></thead>
+    <tbody>
+      <tr><td>GMV</td><td>500</td></tr>
+      <tr><td>Take rate</td><td>12%</td></tr>
+      <tr><td><strong>Receita do marketplace</strong></td><td><strong>60</strong></td></tr>
+    </tbody>
+  </table>
+  <table>
+    <thead><tr><th>Ganho de embedded finance (R$ mi)</th><th>Valor</th></tr></thead>
+    <tbody>
+      <tr><td>Intercâmbio</td><td>1,0</td></tr>
+      <tr><td>Float</td><td>0,5</td></tr>
+      <tr><td>Spread BNPL</td><td>2,5</td></tr>
+      <tr><td>Take sobre GMV incremental (+10% × 500 = 50; × 12%)</td><td>6,0</td></tr>
+      <tr><td><strong>Ganho incremental total</strong></td><td><strong>10,0</strong></td></tr>
+    </tbody>
+    <tfoot></tfoot>
+  </table>
+  <p class="small">O lift de retenção (60% → maior) reforça o LTV, mas o cálculo do ganho usa as quatro linhas acima.</p>
+</div>
+
+<h4><span class="etapa-tag">Etapa 1</span> Leitura — receita atual <span class="small">(20 pts)</span></h4>
+<p><strong>Prompt:</strong> Qual a receita atual do marketplace?</p>
+<div class="opt correct"><span class="otext">A) R$ 60 mi</span> <span class="badge">✓ Correto</span>
+  <div class="mem">Receita = GMV × take rate = 500 × 12% = <strong>R$ 60 mi</strong>.</div></div>
+<div class="opt err"><span class="otext">B) R$ 500 mi</span> <span class="badge">✗</span>
+  <div class="mem">Erro: R$ 500 mi é o GMV (volume transacionado), não a receita. Receita = 500 × 12% = 60.</div></div>
+<div class="opt err"><span class="otext">C) R$ 6,0 mi</span> <span class="badge">✗</span>
+  <div class="mem">Erro: aplicou 12% sobre o GMV incremental (50), não sobre o GMV total (500). Receita base = 60.</div></div>
+<div class="opt err"><span class="otext">D) R$ 12 mi</span> <span class="badge">✗</span>
+  <div class="mem">Erro: o take incide sobre o GMV (500), não sobre a base de clientes. Receita = 60.</div></div>
+
+<h4><span class="etapa-tag">Etapa 2</span> Mecanismo — de onde vem o ganho <span class="small">(20 pts)</span></h4>
+<p><strong>Prompt:</strong> De onde vem, principalmente, o ganho de embarcar finanças?</p>
+<div class="opt correct"><span class="otext">A) De três fontes: nova receita financeira; lift do GMV core (conversão/frequência); e retenção/LTV. Não é só “vender um produto financeiro”.</span> <span class="badge">✓ Correto</span>
+  <div class="mem">O efeito principal costuma ser no funil (mais conversão, mais frequência, menos churn) somado às linhas financeiras — não apenas a margem do produto financeiro isolado.</div></div>
+<div class="opt err"><span class="otext">B) Só da nova receita financeira (intercâmbio/float/spread).</span> <span class="badge">✗</span>
+  <div class="mem">Erro: ignora o lift de GMV (6,0), que aqui é a maior parcela.</div></div>
+<div class="opt err"><span class="otext">C) Só do lift de GMV.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: ignora as linhas financeiras (1,0 + 0,5 + 2,5 = 4,0).</div></div>
+<div class="opt err"><span class="otext">D) Apenas de um CAC menor.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: CAC menor ajuda o LTV, mas o ganho medido vem de receita financeira + lift de GMV.</div></div>
+
+<h4><span class="etapa-tag">Etapa 3</span> Síntese — ganho incremental <span class="small">(20 pts)</span></h4>
+<p><strong>Prompt:</strong> Qual o ganho incremental anual de embarcar finanças?</p>
+<div class="opt correct"><span class="otext">A) R$ 10,0 mi (+16,7% sobre a receita base)</span> <span class="badge">✓ Correto</span>
+  <div class="mem">Ganho = 1,0 + 0,5 + 2,5 + (10% × 500 × 12% = 6,0) = <strong>R$ 10,0 mi</strong>. Sobre os R$ 60 mi de base → <strong>+16,7%</strong>.</div></div>
+<div class="opt err"><span class="otext">B) R$ 4,0 mi</span> <span class="badge">✗</span>
+  <div class="mem">Erro: somou só as linhas financeiras (1,0 + 0,5 + 2,5). Falta o take sobre o GMV incremental (6,0). Total 10,0.</div></div>
+<div class="opt err"><span class="otext">C) R$ 6,0 mi</span> <span class="badge">✗</span>
+  <div class="mem">Erro: contou só o lift de GMV. Faltam as linhas financeiras (4,0). Total 10,0.</div></div>
+<div class="opt err"><span class="otext">D) R$ 16,7 mi</span> <span class="badge">✗</span>
+  <div class="mem">Erro: +16,7% é o ganho relativo; o valor absoluto é R$ 10,0 mi.</div></div>
+
+<h4>Encruzilhada <span class="small">(decisão · 0 pts)</span></h4>
+<p><strong>Prompt:</strong> Como a marca deve operacionalizar as finanças embarcadas?</p>
+<div class="branch">
+  <h5>Caminho A — Partner via BaaS (ex.: Banco Trilho)</h5>
+  <div class="deltas"><span class="delta pos">Time-to-market rápido</span><span class="delta pos">Capex baixo</span><span class="delta neg">Divide a margem (rev-share)</span><span class="delta risk">Dependência do parceiro</span></div>
+  <p class="small">Trade-off: lança rápido e sem balanço próprio, mas entrega parte do ganho ao provedor (o outro lado do S7.1) e fica dependente dele.</p>
+</div>
+<div class="branch">
+  <h5>Caminho B — Licença própria (IP / SCD)</h5>
+  <div class="deltas"><span class="delta pos">Captura toda a margem</span><span class="delta neg">Custo regulatório/capital alto</span><span class="delta risk">Assume compliance e risco</span></div>
+  <p class="small">Trade-off: fica com 100% da economia, mas vira (parcialmente) uma instituição financeira — custo, prazo e risco regulatório.</p>
+</div>
+<div class="branch">
+  <h5>Caminho C — Híbrido / referral</h5>
+  <div class="deltas"><span class="delta pos">Risco baixo</span><span class="delta neu">Captura parcial</span><span class="delta pos">Sem balanço de crédito</span></div>
+  <p class="small">Trade-off: embute pagamentos via parceiro e mantém o crédito como referral (sem assumir a carteira); ganho menor, exposição mínima.</p>
+</div>
+
+<h4>Reflexão — risco residual <span class="small">(25 pts)</span></h4>
+<p><strong>Prompt:</strong> Qual risco residual o ganho de embedded finance esconde?</p>
+<div class="opt correct"><span class="otext">A) A marca passa a carregar risco de crédito e perímetro regulatório que não tinha; os R$ 10 mi são brutos — líquidos da PDD do BNPL e do rev-share podem ser bem menores.</span> <span class="badge">✓ Correto</span>
+  <div class="mem">A inadimplência do crédito embarcado e o repasse ao parceiro corroem o ganho bruto; e a marca assume obrigações de compliance que antes não eram dela.</div></div>
+<div class="opt err"><span class="otext">B) Nenhum: é receita pura.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: o ganho é bruto; PDD do BNPL e rev-share reduzem o líquido.</div></div>
+<div class="opt err"><span class="otext">C) Só o risco de TI.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: o risco central é de crédito/regulatório, não só operacional.</div></div>
+<div class="opt err"><span class="otext">D) O risco é o take rate cair.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: o risco central é crédito/regulatório e dependência do parceiro.</div></div>
+
+<hr class="soft">
+
+<!-- ============================ S7.3 ============================ -->
+<h2 id="s73">Cenário S7.3 — AgroNova <span class="pill avanc" style="vertical-align:middle">Avançado</span></h2>
+
+<div class="scenario-head adv">
+  <div class="code">S7.3 · AgroNova S.A. · Avançado · 24 min</div>
+  <h3>Tokenização de recebíveis: o custo de funding</h3>
+  <p><strong>Blurb (card):</strong> A AgroNova precisa antecipar R$ 50 mi de recebíveis de 180 dias. Antecipação bancária, FIDC ou tokenização? Sua tarefa: precificar a rota tokenizada, entender por que a taxa exigida cai e medir a economia.</p>
+  <div class="qkey"><strong>Pergunta-chave:</strong> tokenizar recebíveis reduz o custo de captação frente às rotas tradicionais — e por quê?</div>
+</div>
+
+<h4>Contexto (narrativa)</h4>
+<div class="card">A <strong>AgroNova S.A.</strong> tem <strong>R$ 50 milhões em recebíveis</strong> de prazo médio de <strong>180 dias</strong> e precisa de caixa agora. Há três rotas: <em>antecipação bancária</em> (rápida, cara), <em>FIDC</em> (estruturada, regulada, mais lenta) e <em>tokenização</em> (tokens lastreados nos recebíveis, distribuídos a investidores fracionados, com registro on-chain e mercado secundário). Você é da tesouraria e precisa comparar o custo efetivo e decidir a rota.</div>
+
+<h4>KeyFacts</h4>
+<div class="keyfacts">
+  <div class="kf"><div class="lbl">Recebíveis a financiar</div><div class="val">R$ 50 mi</div></div>
+  <div class="kf"><div class="lbl">Prazo médio</div><div class="val">180 dias</div></div>
+  <div class="kf warn"><div class="lbl">CDI (premissa · verificar)</div><div class="val">11% a.a.</div></div>
+  <div class="kf"><div class="lbl">Antecipação bancária</div><div class="val">~30% a.a.</div></div>
+  <div class="kf"><div class="lbl">FIDC</div><div class="val">CDI + 6% (17%)</div></div>
+  <div class="kf"><div class="lbl">Tokenização</div><div class="val">CDI + 3% (14%)</div></div>
+</div>
+
+<h4>Dados detalhados (ocultável)</h4>
+<div class="card">
+  <table>
+    <thead><tr><th>Rota de funding</th><th>Taxa a.a.</th><th>Custo no ciclo (180d) sobre R$ 50 mi</th><th>Característica</th></tr></thead>
+    <tbody>
+      <tr><td>Antecipação bancária</td><td>~30%</td><td>R$ 7,5 mi</td><td>Rápida, simples, cara</td></tr>
+      <tr><td>FIDC</td><td>17%</td><td>R$ 4,25 mi</td><td>Estruturada, regulada, lenta; taxa de adm/subordinação</td></tr>
+      <tr><td>Tokenização</td><td>14%</td><td>R$ 3,5 mi</td><td>Fracionada, secundário, risco operacional/jurídico novo</td></tr>
+    </tbody>
+    <tfoot></tfoot>
+  </table>
+  <p class="small">Custo no ciclo = taxa a.a. × (180/360) × 50. Não usar o acrônimo “RWA” para ativos do mundo real; aqui falamos de <em>recebíveis tokenizados</em>.</p>
+</div>
+
+<h4><span class="etapa-tag">Etapa 1</span> Leitura — custo da rota tokenizada <span class="small">(20 pts)</span></h4>
+<p><strong>Prompt:</strong> Qual o custo da rota tokenizada no ciclo de 180 dias?</p>
+<div class="opt correct"><span class="otext">A) R$ 3,5 mi</span> <span class="badge">✓ Correto</span>
+  <div class="mem">Custo = 14% × (180/360) × 50 = 0,14 × 0,5 × 50 = <strong>R$ 3,5 mi</strong>.</div></div>
+<div class="opt err"><span class="otext">B) R$ 7,0 mi</span> <span class="badge">✗</span>
+  <div class="mem">Erro: usou a taxa anual sem ajustar o prazo. O ciclo é 180 dias (×0,5): 14% × 0,5 × 50 = 3,5.</div></div>
+<div class="opt err"><span class="otext">C) R$ 1,5 mi</span> <span class="badge">✗</span>
+  <div class="mem">Erro: usou só o spread (3%). A taxa é CDI + 3% = 14%. Custo = 14% × 0,5 × 50 = 3,5.</div></div>
+<div class="opt err"><span class="otext">D) R$ 4,25 mi</span> <span class="badge">✗</span>
+  <div class="mem">Erro: usou a taxa do FIDC (17%). A tokenização é 14%: 14% × 0,5 × 50 = 3,5.</div></div>
+
+<h4><span class="etapa-tag">Etapa 2</span> Mecanismo — por que a taxa cai <span class="small">(20 pts)</span></h4>
+<p><strong>Prompt:</strong> Por que a taxa exigida na tokenização é menor que no FIDC?</p>
+<div class="opt correct"><span class="otext">A) Remove camadas de intermediação, permite fracionamento, o registro on-chain reduz risco operacional/fraude e o secundário aumenta a liquidez → menor prêmio exigido.</span> <span class="badge">✓ Correto</span>
+  <div class="mem">Cedente → plataforma → investidor direto (vs. cedente → FIDC → cotistas): menos camadas e mais demanda fracionada comprimem o prêmio de risco/liquidez.</div></div>
+<div class="opt err"><span class="otext">B) Porque tokens rendem menos por serem digitais.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: a queda vem de desintermediação/liquidez/fracionamento, não de “ser digital”.</div></div>
+<div class="opt err"><span class="otext">C) Porque a tokenização elimina o risco de crédito do recebível.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: o risco de crédito do sacado permanece; o que muda é a estrutura de distribuição.</div></div>
+<div class="opt err"><span class="otext">D) Porque o CDI cai com a tokenização.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: o CDI é exógeno; o que cai é o spread exigido (prêmio sobre o CDI).</div></div>
+
+<h4><span class="etapa-tag">Etapa 3</span> Síntese — economia vs. FIDC <span class="small">(20 pts)</span></h4>
+<p><strong>Prompt:</strong> Qual a economia de tokenizar em vez de usar FIDC?</p>
+<div class="opt correct"><span class="otext">A) R$ 0,75 mi por ciclo (≈ R$ 1,5 mi/ano girando 2×)</span> <span class="badge">✓ Correto</span>
+  <div class="mem">Economia = (17% − 14%) × (180/360) × 50 = 3% × 0,5 × 50 = <strong>R$ 0,75 mi</strong> por ciclo de 180 dias.</div></div>
+<div class="opt err"><span class="otext">B) R$ 1,5 mi por ciclo</span> <span class="badge">✗</span>
+  <div class="mem">Erro: não ajustou o prazo. 3% × 0,5 × 50 = 0,75 no ciclo de 180d (1,5 só anualizado).</div></div>
+<div class="opt err"><span class="otext">C) R$ 4,0 mi por ciclo</span> <span class="badge">✗</span>
+  <div class="mem">Erro: comparou com a antecipação bancária (30%), não com o FIDC. Vs. FIDC = 0,75; vs. banco = 4,0.</div></div>
+<div class="opt err"><span class="otext">D) R$ 0,15 mi por ciclo</span> <span class="badge">✗</span>
+  <div class="mem">Erro: usou diferença de spread errada. A diferença é 3 p.p. (17 − 14): 3% × 0,5 × 50 = 0,75.</div></div>
+
+<h4>Encruzilhada <span class="small">(decisão · 0 pts)</span></h4>
+<p><strong>Prompt:</strong> Qual rota de funding adotar para os recebíveis?</p>
+<div class="branch">
+  <h5>Caminho A — Antecipação bancária</h5>
+  <div class="deltas"><span class="delta pos">Rápida e simples</span><span class="delta neg">Custo ~R$ 7,5 mi/ciclo</span><span class="delta neu">Mantém relação bancária</span></div>
+  <p class="small">Trade-off: liquidez imediata, mas a rota mais cara (~30% a.a.).</p>
+</div>
+<div class="branch">
+  <h5>Caminho B — FIDC</h5>
+  <div class="deltas"><span class="delta neu">Custo R$ 4,25 mi/ciclo</span><span class="delta pos">Estrutura robusta/regulada</span><span class="delta neg">Setup lento</span></div>
+  <p class="small">Trade-off: custo médio e arcabouço maduro, mas montagem lenta e taxa de adm/subordinação.</p>
+</div>
+<div class="branch">
+  <h5>Caminho C — Tokenização</h5>
+  <div class="deltas"><span class="delta pos">Custo R$ 3,5 mi/ciclo</span><span class="delta pos">Fracionamento + secundário</span><span class="delta risk">Risco operacional/jurídico novo</span></div>
+  <p class="small">Trade-off: o menor custo, mas introduz riscos de custódia, smart contract e enforceability ainda em amadurecimento.</p>
+</div>
+
+<h4>Reflexão — risco residual <span class="small">(25 pts)</span></h4>
+<p><strong>Prompt:</strong> Qual risco residual a tokenização introduz?</p>
+<div class="opt correct"><span class="otext">A) A liquidez do secundário pode ser ilusória; o vínculo jurídico token↔recebível precisa ser exequível na inadimplência; há risco de custódia/smart contract/plataforma; e a demanda some no estresse.</span> <span class="badge">✓ Correto</span>
+  <div class="mem">A taxa menor pressupõe um mercado secundário líquido e um elo legal robusto entre o token e o lastro — premissas que podem falhar exatamente quando mais importam.</div></div>
+<div class="opt err"><span class="otext">B) Nenhum: on-chain é à prova de risco.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: há risco operacional, jurídico e de liquidez, não eliminados pela tecnologia.</div></div>
+<div class="opt err"><span class="otext">C) Só o risco de o CDI subir.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: o CDI afeta todas as rotas igualmente; o risco específico é jurídico/operacional/liquidez.</div></div>
+<div class="opt err"><span class="otext">D) O token elimina a inadimplência do sacado.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: o risco de crédito do recebível subjacente permanece.</div></div>
+
+<hr class="soft">
+
+<!-- ============================ S7.4 ============================ -->
+<h2 id="s74">Cenário S7.4 — Tesouraria Mérito <span class="pill avanc" style="vertical-align:middle">Avançado</span></h2>
+
+<div class="scenario-head adv">
+  <div class="code">S7.4 · Tesouraria Mérito · Avançado · 24 min</div>
+  <h3>Liquidação atômica: liberar liquidez e zerar risco de liquidação</h3>
+  <p><strong>Blurb (card):</strong> A Tesouraria Mérito liquida R$ 200 mi/dia em T+2. Uma plataforma de razão tokenizada permite liquidação atômica (DvP, T+0). Sua tarefa: medir a liquidez travada, entender por que o atômico elimina o risco de liquidação e quantificar o ganho.</p>
+  <div class="qkey"><strong>Pergunta-chave:</strong> a liquidação atômica (DvP, T+0) libera liquidez e elimina o risco de liquidação — quanto isso vale?</div>
+</div>
+
+<h4>Contexto (narrativa)</h4>
+<div class="card">A <strong>Tesouraria Mérito</strong> liquida <strong>R$ 200 milhões por dia</strong> em operações com janela <strong>T+2</strong>. Nessa janela, parte da liquidez fica “em trânsito” e existe o <em>risco de liquidação</em> (uma parte entrega e a outra não — risco Herstatt), exigindo um <em>buffer</em>. Uma plataforma de <strong>razão tokenizada</strong> permite <strong>liquidação atômica (DvP, T+0)</strong>: entrega do ativo e pagamento ocorrem de forma simultânea e condicional. Sua tarefa: medir a liquidez travada, explicar o mecanismo e quantificar o ganho de liberá-la.</div>
+
+<h4>KeyFacts</h4>
+<div class="keyfacts">
+  <div class="kf"><div class="lbl">Volume diário de liquidação</div><div class="val">R$ 200 mi</div></div>
+  <div class="kf"><div class="lbl">Janela tradicional</div><div class="val">T+2</div></div>
+  <div class="kf"><div class="lbl">Funding do buffer</div><div class="val">CDI + 2%</div></div>
+  <div class="kf warn"><div class="lbl">Caixa rende (premissa · verificar)</div><div class="val">CDI</div></div>
+</div>
+
+<h4>Dados detalhados (ocultável)</h4>
+<div class="card">
+  <table>
+    <thead><tr><th>Liquidação</th><th>Tradicional (T+2)</th><th>Atômica (T+0)</th></tr></thead>
+    <tbody>
+      <tr><td>Liquidez em trânsito</td><td>R$ 400 mi (200 × 2 dias)</td><td>R$ 0</td></tr>
+      <tr><td>Risco de liquidação (Herstatt)</td><td>Presente</td><td>Eliminado</td></tr>
+      <tr><td>Buffer necessário</td><td>~R$ 400 mi</td><td>Desnecessário</td></tr>
+      <tr><td>Carry do buffer (funding − rendimento)</td><td>2% a.a.</td><td>—</td></tr>
+    </tbody>
+    <tfoot></tfoot>
+  </table>
+  <p class="small">DvP = delivery versus payment. Atomicidade: ou ambas as pernas ocorrem, ou nenhuma — não há janela de exposição.</p>
+</div>
+
+<h4><span class="etapa-tag">Etapa 1</span> Leitura — liquidez travada <span class="small">(20 pts)</span></h4>
+<p><strong>Prompt:</strong> Quanta liquidez fica travada em liquidação no regime T+2?</p>
+<div class="opt correct"><span class="otext">A) R$ 400 mi</span> <span class="badge">✓ Correto</span>
+  <div class="mem">Liquidez em trânsito = volume diário × dias da janela = 200 × 2 = <strong>R$ 400 mi</strong>.</div></div>
+<div class="opt err"><span class="otext">B) R$ 200 mi</span> <span class="badge">✗</span>
+  <div class="mem">Erro: contou só 1 dia. Em T+2, dois dias de volume ficam em trânsito: 200 × 2 = 400.</div></div>
+<div class="opt err"><span class="otext">C) R$ 600 mi</span> <span class="badge">✗</span>
+  <div class="mem">Erro: contou 3 dias. T+2 = 2 dias: 200 × 2 = 400.</div></div>
+<div class="opt err"><span class="otext">D) R$ 100 mi</span> <span class="badge">✗</span>
+  <div class="mem">Erro: o volume diário inteiro (200) fica em trânsito por 2 dias: 200 × 2 = 400.</div></div>
+
+<h4><span class="etapa-tag">Etapa 2</span> Mecanismo — por que o atômico elimina o risco <span class="small">(20 pts)</span></h4>
+<p><strong>Prompt:</strong> Por que a liquidação atômica elimina o risco de liquidação e libera o buffer?</p>
+<div class="opt correct"><span class="otext">A) Em DvP atômico, entrega e pagamento ocorrem simultaneamente e condicionalmente (ou ambos, ou nenhum) → some a janela de risco Herstatt; T+0 → nada em trânsito → buffer desnecessário.</span> <span class="badge">✓ Correto</span>
+  <div class="mem">A atomicidade remove o intervalo em que uma parte já entregou e a outra ainda não; sem janela, não há buffer a manter.</div></div>
+<div class="opt err"><span class="otext">B) Porque o tokenizado é mais rápido, mas o risco continua.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: a atomicidade elimina o risco de liquidação — não é só velocidade.</div></div>
+<div class="opt err"><span class="otext">C) Porque elimina o risco de crédito da contraparte.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: elimina o risco de liquidação (settlement), não o risco de crédito geral da contraparte.</div></div>
+<div class="opt err"><span class="otext">D) Porque o buffer passa a render mais.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: o ganho é não precisar do buffer (liberá-lo), não fazê-lo render mais.</div></div>
+
+<h4><span class="etapa-tag">Etapa 3</span> Síntese — ganho anual <span class="small">(20 pts)</span></h4>
+<p><strong>Prompt:</strong> Qual o ganho anual de liberar o buffer com a liquidação atômica?</p>
+<div class="opt correct"><span class="otext">A) R$ 8 mi/ano</span> <span class="badge">✓ Correto</span>
+  <div class="mem">Ganho = carry negativo evitado = (CDI+2% − CDI) × buffer = 2% × 400 = <strong>R$ 8 mi/ano</strong>, além de zerar o risco de liquidação.</div></div>
+<div class="opt err"><span class="otext">B) R$ 44 mi/ano</span> <span class="badge">✗</span>
+  <div class="mem">Erro: usou o CDI cheio (11%). O que se evita é o carry negativo (funding − rendimento = 2%): 2% × 400 = 8.</div></div>
+<div class="opt err"><span class="otext">C) R$ 4 mi/ano</span> <span class="badge">✗</span>
+  <div class="mem">Erro: usou metade do buffer. Buffer liberado = 400: 2% × 400 = 8.</div></div>
+<div class="opt err"><span class="otext">D) R$ 8 mil/ano</span> <span class="badge">✗</span>
+  <div class="mem">Erro de escala: 2% × R$ 400 mi = R$ 8 milhões/ano.</div></div>
+
+<h4>Encruzilhada <span class="small">(decisão · 0 pts)</span></h4>
+<p><strong>Prompt:</strong> Qual caminho de adoção seguir?</p>
+<div class="branch">
+  <h5>Caminho A — Manter T+2 (rails tradicionais)</h5>
+  <div class="deltas"><span class="delta pos">Custo de mudança zero</span><span class="delta risk">Mantém buffer R$ 400 mi</span><span class="delta risk">Mantém risco de liquidação</span></div>
+  <p class="small">Trade-off: nenhum esforço de migração, mas carrega o carry negativo e o risco Herstatt.</p>
+</div>
+<div class="branch">
+  <h5>Caminho B — Pilotar tokenização numa fatia (25%)</h5>
+  <div class="deltas"><span class="delta pos">Captura parte do ganho</span><span class="delta pos">Aprende com risco controlado</span><span class="delta neu">Opera dois sistemas</span></div>
+  <p class="small">Trade-off: ganho parcial e aprendizado, ao custo de integração e dupla operação.</p>
+</div>
+<div class="branch">
+  <h5>Caminho C — Migrar full para liquidação tokenizada</h5>
+  <div class="deltas"><span class="delta pos">Captura todo o ganho (R$ 8 mi)</span><span class="delta risk">Depende de interoperabilidade</span><span class="delta risk">Finalidade jurídica e maturidade da infra</span></div>
+  <p class="small">Trade-off: ganho integral, mas só funciona se a infra for madura e as contrapartes aderirem.</p>
+</div>
+
+<h4>Reflexão — risco residual <span class="small">(25 pts)</span></h4>
+<p><strong>Prompt:</strong> Qual condição/risco residual permanece?</p>
+<div class="opt correct"><span class="otext">A) O ganho só se materializa com efeito de rede (as contrapartes precisam estar na mesma razão); restam riscos de interoperabilidade, finalidade jurídica e dependência da plataforma.</span> <span class="badge">✓ Correto</span>
+  <div class="mem">Liquidação atômica exige que ambas as pernas vivam na mesma infraestrutura; sem adoção das contrapartes, surgem “ilhas de liquidez” e o ganho não aparece.</div></div>
+<div class="opt err"><span class="otext">B) Nenhum: basta o banco adotar.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: precisa que as contrapartes também adotem (efeito de rede).</div></div>
+<div class="opt err"><span class="otext">C) Só o risco de TI interno.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: o risco central é de rede/interoperabilidade/finalidade jurídica.</div></div>
+<div class="opt err"><span class="otext">D) O atômico elimina toda a necessidade de liquidez.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: reduz o buffer de liquidação, não toda a gestão de liquidez da tesouraria.</div></div>
+
+<hr class="soft">
+
+<!-- ============================ ANEXO ============================ -->
+<h2 id="anexo"><span class="num">Anexo</span> — exemplo de <code>scenarios-s7.ts</code> (S7.1 tipado)</h2>
+<p>Objeto canônico do cenário S7.1, no formato esperado pelo renderizador data-driven. Os demais cenários seguem a mesma forma; o conteúdo completo está nas seções acima.</p>
+<pre><code>import type { Scenario } from "@/types/scenario";
+
+const s7_1: Scenario = {
+  id: "s7-1", code: "S7.1", order: 1,
+  title: "BaaS: revenue sharing e o break-even do banco licenciado",
+  protagonist: "Banco Trilho S.A.",
+  difficulty: "intermediario", estMinutes: 20,
+  blurb: "O Banco Trilho fornece a infraestrutura bancária para a marca VarejoX. Como a economia " +
+         "de cada conta se divide entre os dois — e a partir de quantas contas o banco fecha a conta?",
+  archetype: "BaaS (lado provedor) — revenue sharing e break-even",
+  context:
+    "O &lt;strong&gt;Banco Trilho S.A.&lt;/strong&gt; é um banco licenciado que oferece BaaS: a marca " +
+    "&lt;strong&gt;VarejoX&lt;/strong&gt; embute conta, cartão e crédito, mas quem detém a &lt;em&gt;licença, o " +
+    "capital e o risco de crédito&lt;/em&gt; é o banco, que repassa à marca uma fatia da receita (rev-share)...",
+  keyFacts: [
+    { label: "Intercâmbio / conta / ano", value: "R$ 120" },
+    { label: "Float / conta / ano", value: "R$ 80" },
+    { label: "Spread de crédito / conta / ano", value: "R$ 270" },
+    { label: "Tarifas / conta / ano", value: "R$ 30" },
+    { label: "Custo infra + compliance / conta", value: "R$ 150" },
+    { label: "PDD esperada / conta / ano", value: "R$ 60", tone: "warning" },
+    { label: "Share da marca (rev-share)", value: "40%" },
+    { label: "Custo fixo de plataforma", value: "R$ 9 mi/ano" },
+  ],
+  details: [
+    { id: "unit", title: "Unit economics (R$ / conta / ano)", columns: ["Item", "Valor"],
+      rows: [
+        { label: "Receita bruta", values: ["500"], emphasis: true },
+        { label: "(–) Repasse à marca (40%)", values: ["(200)"] },
+        { label: "(–) Infra + compliance", values: ["(150)"] },
+        { label: "(–) PDD esperada", values: ["(60)"] },
+        { label: "Net do banco / conta", values: ["90"], emphasis: true },
+      ] },
+    { id: "plat", title: "Plataforma", columns: ["Item", "Valor"],
+      rows: [
+        { label: "Custo fixo anual", values: ["9.000.000"] },
+        { label: "Break-even (contas ativas)", values: ["100.000"], emphasis: true },
+      ] },
+  ],
+  etapas: [
+    { id: "e1", label: "Leitura — receita bruta por conta", points: 20,
+      prompt: "Qual a receita bruta por conta ativa ao ano?",
+      options: [
+        { id: "a", text: "R$ 500", correct: true,
+          feedback: "120 + 80 + 270 + 30 = &lt;strong&gt;R$ 500&lt;/strong&gt;." },
+        { id: "b", text: "R$ 200", correct: false,
+          feedback: "Erro: 200 é o repasse à marca (40% × 500). A bruta é a soma das fontes = 500." },
+        { id: "c", text: "R$ 290", correct: false,
+          feedback: "Erro: 290 é a contribuição antes do split (500 − 150 − 60). A bruta = 500." },
+        { id: "d", text: "R$ 470", correct: false,
+          feedback: "Erro: esqueceu as tarifas (30). 120 + 80 + 270 + 30 = 500." },
+      ] },
+    /* e2 (mecanismo do split), e3 (net 90 / break-even 100.000) — ver seção S7.1 */
+  ],
+  encruzilhada: {
+    prompt: "Que modelo de contrato adotar com a marca?",
+    branches: [
+      { id: "A", title: "Pure rev-share (40% à marca)",
+        summary: "Alinhado e escalável, exposto a contas inativas.",
+        resultado: {
+          headline: "Alinhado, mas dependente de contas ativas",
+          caption: "Rentabilidade ligada à ativação da base.",
+          metrics: [
+            { label: "Net / conta", value: "R$ 90", tone: "neutral" },
+            { label: "Break-even", value: "100k contas", tone: "neutral" },
+            { label: "Alinhamento", value: "Alto", tone: "positive" },
+            { label: "Contas inativas", value: "Risco", tone: "risk" },
+          ],
+          explanation: "Escala junto com a marca; contas dormentes não cobrem o custo fixo.",
+        } },
+      /* B (fee fixo), C (híbrido) — ver seção S7.1 */
+    ],
+  },
+  reflexao: {
+    points: 25,
+    prompt: "Qual risco residual o rev-share NÃO resolve para o banco?",
+    options: [
+      { id: "a", correct: true,
+        text: "O banco carrega risco regulatório/reputacional e fica concentrado num parceiro; " +
+              "se a marca sai, a base evapora.",
+        feedback: "O rev-share alinha receita, não transfere compliance/reputação nem dilui a concentração." },
+      /* b, c, d incorretas — ver seção S7.1 */
+    ],
+  },
+  maxScore: 85,
+};
+
+export const scenariosS7: Scenario[] = [s7_1 /*, s7_2, s7_3, s7_4 */];</code></pre>
+
+<p class="small" style="margin-top:30px;color:var(--muted)">Fim da especificação · Módulo S7 — BaaS e Tokenização · Laboratório de Tesouraria de Empresas</p>
+
+</div>
+</body>
+</html>

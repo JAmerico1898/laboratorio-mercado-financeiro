@@ -6,7 +6,7 @@ interface OpeningHeroProps {
 
 export default function OpeningHero({ onStartAnalysis }: OpeningHeroProps) {
   return (
-    <section className="relative px-6 md:px-8 pt-24 pb-16 overflow-hidden">
+    <section className="relative bg-surface px-6 md:px-8 pt-24 pb-16 overflow-hidden">
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary-container/5 rounded-full blur-3xl" />
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary/5 rounded-full blur-3xl" />

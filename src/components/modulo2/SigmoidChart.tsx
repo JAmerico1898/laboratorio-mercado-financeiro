@@ -3,9 +3,9 @@ import dynamic from "next/dynamic";
 const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
 
 const DARK_LAYOUT = {
-  paper_bgcolor: "#191c1f",
-  plot_bgcolor: "#191c1f",
-  font: { color: "#e1e2e7" },
+  paper_bgcolor: "#ffffff",
+  plot_bgcolor: "#ffffff",
+  font: { color: "#191c1d" },
   margin: { l: 60, r: 30, t: 50, b: 50 },
 };
 
@@ -68,7 +68,7 @@ export default function SigmoidChart({
           x: xTheory,
           y: yTheory,
           name: "Curva Sigmóide",
-          line: { color: "#00f2ff", width: 2 },
+          line: { color: "#00314a", width: 2 },
           xaxis: "x",
           yaxis: "y",
         },
@@ -79,7 +79,7 @@ export default function SigmoidChart({
           x: scatterX0,
           y: scatterY0,
           name: "Bom Pagador (0)",
-          marker: { color: "#4edea3", size: 4, opacity: 0.6 },
+          marker: { color: "#006b5f", size: 4, opacity: 0.6 },
           xaxis: "x",
           yaxis: "y",
         },
@@ -90,7 +90,7 @@ export default function SigmoidChart({
           x: scatterX1,
           y: scatterY1,
           name: "Inadimplente (1)",
-          marker: { color: "#ef4444", size: 4, opacity: 0.6 },
+          marker: { color: "#dc2626", size: 4, opacity: 0.6 },
           xaxis: "x",
           yaxis: "y",
         },
@@ -99,7 +99,7 @@ export default function SigmoidChart({
           type: "histogram" as const,
           x: probClass0,
           name: "Bom Pagador (0)",
-          marker: { color: "#4edea3" },
+          marker: { color: "#006b5f" },
           opacity: 0.7,
           nbinsx: 30,
           xaxis: "x2",
@@ -111,7 +111,7 @@ export default function SigmoidChart({
           type: "histogram" as const,
           x: probClass1,
           name: "Inadimplente (1)",
-          marker: { color: "#ef4444" },
+          marker: { color: "#dc2626" },
           opacity: 0.7,
           nbinsx: 30,
           xaxis: "x2",
@@ -127,7 +127,7 @@ export default function SigmoidChart({
         ...DARK_LAYOUT,
         title: {
           text: "Análise da Função Sigmóide do Modelo de Regressão Logística",
-          font: { color: "#e1e2e7", size: 14 },
+          font: { color: "#191c1d", size: 14 },
         },
         barmode: "overlay" as const,
         showlegend: true,
@@ -135,26 +135,26 @@ export default function SigmoidChart({
         xaxis: {
           domain: [0, 0.48],
           title: { text: "Combinação Linear (β₀ + β₁X₁ + β₂X₂ + ...)" },
-          gridcolor: "#2a2d31",
-          zerolinecolor: "#2a2d31",
+          gridcolor: "#bfc9c4",
+          zerolinecolor: "#bfc9c4",
         },
         yaxis: {
           title: { text: "Probabilidade de Inadimplência" },
-          gridcolor: "#2a2d31",
-          zerolinecolor: "#2a2d31",
+          gridcolor: "#bfc9c4",
+          zerolinecolor: "#bfc9c4",
         },
         xaxis2: {
           domain: [0.52, 1],
           anchor: "y2",
           title: { text: "Probabilidade Predita" },
-          gridcolor: "#2a2d31",
-          zerolinecolor: "#2a2d31",
+          gridcolor: "#bfc9c4",
+          zerolinecolor: "#bfc9c4",
         },
         yaxis2: {
           anchor: "x2",
           title: { text: "Frequência" },
-          gridcolor: "#2a2d31",
-          zerolinecolor: "#2a2d31",
+          gridcolor: "#bfc9c4",
+          zerolinecolor: "#bfc9c4",
         },
       }}
       config={{ responsive: true }}

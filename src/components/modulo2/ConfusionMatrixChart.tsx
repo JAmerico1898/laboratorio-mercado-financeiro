@@ -3,9 +3,9 @@ import dynamic from "next/dynamic";
 const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
 
 const DARK_LAYOUT = {
-  paper_bgcolor: "#191c1f",
-  plot_bgcolor: "#191c1f",
-  font: { color: "#e1e2e7" },
+  paper_bgcolor: "#ffffff",
+  plot_bgcolor: "#ffffff",
+  font: { color: "#191c1d" },
   margin: { l: 60, r: 30, t: 50, b: 50 },
 };
 
@@ -45,7 +45,7 @@ export default function ConfusionMatrixChart({
         x: xLabels[j],
         y: yLabels[i],
         text: String(z[i][j]),
-        font: { color: z[i][j] > (tp + tn + fp + fn) / 4 ? "#111417" : "#e1e2e7", size: 20 },
+        font: { color: z[i][j] > (tp + tn + fp + fn) / 4 ? "#ffffff" : "#191c1d", size: 20 },
         showarrow: false,
       });
     }
@@ -65,7 +65,7 @@ export default function ConfusionMatrixChart({
       ]}
       layout={{
         ...DARK_LAYOUT,
-        title: { text: title, font: { color: "#e1e2e7", size: 14 } },
+        title: { text: title, font: { color: "#191c1d", size: 14 } },
         annotations,
         xaxis: { side: "bottom" as const, automargin: true },
         yaxis: { autorange: "reversed" as const, automargin: true },

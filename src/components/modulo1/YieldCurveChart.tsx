@@ -29,7 +29,7 @@ export default function YieldCurveChart({
           y: yObserved,
           type: "scatter" as const,
           mode: "markers" as const,
-          marker: { color: "royalblue", size: 8 },
+          marker: { color: "#00314a", size: 8 },
           name: "Taxas Observadas",
         },
         {
@@ -37,31 +37,31 @@ export default function YieldCurveChart({
           y: ySmooth,
           type: "scatter" as const,
           mode: "lines" as const,
-          line: { color: "crimson", width: 3 },
+          line: { color: "#006b5f", width: 3 },
           name: methodLabel,
         },
       ]}
       layout={{
         title: {
           text: `ETTJ — ${methodLabel} — ${date}`,
-          font: { color: "#e1e2e7" },
+          font: { color: "#191c1d" },
           y: 0.97,
           yref: "container" as const,
           yanchor: "top" as const,
         },
-        paper_bgcolor: "#191c1f",
-        plot_bgcolor: "#191c1f",
-        font: { color: "#e1e2e7" },
+        paper_bgcolor: "#ffffff",
+        plot_bgcolor: "#ffffff",
+        font: { color: "#191c1d" },
         height: 500,
         hovermode: "closest" as const,
         xaxis: {
           title: { text: "Dias Úteis até o Vencimento" },
-          gridcolor: "#3a494b",
+          gridcolor: "#bfc9c4",
         },
         yaxis: {
           title: { text: "Taxa de Juros (%)" },
           hoverformat: ".4f",
-          gridcolor: "#3a494b",
+          gridcolor: "#bfc9c4",
         },
         legend: {
           orientation: "h" as const,

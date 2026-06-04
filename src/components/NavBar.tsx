@@ -19,7 +19,7 @@ export default function NavBar() {
     <nav className="relative w-full flex items-center justify-between px-6 py-8 max-w-7xl mx-auto">
       <Link
         href="/"
-        className="flex items-center gap-3 text-xl font-bold tracking-tighter text-slate-100 font-headline"
+        className="flex items-center gap-3 text-xl font-bold tracking-tighter text-primary font-headline"
       >
         <Image
           src="/logo/finlab-logo-white.jpg"
@@ -38,7 +38,7 @@ export default function NavBar() {
           <li key={link.href}>
             <Link
               href={link.href}
-              className="text-sm font-medium text-slate-300 hover:text-primary transition-colors"
+              className="text-sm font-medium text-slate-600 hover:text-primary transition-colors"
             >
               {link.label}
             </Link>
@@ -48,7 +48,7 @@ export default function NavBar() {
 
       {/* Mobile hamburger */}
       <button
-        className="md:hidden text-slate-300"
+        className="md:hidden text-slate-600"
         onClick={() => setOpen(!open)}
         aria-label={open ? "Fechar menu" : "Abrir menu"}
       >
@@ -65,7 +65,7 @@ export default function NavBar() {
               <li key={link.href}>
                 <Link
                   href={link.href}
-                  className="text-sm font-medium text-slate-300 hover:text-primary transition-colors block py-1"
+                  className="text-sm font-medium text-slate-600 hover:text-primary transition-colors block py-1"
                   onClick={() => setOpen(false)}
                 >
                   {link.label}

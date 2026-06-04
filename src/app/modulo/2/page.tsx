@@ -241,7 +241,7 @@ export default function Module2Page() {
       <OpeningHero onStartAnalysis={handleStartAnalysis} />
 
       {analysisStarted && (
-        <>
+        <div data-theme="light">
           <div ref={setupRef}>
             <ControlBar
               features={FEATURES}
@@ -269,7 +269,7 @@ export default function Module2Page() {
               productionData={productionTrueData}
             />
           )}
-        </>
+        </div>
       )}
     </div>
   );

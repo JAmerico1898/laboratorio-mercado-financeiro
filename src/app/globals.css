@@ -1,6 +1,149 @@
 @import "tailwindcss";
 
-@theme inline {
+/* ──────────────────────────────────────────────────────────────────────────
+   Tema PADRÃO = CLARO (Material Design 3, espelha laboratorio-derivativos).
+   As faixas de hero e os Módulos 3–6 (desenhados em escuro) usam o escopo
+   [data-theme="dark"] abaixo para permanecerem escuros.
+   ────────────────────────────────────────────────────────────────────────── */
+@theme {
+  --color-background: #f8f9fa;
+  --color-surface: #f8f9fa;
+  --color-surface-dim: #d9dadb;
+  --color-surface-bright: #f8f9fa;
+  --color-surface-variant: #e1e3e4;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f3f4f5;
+  --color-surface-container: #edeeef;
+  --color-surface-container-high: #e7e8e9;
+  --color-surface-container-highest: #e1e3e4;
+  --color-surface-tint: #346383;
+
+  --color-on-surface: #191c1d;
+  --color-on-surface-variant: #3f4945;
+  --color-on-background: #191c1d;
+  --color-outline: #707975;
+  --color-outline-variant: #bfc9c4;
+
+  --color-primary: #00314a;
+  --color-primary-container: #134866;
+  --color-on-primary: #ffffff;
+  --color-on-primary-container: #89b6d9;
+  --color-primary-fixed: #cae6ff;
+  --color-primary-fixed-dim: #9eccf0;
+  --color-on-primary-fixed: #001e2f;
+  --color-on-primary-fixed-variant: #184b6a;
+
+  --color-secondary: #006b5f;
+  --color-secondary-container: #8df5e4;
+  --color-on-secondary: #ffffff;
+  --color-on-secondary-container: #007165;
+  --color-secondary-fixed: #8df5e4;
+  --color-secondary-fixed-dim: #70d8c8;
+  --color-on-secondary-fixed: #00201c;
+  --color-on-secondary-fixed-variant: #005048;
+
+  --color-tertiary: #003608;
+  --color-tertiary-container: #004f11;
+  --color-on-tertiary: #ffffff;
+  --color-on-tertiary-container: #72c26e;
+  --color-tertiary-fixed: #a3f69c;
+  --color-tertiary-fixed-dim: #88d982;
+  --color-on-tertiary-fixed: #002204;
+  --color-on-tertiary-fixed-variant: #005312;
+
+  --color-inverse-surface: #2e3132;
+  --color-inverse-on-surface: #f0f1f2;
+  --color-inverse-primary: #9eccf0;
+
+  --color-error: #ba1a1a;
+  --color-error-container: #ffdad6;
+  --color-on-error: #ffffff;
+  --color-on-error-container: #93000a;
+
+  --font-headline: var(--font-manrope), "Manrope", sans-serif;
+  --font-body: var(--font-inter), "Inter", sans-serif;
+  --font-label: var(--font-inter), "Inter", sans-serif;
+}
+
+html,
+body {
+  background-color: #f8f9fa;
+  color: #191c1d;
+  overflow-x: hidden;
+}
+
+.material-symbols-outlined {
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+}
+
+.glass-panel {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.cyber-river {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(17, 20, 23, 0.8) 0%,
+      rgba(0, 242, 255, 0.05) 50%,
+      rgba(17, 20, 23, 0.8) 100%
+    ),
+    #111417;
+  position: relative;
+  overflow: hidden;
+}
+
+.cyber-river::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background-image: radial-gradient(
+    circle at center,
+    rgba(0, 242, 255, 0.1) 0%,
+    transparent 70%
+  );
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.gradient-text {
+  background: linear-gradient(to bottom right, #00314a, #006b5f);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+@keyframes hero-drift {
+  0% {
+    transform: scale(1) translate(0, 0);
+  }
+  33% {
+    transform: scale(1.08) translate(-1.5%, -1%);
+  }
+  66% {
+    transform: scale(1.05) translate(1%, -0.5%);
+  }
+  100% {
+    transform: scale(1) translate(0, 0);
+  }
+}
+
+.animate-hero-drift {
+  animation: hero-drift 25s ease-in-out infinite;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Escopo ESCURO — faixas de hero (landing, M1, M2) e Módulos 3–6.
+   Redeclara os tokens; a cor de texto padrão é clara. NÃO seta background
+   diretamente no seletor para não sobrepor classes de bg do elemento
+   (ex.: .cyber-river). Cada raiz escura recebe `bg-surface` no JSX.
+   ────────────────────────────────────────────────────────────────────────── */
+[data-theme="dark"] {
   --color-primary-container: #00f2ff;
   --color-surface-container-low: #191c1f;
   --color-on-secondary-fixed: #002113;
@@ -49,77 +192,88 @@
   --color-inverse-primary: #00696f;
   --color-surface-container-highest: #323539;
 
-  --font-headline: "Manrope", sans-serif;
-  --font-body: "Manrope", sans-serif;
-  --font-label: "Manrope", sans-serif;
-}
+  --font-body: var(--font-manrope), "Manrope", sans-serif;
+  --font-label: var(--font-manrope), "Manrope", sans-serif;
 
-html,
-body {
-  background-color: #111417;
   color: #e1e2e7;
-  overflow-x: hidden;
+  color-scheme: dark;
+  font-family: var(--font-manrope), "Manrope", sans-serif;
 }
 
-.material-symbols-outlined {
-  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
-}
-
-.glass-panel {
+[data-theme="dark"] .glass-panel {
   background: rgba(29, 32, 35, 0.6);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
 }
 
-.cyber-river {
-  background: linear-gradient(
-    135deg,
-    rgba(17, 20, 23, 0.8) 0%,
-    rgba(0, 242, 255, 0.05) 50%,
-    rgba(17, 20, 23, 0.8) 100%
-  );
-  position: relative;
-  overflow: hidden;
-}
-
-.cyber-river::before {
-  content: "";
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background-image: radial-gradient(
-    circle at center,
-    rgba(0, 242, 255, 0.1) 0%,
-    transparent 70%
-  );
-  opacity: 0.4;
-  pointer-events: none;
-}
-
-.gradient-text {
+[data-theme="dark"] .gradient-text {
   background: linear-gradient(to bottom right, #e1fdff, #00f2ff);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-@keyframes hero-drift {
-  0% {
-    transform: scale(1) translate(0, 0);
-  }
-  33% {
-    transform: scale(1.08) translate(-1.5%, -1%);
-  }
-  66% {
-    transform: scale(1.05) translate(1%, -0.5%);
-  }
-  100% {
-    transform: scale(1) translate(0, 0);
-  }
+/* ──────────────────────────────────────────────────────────────────────────
+   Escopo CLARO explícito — para ilhas claras aninhadas dentro de seções
+   escuras, se necessário (redundante com o padrão claro acima).
+   ────────────────────────────────────────────────────────────────────────── */
+[data-theme="light"] {
+  --color-background: #f8f9fa;
+  --color-surface: #f8f9fa;
+  --color-surface-dim: #d9dadb;
+  --color-surface-bright: #f8f9fa;
+  --color-surface-variant: #e1e3e4;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f3f4f5;
+  --color-surface-container: #edeeef;
+  --color-surface-container-high: #e7e8e9;
+  --color-surface-container-highest: #e1e3e4;
+  --color-surface-tint: #346383;
+  --color-on-surface: #191c1d;
+  --color-on-surface-variant: #3f4945;
+  --color-on-background: #191c1d;
+  --color-outline: #707975;
+  --color-outline-variant: #bfc9c4;
+  --color-primary: #00314a;
+  --color-primary-container: #134866;
+  --color-on-primary: #ffffff;
+  --color-on-primary-container: #89b6d9;
+  --color-secondary: #006b5f;
+  --color-secondary-container: #8df5e4;
+  --color-on-secondary: #ffffff;
+  --color-on-secondary-container: #007165;
+  --color-secondary-fixed: #8df5e4;
+  --color-secondary-fixed-dim: #70d8c8;
+  --color-tertiary: #003608;
+  --color-tertiary-container: #004f11;
+  --color-on-tertiary: #ffffff;
+  --color-on-tertiary-container: #72c26e;
+  --color-inverse-surface: #2e3132;
+  --color-inverse-on-surface: #f0f1f2;
+  --color-inverse-primary: #9eccf0;
+  --color-error: #ba1a1a;
+  --color-error-container: #ffdad6;
+  --color-on-error: #ffffff;
+  --color-on-error-container: #93000a;
+
+  --font-body: var(--font-inter), "Inter", sans-serif;
+  --font-label: var(--font-inter), "Inter", sans-serif;
+
+  background: #f8f9fa;
+  color: #191c1d;
+  color-scheme: light;
+  font-family: var(--font-inter), "Inter", sans-serif;
 }
 
-.animate-hero-drift {
-  animation: hero-drift 25s ease-in-out infinite;
+[data-theme="light"] .glass-panel {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+[data-theme="light"] .gradient-text {
+  background: linear-gradient(to bottom right, #00314a, #006b5f);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }

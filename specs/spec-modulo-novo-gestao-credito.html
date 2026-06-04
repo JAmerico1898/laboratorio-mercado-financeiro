@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Especificação — Módulo Gestão de Crédito (S8) · Laboratório de Tesouraria de Empresas</title>
+<style>
+  :root{
+    --bg:#f6f7f8; --card:#ffffff; --border:#e3e7ea; --radius:15px;
+    --navy:#103049; --teal:#1c8c6b; --teal-dark:#176f55;
+    --keyfact:#eaf3ee; --ok-bg:#e9f6ef; --ok-border:#bfe6d2;
+    --current:#dcebf8; --risk:#b23a2e; --rust:#c2592e;
+    --ink:#1f2a30; --muted:#5b6b73; --code-bg:#0f2230; --code-ink:#d6e6f2;
+    --mint:#d8f0e4;
+    --serif:Georgia,"Iowan Old Style","Times New Roman",serif;
+    --sans:"Segoe UI",-apple-system,"Helvetica Neue",Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+    font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:980px;margin:0 auto;padding:0 22px 120px}
+  header.top{background:var(--navy);color:#fff;padding:46px 22px 38px;margin-bottom:34px}
+  header.top .inner{max-width:980px;margin:0 auto}
+  header.top .eyebrow{font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+    color:#9ec7e0;font-weight:700;margin-bottom:14px}
+  header.top h1{font-family:var(--serif);font-size:38px;line-height:1.12;margin:0 0 12px;font-weight:700}
+  header.top p{margin:0;color:#cfe0ec;max-width:760px;font-size:16px}
+  header.top .meta{margin-top:20px;display:flex;flex-wrap:wrap;gap:10px}
+  header.top .meta span{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);
+    padding:6px 12px;border-radius:999px;font-size:13px}
+  h2{font-family:var(--serif);font-size:26px;color:var(--navy);margin:48px 0 6px;
+    padding-bottom:8px;border-bottom:2px solid var(--border)}
+  h2 .num{color:var(--teal);font-size:18px;font-weight:700;font-family:var(--sans)}
+  h3{font-family:var(--serif);font-size:20px;color:var(--navy);margin:30px 0 8px}
+  h4{font-size:15px;color:var(--teal-dark);margin:22px 0 6px;letter-spacing:.02em;
+    text-transform:uppercase;font-weight:700}
+  p{margin:10px 0}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  strong{color:var(--navy)}
+  em{color:var(--teal-dark);font-style:italic}
+  a{color:var(--teal-dark)}
+  .lead{font-size:17px;color:#33424a}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+    padding:22px 24px;margin:16px 0}
+  .toc{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+    padding:18px 22px;margin:6px 0 10px}
+  .toc ol{columns:2;column-gap:34px;margin:6px 0 0;padding-left:20px}
+  .toc a{text-decoration:none}
+  .toc a:hover{text-decoration:underline}
+  code{background:#eef1f3;border:1px solid #e0e5e8;border-radius:5px;padding:1px 6px;
+    font-family:"SF Mono",Menlo,Consolas,monospace;font-size:13.5px;color:#0c3b54}
+  pre{background:var(--code-bg);color:var(--code-ink);border-radius:12px;padding:18px 20px;
+    overflow:auto;font-family:"SF Mono",Menlo,Consolas,monospace;font-size:13px;line-height:1.65}
+  pre code{background:none;border:none;color:inherit;padding:0}
+  .pill{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.08em;
+    text-transform:uppercase;padding:4px 11px;border-radius:999px}
+  .pill.inter{background:var(--mint);color:var(--teal-dark)}
+  .pill.avanc{background:var(--navy);color:#fff}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14.5px;background:#fff;
+    border:1px solid var(--border);border-radius:10px;overflow:hidden}
+  th,td{text-align:left;padding:10px 13px;border-bottom:1px solid var(--border);vertical-align:top}
+  th{background:#f0f3f5;color:var(--navy);font-weight:700;font-size:12.5px;
+    letter-spacing:.04em;text-transform:uppercase}
+  tr:last-child td{border-bottom:none}
+  .keyfacts{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:11px;margin:14px 0}
+  .kf{background:var(--keyfact);border:1px solid #d3e6da;border-radius:12px;padding:13px 15px}
+  .kf .lbl{font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:#5c7a6c;font-weight:700}
+  .kf .val{font-size:17px;font-weight:800;color:var(--navy);margin-top:3px}
+  .kf.warn .val{color:var(--rust)}
+  .opt{border:1px solid var(--border);border-radius:12px;padding:12px 15px;margin:9px 0;background:#fff}
+  .opt.correct{border-color:var(--ok-border);background:var(--ok-bg)}
+  .opt .otext{font-weight:600;color:var(--navy)}
+  .opt .mem{margin-top:7px;font-size:14px;color:#3a4850}
+  .opt.correct .badge{color:var(--teal-dark);font-weight:800}
+  .opt.err .badge{color:var(--risk);font-weight:800}
+  .branch{border:1px solid var(--border);border-radius:12px;padding:15px 18px;margin:11px 0;background:#fff}
+  .branch h5{margin:0 0 4px;font-size:16px;color:var(--navy);font-family:var(--serif)}
+  .deltas{display:flex;flex-wrap:wrap;gap:8px;margin:9px 0}
+  .delta{font-size:12.5px;font-weight:700;padding:5px 11px;border-radius:8px}
+  .delta.pos{background:#e9f6ef;color:var(--teal-dark)}
+  .delta.neg{background:#fbeeec;color:var(--risk)}
+  .delta.neu{background:#eef1f3;color:#44525a}
+  .delta.risk{background:#fbeeec;color:var(--risk);border:1px dashed #e3b4ac}
+  .note{background:#fff8f0;border:1px solid #f0ddc2;border-left:4px solid var(--rust);
+    border-radius:10px;padding:12px 16px;margin:12px 0;font-size:14.5px}
+  .note strong{color:var(--rust)}
+  .formula{background:#eef5f1;border:1px solid #cfe6da;border-radius:12px;padding:14px 18px;margin:14px 0;
+    font-size:16px;color:var(--navy)}
+  .formula b{color:var(--teal-dark)}
+  .scenario-head{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+    padding:20px 24px;margin:18px 0 6px;border-top:5px solid var(--teal)}
+  .scenario-head.adv{border-top-color:var(--navy)}
+  .scenario-head .code{font-size:12px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--muted);font-weight:700}
+  .scenario-head h3{margin:6px 0 8px}
+  .qkey{background:#eef5f1;border-radius:8px;padding:8px 13px;font-size:14px;margin:8px 0;
+    border:1px solid #d7e8df}
+  .boxlabel{display:inline-block;background:#eef1f3;border:1px solid #dde3e7;border-radius:7px;
+    padding:3px 10px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;
+    color:#44525a;margin-bottom:6px}
+  .swatch{display:inline-flex;align-items:center;gap:8px;margin:4px 12px 4px 0;font-size:13px}
+  .swatch i{width:20px;height:20px;border-radius:5px;border:1px solid rgba(0,0,0,.1);display:inline-block}
+  .etapa-tag{display:inline-block;background:var(--navy);color:#fff;font-size:11px;font-weight:800;
+    border-radius:6px;padding:3px 9px;letter-spacing:.05em;margin-right:8px}
+  .small{font-size:13.5px;color:var(--muted)}
+  hr.soft{border:none;border-top:1px solid var(--border);margin:30px 0}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="inner">
+    <div class="eyebrow">Especificação técnica · Para construção via Claude Code</div>
+    <h1>Módulo S8 — Gestão de Crédito</h1>
+    <p>Novo módulo do <strong style="color:#fff">Laboratório de Tesouraria de Empresas</strong>: quatro cenários sobre <em style="color:#bfe6d2">gestão de carteira de crédito bancária</em>, no mesmo padrão dos módulos S6/S7 e do cenário-referência “Indústria Alfa”. Todos os casos rodam sobre um único motor — <strong style="color:#fff">perda esperada PE = PD × LGD × EAD</strong>. O aluno escolhe opções, o app valida e mostra a memória de cálculo; tudo que resolve a etapa está em KeyFacts; o volumoso (dados da operação, cenários, carteiras) fica numa caixa ocultável.</p>
+    <div class="meta">
+      <span>4 cenários · S8.1 a S8.4</span>
+      <span>Pontuação /85</span>
+      <span>Next.js (App Router) + TypeScript</span>
+      <span>Renderização data-driven (<code style="color:#cfe0ec;background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.2)">scenarios-s8.ts</code>)</span>
+      <span>Idioma pt-BR</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+<div class="toc">
+  <strong style="color:var(--navy)">Sumário</strong>
+  <ol>
+    <li><a href="#visao">Visão geral do módulo</a></li>
+    <li><a href="#motor">Motor único, premissas e diferenças vs. S6/S7</a></li>
+    <li><a href="#ia">Arquitetura de informação e rotas</a></li>
+    <li><a href="#estados">Máquina de estados</a></li>
+    <li><a href="#componentes">Componentes de UI</a></li>
+    <li><a href="#modelo">Modelo de dados (TypeScript)</a></li>
+    <li><a href="#pontuacao">Pontuação e persistência</a></li>
+    <li><a href="#design">Sistema de design (tokens)</a></li>
+    <li><a href="#convencoes">Convenções de conteúdo</a></li>
+    <li><a href="#qa">Checklist de QA</a></li>
+    <li><a href="#s81">S8.1 — Crédito Alfa · alto × baixo risco (template canônico)</a></li>
+    <li><a href="#s82">S8.2 — Comitê de Crédito · cenários e apetite</a></li>
+    <li><a href="#s83">S8.3 — Banco Recesso · recessão na carteira</a></li>
+    <li><a href="#s84">S8.4 — Carteira Espelho · concentração</a></li>
+    <li><a href="#anexo">Anexo — exemplo de <code>scenarios-s8.ts</code></a></li>
+  </ol>
+</div>
+
+<!-- ============================ 1 ============================ -->
+<h2 id="visao"><span class="num">1.</span> Visão geral do módulo</h2>
+<p class="lead">O módulo <strong>Gestão de Crédito</strong> cobre o ciclo da carteira de crédito por quatro lentes. Os casos isolam, um a um: diferenciação de risco no nível do empréstimo, definição de apetite a partir do cenário macro, controle de dano na recessão e o risco de concentração no nível do portfólio.</p>
+
+<table>
+  <thead><tr><th>Código</th><th>Protagonista fictício</th><th>Tema</th><th>Eixo isolado</th><th>Dificuldade</th><th>Tempo</th></tr></thead>
+  <tbody>
+    <tr><td><strong>S8.1</strong></td><td>Crédito Alfa</td><td>Diferenciação de risco</td><td>Perda esperada por empréstimo: preço × gestão</td><td><span class="pill inter">Intermediário</span></td><td>20 min</td></tr>
+    <tr><td><strong>S8.2</strong></td><td>Comitê de Crédito</td><td>Apetite de risco</td><td>Visão <em>forward</em>: cenário macro define quanto originar</td><td><span class="pill avanc">Avançado</span></td><td>24 min</td></tr>
+    <tr><td><strong>S8.3</strong></td><td>Banco Recesso</td><td>Recessão</td><td>Stress realizado: provisão e <em>damage control</em></td><td><span class="pill inter">Intermediário</span></td><td>22 min</td></tr>
+    <tr><td><strong>S8.4</strong></td><td>Carteira Espelho</td><td>Concentração</td><td>Portfólio: perda <em>inesperada</em> que a PE ignora</td><td><span class="pill avanc">Avançado</span></td><td>24 min</td></tr>
+  </tbody>
+</table>
+
+<p>Duas amarrações pedagógicas a manter no texto: <strong>S8.1 ↔ S8.4</strong> (a perda esperada média vs. o que ela esconde — a cauda/concentração) e <strong>S8.2 → S8.3</strong> (definir apetite <em>antes</em>, controlar o dano <em>durante</em>).</p>
+
+<!-- ============================ 2 ============================ -->
+<h2 id="motor"><span class="num">2.</span> Motor único, premissas e diferenças vs. S6/S7</h2>
+<p>Os quatro cenários compartilham uma única fórmula de perda esperada:</p>
+<div class="formula"><b>PE = PD × LGD × EAD</b> &nbsp;—&nbsp; perda esperada = probabilidade de inadimplência (PD) × perda dado o default (LGD) × exposição no momento do default (EAD).</div>
+<p class="small"><strong>Glossário (introduzir no contexto/KeyFacts, não em chip):</strong> PD = probabilidade de default · LGD = <em>loss given default</em> (perda dado o default; colateral reduz a LGD) · EAD = <em>exposure at default</em> · PE = perda esperada · NPL = crédito inadimplente (90+ dias) · cobertura = provisão ÷ NPL.</p>
+
+<p>Diferenças explícitas em relação aos módulos anteriores:</p>
+<ol>
+  <li><strong>Sem chip global.</strong> Diferente do S6 (chip de regra IB ≥ 10,5%), o S8 <u>não tem faixa fixa no topo</u>. A fórmula e os termos são apresentados no <em>contexto</em> e nos <em>KeyFacts</em> de cada cenário. <em>Não implementar <code>GlobalRuleChip</code>.</em></li>
+  <li><strong>Caixa ocultável com rótulo adaptável por cenário</strong> (campo <code>detailBoxLabel</code>): “DADOS DA OPERAÇÃO” (S8.1), “CENÁRIOS MACRO” (S8.2), “CARTEIRA E PROVISÕES” (S8.3), “COMPARATIVO DE CARTEIRAS” (S8.4).</li>
+</ol>
+
+<div class="note"><strong>Rigor normativo:</strong> o provisionamento por perda esperada segue o espírito da <strong>Res. CMN 4.966</strong> (vigente desde jan/2025, substituiu a 2.682), incluindo a lógica de estágios e de aumento significativo de risco de crédito. Os <em>dispositivos específicos</em> (estágios 1/2/3, gatilhos) devem ser marcados “verificar” antes de publicar. PD, LGD, CDI e taxas de inadimplência são premissas de aula.</div>
+
+<!-- ============================ 3 ============================ -->
+<h2 id="ia"><span class="num">3.</span> Arquitetura de informação e rotas</h2>
+<pre><code>app/
+ └─ modulo-8/
+     ├─ page.tsx            // grade de cenários (cards S8.1–S8.4)
+     └─ [scenarioId]/
+         └─ page.tsx        // jornada de um cenário (máquina de estados)
+data/
+ └─ scenarios-s8.ts         // conteúdo tipado dos 4 cenários (fonte única)
+components/                  // reaproveitar os componentes existentes do app</code></pre>
+<ul>
+  <li><code>scenarioId</code> = <code>"s8-1" | "s8-2" | "s8-3" | "s8-4"</code>.</li>
+  <li><strong>Nenhum texto hard-coded</strong> em componente — tudo vem de <code>scenarios-s8.ts</code>.</li>
+  <li>Card do módulo na home: ícone sugerido (documento/contrato ou gráfico de risco), título <strong>“Gestão de Crédito”</strong>, descrição: “Perda esperada, apetite de risco por cenário, recessão na carteira e concentração — gestão de crédito do empréstimo ao portfólio.”, progresso <code>0/4 concluídos</code>.</li>
+</ul>
+
+<!-- ============================ 4 ============================ -->
+<h2 id="estados"><span class="num">4.</span> Máquina de estados (jornada do cenário)</h2>
+<pre><code>card → contexto → etapas (3, sequenciais) → encruzilhada → resultado(caminho) → reflexão → conclusão</code></pre>
+<ol>
+  <li><strong>contexto</strong> — narrativa com termos destacados + KeyFacts + caixa ocultável (rótulo do cenário).</li>
+  <li><strong>etapas</strong> — 3 múltiplas escolhas com <strong>revelação progressiva</strong>: a Etapa N+1 só abre após acerto da N. Cada opção exibe memória de cálculo (verde se certa, vermelha se errada). Erro não pontua e permite nova tentativa. Pontua na <strong>1ª seleção correta</strong>.</li>
+  <li><strong>encruzilhada</strong> — 3 cards de decisão (A/B/C); <em>não há “certo”</em>. 0 pontos.</li>
+  <li><strong>resultado(caminho)</strong> — headline + caption + tiles de variação (deltas) + explicação do trade-off.</li>
+  <li><strong>reflexão</strong> — 1 MC sobre o risco residual (25 pts).</li>
+  <li><strong>conclusão</strong> — “PONTUAÇÃO FINAL X / 85” + “Tentar outro cenário” / “Finalizar e voltar”.</li>
+</ol>
+<p class="small">Barra de progresso = 3 etapas. Transição 0/85 → 60/85 → 85/85.</p>
+
+<!-- ============================ 5 ============================ -->
+<h2 id="componentes"><span class="num">5.</span> Componentes de UI</h2>
+<p>Reaproveitar os componentes do S6/S7, com duas notas: <strong>sem <code>GlobalRuleChip</code></strong>, e o <code>DetailBox</code> usa o <strong>rótulo do campo <code>detailBoxLabel</code></strong> do cenário.</p>
+<table>
+  <thead><tr><th>Componente</th><th>Função</th></tr></thead>
+  <tbody>
+    <tr><td><code>ScoreHeader</code></td><td>“← Início”, “PONTUAÇÃO”, contador <code>score/85</code> com mini-barra.</td></tr>
+    <tr><td><code>Breadcrumb</code></td><td><code>código · protagonista · &lt;pílula dificuldade&gt;</code>.</td></tr>
+    <tr><td><code>ProgressBar</code></td><td>3 segmentos; ativo em rust <code>#c2592e</code>.</td></tr>
+    <tr><td><code>ContextPanel</code></td><td>Box CONTEXTO: narrativa + grade de KeyFacts + <code>DetailBox</code>.</td></tr>
+    <tr><td><code>KeyFactTile</code></td><td>Tile verde-claro: label + valor. Tom <code>warning</code> em rust.</td></tr>
+    <tr><td><code>DetailBox</code></td><td>Box ocultável com botão “+”; <strong>título dinâmico</strong> = <code>scenario.detailBoxLabel</code>. Contém tabelas.</td></tr>
+    <tr><td><code>EtapaBlock</code> / <code>OptionButton</code> / <code>FeedbackBox</code></td><td>Idênticos: etapa com 4 opções; estados neutro/atual(azul)/correta(verde)/errada(vermelha); memória sempre com a conta.</td></tr>
+    <tr><td><code>Encruzilhada</code> / <code>BranchCard</code> / <code>ResultadoPanel</code> / <code>DeltaTile</code></td><td>Idênticos: 3 caminhos divergentes com deltas e trade-off.</td></tr>
+    <tr><td><code>ReflexaoBlock</code> / <code>Conclusao</code></td><td>Idênticos: reflexão (25 pts) e tela final.</td></tr>
+  </tbody>
+</table>
+
+<!-- ============================ 6 ============================ -->
+<h2 id="modelo"><span class="num">6.</span> Modelo de dados (TypeScript)</h2>
+<p>Mesmos tipos do S7, com o acréscimo de <code>detailBoxLabel</code> (rótulo adaptável da caixa ocultável).</p>
+<pre><code>interface KeyFact { label: string; value: string; tone?: "default" | "positive" | "warning"; }
+
+interface DetailTable {
+  id: string; title: string; columns: string[];
+  rows: { label: string; values: string[]; emphasis?: boolean }[];
+  note?: string;
+}
+
+interface Option { id: string; text: string; correct: boolean; feedback: string; } // feedback = memória de cálculo
+interface Etapa { id: string; label: string; prompt: string; options: Option[]; points: number; } // 4 opções, 1 correta, 20 pts
+interface DeltaMetric { label: string; value: string; tone: "positive" | "negative" | "neutral" | "risk"; }
+interface Resultado { headline: string; caption: string; metrics: DeltaMetric[]; explanation: string; }
+interface Branch { id: "A" | "B" | "C"; title: string; summary: string; resultado: Resultado; }
+interface Reflexao { prompt: string; options: Option[]; points: number; } // 25
+
+interface Scenario {
+  id: string; code: string; order: number;
+  title: string; protagonist: string;
+  difficulty: "intermediario" | "avancado"; estMinutes: number;
+  blurb: string; archetype: string; context: string;
+  keyFacts: KeyFact[];
+  detailBoxLabel: string;                     // rótulo adaptável: "Dados da operação", "Cenários macro"...
+  details: DetailTable[];
+  etapas: Etapa[];                            // 3
+  encruzilhada: { prompt: string; branches: Branch[] };
+  reflexao: Reflexao;
+  maxScore: number;                           // 85
+}</code></pre>
+
+<!-- ============================ 7 ============================ -->
+<h2 id="pontuacao"><span class="num">7.</span> Pontuação e persistência</h2>
+<ul>
+  <li><strong>3 etapas × 20 + reflexão 25 = 85.</strong> Encruzilhada = decisão (0 pts).</li>
+  <li>Pontua na <strong>1ª seleção correta</strong>; erros não descontam nem readicionam.</li>
+  <li>Estado por cenário: <code>{ phase, currentEtapaIndex, answers, chosenBranch, score, completed }</code>; <code>localStorage</code> por <code>scenarioId</code>.</li>
+  <li>Progresso do módulo (<code>x/4 concluídos</code>) deriva de <code>completed</code>.</li>
+</ul>
+
+<!-- ============================ 8 ============================ -->
+<h2 id="design"><span class="num">8.</span> Sistema de design (tokens)</h2>
+<div class="card">
+  <div class="swatch"><i style="background:#f6f7f8"></i> Fundo <code>#f6f7f8</code></div>
+  <div class="swatch"><i style="background:#103049"></i> Navy <code>#103049</code></div>
+  <div class="swatch"><i style="background:#1c8c6b"></i> Teal <code>#1c8c6b</code></div>
+  <div class="swatch"><i style="background:#eaf3ee"></i> KeyFact <code>#eaf3ee</code></div>
+  <div class="swatch"><i style="background:#e9f6ef;border-color:#bfe6d2"></i> Feedback correto <code>#e9f6ef</code>/<code>#bfe6d2</code></div>
+  <div class="swatch"><i style="background:#dcebf8"></i> Resposta atual <code>#dcebf8</code></div>
+  <div class="swatch"><i style="background:#b23a2e"></i> Risco/negativo <code>#b23a2e</code></div>
+  <div class="swatch"><i style="background:#c2592e"></i> Progresso (rust) <code>#c2592e</code></div>
+</div>
+<ul>
+  <li>Cards brancos, borda <code>#e3e7ea</code>, raio 14–16px. Badge INTERMEDIÁRIO = pílula verde-menta; AVANÇADO = pílula navy.</li>
+  <li>Display serifado nos títulos; sans humanista no corpo; números em peso forte.</li>
+</ul>
+
+<!-- ============================ 9 ============================ -->
+<h2 id="convencoes"><span class="num">9.</span> Convenções de conteúdo</h2>
+<ul>
+  <li><strong>Autossuficiência:</strong> tudo que resolve as etapas está nos KeyFacts; tabelas volumosas vão na caixa ocultável (rótulo do cenário).</li>
+  <li><strong>Memória de cálculo SEMPRE com a conta</strong> (fórmula + números). No acerto, reforça o conceito; no erro, aponta o equívoco específico. Cada opção incorreta tem sua memória de erro.</li>
+  <li><strong>Padrão E1 → E2 → E3:</strong> E1 = leitura/medida; E2 = mecanismo; E3 = cálculo-síntese.</li>
+  <li><strong>Unidades:</strong> S8.1 no nível do empréstimo usa <code>R$ mil</code>; S8.2–S8.4 no nível de portfólio usam <code>R$ mi</code>. Deixar a unidade explícita em cada KeyFact/tabela.</li>
+  <li>Introduzir PD/LGD/EAD/PE/NPL no contexto na primeira aparição (sem chip de glossário fixo).</li>
+</ul>
+
+<!-- ============================ 10 ============================ -->
+<h2 id="qa"><span class="num">10.</span> Checklist de QA</h2>
+<ul>
+  <li>Os KeyFacts bastam para resolver as etapas? O resto está na caixa ocultável?</li>
+  <li>Cada etapa tem 4 opções plausíveis, 1 correta e memória com a conta (inclusive nas erradas)?</li>
+  <li>Os 3 caminhos da encruzilhada divergem (deltas e trade-offs distintos)?</li>
+  <li>A pontuação soma 85 (3×20 + 25)? Transição 0 → 60 → 85 confere?</li>
+  <li><strong>Sem</strong> <code>GlobalRuleChip</code>? <code>DetailBox</code> usando o <code>detailBoxLabel</code> de cada cenário?</li>
+  <li>PE = PD × LGD × EAD consistente em todos os cálculos? Unidades (mil/mi) corretas por cenário?</li>
+  <li>Specs de provisionamento (4.966/estágios) marcadas “verificar”?</li>
+  <li>Progressão/mix de dificuldade (S8.1/S8.3 intermediário, S8.2/S8.4 avançado)?</li>
+</ul>
+
+<hr class="soft">
+
+<!-- ============================ S8.1 ============================ -->
+<h2 id="s81"><span class="num">11.</span> Cenário S8.1 — Crédito Alfa <span class="pill inter" style="vertical-align:middle">Intermediário · template canônico</span></h2>
+<p class="small">Template canônico: 4 opções por etapa e memória de erro de cada incorreta. S8.2–S8.4 seguem a mesma estrutura.</p>
+
+<div class="scenario-head">
+  <div class="code">S8.1 · Crédito Alfa · Intermediário · 20 min</div>
+  <h3>Alto risco × baixo risco: preço e gestão diferenciados</h3>
+  <p><strong>Blurb (card):</strong> Dois pedidos de empréstimo de mesmo valor, perfis de risco opostos. Como o risco muda a perda esperada, o preço e a forma de gerir cada um?</p>
+  <div class="qkey"><strong>Pergunta-chave:</strong> como o perfil de risco muda preço, provisão e intensidade de gestão de um empréstimo?</div>
+</div>
+
+<h4>Contexto (narrativa)</h4>
+<div class="card">Você é analista de crédito do <strong>Crédito Alfa</strong>. Chegam dois pedidos de <strong>R$ 1.000 mil</strong> cada. O Empréstimo A é de um tomador sólido (<em>PD</em> baixa, com garantia); o B é de um tomador frágil (<em>PD</em> alta, sem garantia). A <em>perda esperada</em> de cada um é <strong>PE = PD × LGD × EAD</strong> — onde PD é a probabilidade de inadimplência, LGD a perda dado o default (a garantia reduz a LGD) e EAD a exposição. Sua tarefa: medir a PE, entender por que alto risco exige preço <u>e</u> gestão diferentes, e precificar cada operação.</div>
+
+<h4>KeyFacts</h4>
+<div class="keyfacts">
+  <div class="kf"><div class="lbl">Empréstimo A — PD</div><div class="val">1%</div></div>
+  <div class="kf"><div class="lbl">Empréstimo A — LGD</div><div class="val">30%</div></div>
+  <div class="kf"><div class="lbl">Empréstimo B — PD</div><div class="val">8%</div></div>
+  <div class="kf warn"><div class="lbl">Empréstimo B — LGD</div><div class="val">50%</div></div>
+  <div class="kf"><div class="lbl">EAD (cada)</div><div class="val">R$ 1.000 mil</div></div>
+  <div class="kf"><div class="lbl">Funding (CDI)</div><div class="val">11% a.a.</div></div>
+  <div class="kf"><div class="lbl">Opex</div><div class="val">1%</div></div>
+  <div class="kf"><div class="lbl">Margem-alvo</div><div class="val">2%</div></div>
+</div>
+
+<h4>Dados da operação (ocultável)</h4>
+<span class="boxlabel">detailBoxLabel: “Dados da operação”</span>
+<div class="card">
+  <table>
+    <thead><tr><th>Parâmetro</th><th>Empréstimo A</th><th>Empréstimo B</th></tr></thead>
+    <tbody>
+      <tr><td>PD</td><td>1%</td><td>8%</td></tr>
+      <tr><td>LGD</td><td>30%</td><td>50%</td></tr>
+      <tr><td>EAD (R$ mil)</td><td>1.000</td><td>1.000</td></tr>
+      <tr><td>Perda esperada PE (R$ mil)</td><td><strong>3</strong></td><td><strong>40</strong></td></tr>
+      <tr><td>PE % (sobre EAD)</td><td>0,3%</td><td>4,0%</td></tr>
+    </tbody>
+  </table>
+  <table>
+    <thead><tr><th>Composição da taxa</th><th>Empréstimo A</th><th>Empréstimo B</th></tr></thead>
+    <tbody>
+      <tr><td>Funding</td><td>11,0%</td><td>11,0%</td></tr>
+      <tr><td>+ PE %</td><td>0,3%</td><td>4,0%</td></tr>
+      <tr><td>+ Opex</td><td>1,0%</td><td>1,0%</td></tr>
+      <tr><td>+ Margem-alvo</td><td>2,0%</td><td>2,0%</td></tr>
+      <tr><td><strong>Taxa mínima</strong></td><td><strong>14,3%</strong></td><td><strong>18,0%</strong></td></tr>
+    </tbody>
+    <tfoot></tfoot>
+  </table>
+</div>
+
+<h4><span class="etapa-tag">Etapa 1</span> Leitura — perda esperada <span class="small">(20 pts)</span></h4>
+<p><strong>Prompt:</strong> Qual a perda esperada (PE) do Empréstimo B?</p>
+<div class="opt correct"><span class="otext">A) R$ 40 mil</span> <span class="badge">✓ Correto</span>
+  <div class="mem">PE = PD × LGD × EAD = 8% × 50% × 1.000 = <strong>R$ 40 mil</strong> (PE% = 4,0% sobre a EAD).</div></div>
+<div class="opt err"><span class="otext">B) R$ 80 mil</span> <span class="badge">✗</span>
+  <div class="mem">Erro: esqueceu a LGD (usou PD × EAD). PE = 8% × 50% × 1.000 = 40 (não 8% × 1.000 = 80).</div></div>
+<div class="opt err"><span class="otext">C) R$ 5 mil</span> <span class="badge">✗</span>
+  <div class="mem">Erro: usou a PD do Empréstimo A (1%). Com a PD de B (8%): 8% × 50% × 1.000 = 40.</div></div>
+<div class="opt err"><span class="otext">D) R$ 3 mil</span> <span class="badge">✗</span>
+  <div class="mem">Erro: essa é a PE do Empréstimo A (1% × 30% × 1.000). A de B é 40.</div></div>
+
+<h4><span class="etapa-tag">Etapa 2</span> Mecanismo — por que preço E gestão diferentes <span class="small">(20 pts)</span></h4>
+<p><strong>Prompt:</strong> Por que um empréstimo de alto risco exige preço maior <u>e</u> gestão mais intensa?</p>
+<div class="opt correct"><span class="otext">A) O preço cobre a perda esperada (a média); a gestão (colateral, covenants, monitoramento) trata a perda inesperada (a cauda). PD e LGD são alavancas distintas.</span> <span class="badge">✓ Correto</span>
+  <div class="mem">Precificar a PE protege a média; o desvio acima dela (perda inesperada) é gerido com mitigantes e capital. O colateral ataca a LGD; o score/limite ataca a PD.</div></div>
+<div class="opt err"><span class="otext">B) Basta cobrar mais; o preço resolve todo o risco.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: o preço cobre só a perda esperada (média); a perda inesperada (cauda) exige capital e gestão.</div></div>
+<div class="opt err"><span class="otext">C) Alto risco se gerencia só com mais provisão, não com preço.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: a provisão cobre a PE, mas o preço também precisa remunerar capital e custos; e a gestão trata a cauda.</div></div>
+<div class="opt err"><span class="otext">D) Colateral aumenta a PD.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: o colateral reduz a LGD (perda dado o default), não a PD. São alavancas diferentes.</div></div>
+
+<h4><span class="etapa-tag">Etapa 3</span> Síntese — taxa mínima <span class="small">(20 pts)</span></h4>
+<p><strong>Prompt:</strong> Quais as taxas mínimas dos Empréstimos A e B?</p>
+<div class="opt correct"><span class="otext">A) A = 14,3%; B = 18,0%</span> <span class="badge">✓ Correto</span>
+  <div class="mem">Taxa = funding + PE% + opex + margem. A = 11 + 0,3 + 1 + 2 = <strong>14,3%</strong>; B = 11 + 4,0 + 1 + 2 = <strong>18,0%</strong>. O <em>wedge</em> de 3,7 p.p. é puro risco (ΔPE%).</div></div>
+<div class="opt err"><span class="otext">B) A = 14,0%; B = 14,0% (igual)</span> <span class="badge">✗</span>
+  <div class="mem">Erro: ignorou a diferença de PE%. O risco entra via PE% (0,3% vs 4,0%): A = 14,3%, B = 18,0%.</div></div>
+<div class="opt err"><span class="otext">C) A = 13,3%; B = 17,0%</span> <span class="badge">✗</span>
+  <div class="mem">Erro: esqueceu o opex (1%). A = 14,3%, B = 18,0%.</div></div>
+<div class="opt err"><span class="otext">D) A = 12,3%; B = 16,0%</span> <span class="badge">✗</span>
+  <div class="mem">Erro: faltou a margem-alvo (2%). A = 14,3%, B = 18,0%.</div></div>
+
+<h4>Encruzilhada <span class="small">(decisão · 0 pts)</span></h4>
+<p><strong>Prompt:</strong> Como tratar o Empréstimo B (alto risco)?</p>
+<div class="branch">
+  <h5>Caminho A — Precificar alto e emprestar sem garantia</h5>
+  <div class="deltas"><span class="delta pos">Margem alta (18%)</span><span class="delta risk">LGD 50%</span><span class="delta risk">Cauda elevada</span></div>
+  <p class="small">Trade-off: captura a margem do risco, mas carrega a LGD cheia e fica exposto à perda inesperada.</p>
+</div>
+<div class="branch">
+  <h5>Caminho B — Exigir colateral (corta LGD para ~25%)</h5>
+  <div class="deltas"><span class="delta pos">PE 40 → 20 mil</span><span class="delta pos">Taxa 18% → 16%</span><span class="delta neu">Exige garantia/execução</span></div>
+  <p class="small">Trade-off: PE = 8% × 25% × 1.000 = 20 mil; taxa = 11 + 2 + 1 + 2 = 16%. Risco gerenciável, mas depende de garantia e de execução eficaz.</p>
+</div>
+<div class="branch">
+  <h5>Caminho C — Recusar / reduzir ticket</h5>
+  <div class="deltas"><span class="delta pos">Risco zero</span><span class="delta neg">Receita zero</span><span class="delta neg">Relação perdida</span></div>
+  <p class="small">Trade-off: elimina o risco, mas abre mão da receita e do relacionamento.</p>
+</div>
+
+<h4>Reflexão — risco residual <span class="small">(25 pts)</span></h4>
+<p><strong>Prompt:</strong> Mesmo precificando a PE corretamente, qual risco residual permanece?</p>
+<div class="opt correct"><span class="otext">A) A PE é a perda média, já no preço; o perigo real é a perda inesperada (cauda), coberta por capital e monitoramento — não pelo preço.</span> <span class="badge">✓ Correto</span>
+  <div class="mem">Precificar a média não protege de um default acima do esperado; é para isso que existem capital, colateral e acompanhamento.</div></div>
+<div class="opt err"><span class="otext">B) Nenhum: se a PE está no preço, o empréstimo está coberto.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: o preço cobre a média; a perda inesperada (cauda) não.</div></div>
+<div class="opt err"><span class="otext">C) O risco residual é só o funding subir.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: o risco central é a perda inesperada do crédito, não o custo de funding.</div></div>
+<div class="opt err"><span class="otext">D) Colateral elimina toda a perda.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: o colateral reduz a LGD, não zera a perda (execução imperfeita, garantia desvaloriza no estresse).</div></div>
+
+<hr class="soft">
+
+<!-- ============================ S8.2 ============================ -->
+<h2 id="s82">Cenário S8.2 — Comitê de Crédito <span class="pill avanc" style="vertical-align:middle">Avançado</span></h2>
+
+<div class="scenario-head adv">
+  <div class="code">S8.2 · Comitê de Crédito · Avançado · 24 min</div>
+  <h3>Cenários macroeconômicos e apetite de risco</h3>
+  <p><strong>Blurb (card):</strong> O comitê precisa definir quanto originar no segmento-alvo no próximo ano. A PD depende do cenário macro. Quanto a visão forward muda o apetite?</p>
+  <div class="qkey"><strong>Pergunta-chave:</strong> como o cenário macroeconômico esperado define quanto e que tipo de crédito originar?</div>
+</div>
+
+<h4>Contexto (narrativa)</h4>
+<div class="card">O <strong>comitê de crédito</strong> vai definir o <em>apetite de risco</em> do ano para um segmento. A <em>PD</em> do segmento depende do cenário macro: <strong>3%</strong> no cenário base, <strong>6%</strong> num cenário adverso (recessão). O comitê estima <strong>60%</strong> de probabilidade para o base e <strong>40%</strong> para o adverso. O crédito originado <em>agora</em> viverá esse futuro. Sua tarefa: calcular a PD relevante (ponderada), traduzi-la em apetite (quanto se pode originar dentro do orçamento de perda) e decidir a postura.</div>
+
+<h4>KeyFacts</h4>
+<div class="keyfacts">
+  <div class="kf"><div class="lbl">PD — cenário base</div><div class="val">3%</div></div>
+  <div class="kf warn"><div class="lbl">PD — cenário adverso</div><div class="val">6%</div></div>
+  <div class="kf"><div class="lbl">Probabilidade — base</div><div class="val">60%</div></div>
+  <div class="kf"><div class="lbl">Probabilidade — adverso</div><div class="val">40%</div></div>
+  <div class="kf"><div class="lbl">LGD</div><div class="val">45%</div></div>
+  <div class="kf"><div class="lbl">Orçamento de PE do ano</div><div class="val">R$ 189 mi</div></div>
+</div>
+
+<h4>Cenários macro (ocultável)</h4>
+<span class="boxlabel">detailBoxLabel: “Cenários macro”</span>
+<div class="card">
+  <table>
+    <thead><tr><th>Cenário</th><th>PD</th><th>Probabilidade</th><th>Contribuição (PD × prob)</th></tr></thead>
+    <tbody>
+      <tr><td>Base</td><td>3%</td><td>60%</td><td>1,8%</td></tr>
+      <tr><td>Adverso</td><td>6%</td><td>40%</td><td>2,4%</td></tr>
+      <tr><td><strong>PD ponderada</strong></td><td></td><td></td><td><strong>4,2%</strong></td></tr>
+    </tbody>
+  </table>
+  <table>
+    <thead><tr><th>Apetite (EAD máx = orçamento ÷ (PD × LGD))</th><th>R$ mi</th></tr></thead>
+    <tbody>
+      <tr><td>Usando PD base (3%)</td><td>14.000</td></tr>
+      <tr><td>Usando PD ponderada (4,2%)</td><td><strong>10.000</strong></td></tr>
+      <tr><td>Usando PD adversa (6%)</td><td>7.000</td></tr>
+    </tbody>
+    <tfoot></tfoot>
+  </table>
+  <p class="small">EAD = 189 / (PD × 0,45). A visão forward (4,2%) reduz o apetite de R$ 14 bi (base) para R$ 10 bi.</p>
+</div>
+
+<h4><span class="etapa-tag">Etapa 1</span> Leitura — PD por cenário <span class="small">(20 pts)</span></h4>
+<p><strong>Prompt:</strong> Qual a PD em cada cenário?</p>
+<div class="opt correct"><span class="otext">A) Base 3%; adverso 6%</span> <span class="badge">✓ Correto</span>
+  <div class="mem">Leitura direta dos KeyFacts: cenário base 3%, cenário adverso (recessão) 6%.</div></div>
+<div class="opt err"><span class="otext">B) Base 6%; adverso 3%</span> <span class="badge">✗</span>
+  <div class="mem">Erro: invertido. O cenário adverso tem a PD maior (6%); o base, 3%.</div></div>
+<div class="opt err"><span class="otext">C) 4,5% nos dois (média simples)</span> <span class="badge">✗</span>
+  <div class="mem">Erro: são duas PDs distintas (3% e 6%); a média simples ignora as probabilidades.</div></div>
+<div class="opt err"><span class="otext">D) 9% (soma dos cenários)</span> <span class="badge">✗</span>
+  <div class="mem">Erro: PDs não se somam; cada cenário tem a sua (3% e 6%).</div></div>
+
+<h4><span class="etapa-tag">Etapa 2</span> Mecanismo — por que apetite forward <span class="small">(20 pts)</span></h4>
+<p><strong>Prompt:</strong> Sobre qual PD o apetite deve ser fixado, e por quê?</p>
+<div class="opt correct"><span class="otext">A) Sobre a PD ponderada pela probabilidade dos cenários — porque o crédito originado hoje viverá o futuro, não o presente benigno.</span> <span class="badge">✓ Correto</span>
+  <div class="mem">Usar só o cenário base superdimensiona o apetite. A PD relevante é a esperada (ponderada), pois a carteira nova atravessa o cenário futuro.</div></div>
+<div class="opt err"><span class="otext">B) Sobre o melhor cenário (base), para não perder negócios.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: isso superdimensiona o apetite e ignora o risco do cenário adverso.</div></div>
+<div class="opt err"><span class="otext">C) Sobre a PD atual realizada, não cenários.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: a PD realizada é olhar para trás; o apetite é forward — a carteira nova viverá o futuro.</div></div>
+<div class="opt err"><span class="otext">D) Cenários não afetam o apetite, só o preço.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: a PD esperada governa tanto preço quanto volume/apetite.</div></div>
+
+<h4><span class="etapa-tag">Etapa 3</span> Síntese — PD ponderada e apetite <span class="small">(20 pts)</span></h4>
+<p><strong>Prompt:</strong> Qual a PD ponderada e o apetite (EAD máximo) correspondente?</p>
+<div class="opt correct"><span class="otext">A) PD 4,2%; apetite R$ 10.000 mi</span> <span class="badge">✓ Correto</span>
+  <div class="mem">PD = 0,6×3% + 0,4×6% = <strong>4,2%</strong>. Apetite = orçamento ÷ (PD × LGD) = 189 / (0,042 × 0,45) = <strong>R$ 10.000 mi</strong> (vs 14.000 no base).</div></div>
+<div class="opt err"><span class="otext">B) PD 4,5%; apetite R$ 9.333 mi</span> <span class="badge">✗</span>
+  <div class="mem">Erro: usou média simples (4,5%), não a ponderada pelas probabilidades (4,2%).</div></div>
+<div class="opt err"><span class="otext">C) PD 4,2%; apetite R$ 14.000 mi</span> <span class="badge">✗</span>
+  <div class="mem">Erro: aplicou a PD ponderada mas dividiu pela PD base. Apetite = 189 / (0,042 × 0,45) = 10.000.</div></div>
+<div class="opt err"><span class="otext">D) PD 4,2%; apetite R$ 4.500 mi</span> <span class="badge">✗</span>
+  <div class="mem">Erro: esqueceu a LGD no denominador (189/0,042). Apetite = 189 / (0,042 × 0,45) = 10.000.</div></div>
+
+<h4>Encruzilhada <span class="small">(decisão · 0 pts)</span></h4>
+<p><strong>Prompt:</strong> Em que cenário ancorar o apetite?</p>
+<div class="branch">
+  <h5>Caminho A — Ancorar no base (3%) → crescer forte</h5>
+  <div class="deltas"><span class="delta pos">Apetite R$ 14.000 mi</span><span class="delta risk">Exposto se o adverso vier</span></div>
+  <p class="small">Trade-off: maximiza originação na fase boa, mas a carteira fica frágil se a recessão se materializar.</p>
+</div>
+<div class="branch">
+  <h5>Caminho B — Ancorar no ponderado (4,2%) → moderar</h5>
+  <div class="deltas"><span class="delta neu">Apetite R$ 10.000 mi</span><span class="delta pos">Equilíbrio crescimento/prudência</span></div>
+  <p class="small">Trade-off: alinha o apetite à visão forward; cresce menos que o otimista, mais que o pessimista.</p>
+</div>
+<div class="branch">
+  <h5>Caminho C — Ancorar no adverso (6%) → conservador/contracíclico</h5>
+  <div class="deltas"><span class="delta pos">Apetite R$ 7.000 mi</span><span class="delta pos">Resiliência alta</span><span class="delta neg">Abre mão de volume</span></div>
+  <p class="small">Trade-off: máxima resiliência (e munição para a recessão), ao custo de perder participação na fase boa.</p>
+</div>
+
+<h4>Reflexão — risco residual <span class="small">(25 pts)</span></h4>
+<p><strong>Prompt:</strong> Qual o limite/risco residual de definir apetite por cenários?</p>
+<div class="opt correct"><span class="otext">A) As probabilidades são estimativas subjetivas (risco de modelo); e há pró-ciclicidade — se todos apertam juntos na piora, aprofundam a recessão.</span> <span class="badge">✓ Correto</span>
+  <div class="mem">O método é tão bom quanto as probabilidades e PDs estimadas; e o comportamento agregado dos bancos amplifica o ciclo.</div></div>
+<div class="opt err"><span class="otext">B) Nenhum: a ponderação é objetiva e precisa.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: probabilidades de cenário são estimativas subjetivas.</div></div>
+<div class="opt err"><span class="otext">C) O único risco é o adverso não acontecer.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: há risco de modelo (probabilidades/PDs erradas) e pró-ciclicidade.</div></div>
+<div class="opt err"><span class="otext">D) Cenários eliminam o risco da carteira.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: ajudam a calibrar o apetite, não eliminam o risco realizado.</div></div>
+
+<hr class="soft">
+
+<!-- ============================ S8.3 ============================ -->
+<h2 id="s83">Cenário S8.3 — Banco Recesso <span class="pill inter" style="vertical-align:middle">Intermediário</span></h2>
+
+<div class="scenario-head">
+  <div class="code">S8.3 · Banco Recesso · Intermediário · 22 min</div>
+  <h3>A recessão atinge a carteira: damage control</h3>
+  <p><strong>Blurb (card):</strong> A recessão chegou e a inadimplência da carteira mais que dobrou. Quanto de provisão adicional, e quais alavancas o banco tem para limitar o dano?</p>
+  <div class="qkey"><strong>Pergunta-chave:</strong> como a inadimplência atinge a carteira na recessão e que alavancas limitam o dano?</div>
+</div>
+
+<h4>Contexto (narrativa)</h4>
+<div class="card">O <strong>Banco Recesso</strong> tem uma carteira de <strong>R$ 20.000 mi</strong>. Com a recessão, a <em>inadimplência</em> (NPL, créditos com 90+ dias de atraso) sobe de <strong>4% para 9%</strong>. A cobertura de provisão (PDD ÷ NPL) é de <strong>60%</strong>. Sua tarefa: medir o aumento do crédito problemático, entender por que a provisão dispara e calcular o reforço de PDD — para então escolher como controlar o dano.</div>
+
+<h4>KeyFacts</h4>
+<div class="keyfacts">
+  <div class="kf"><div class="lbl">Carteira de crédito</div><div class="val">R$ 20.000 mi</div></div>
+  <div class="kf"><div class="lbl">NPL antes</div><div class="val">4%</div></div>
+  <div class="kf warn"><div class="lbl">NPL na recessão</div><div class="val">9%</div></div>
+  <div class="kf"><div class="lbl">Cobertura (PDD ÷ NPL)</div><div class="val">60%</div></div>
+</div>
+
+<h4>Carteira e provisões (ocultável)</h4>
+<span class="boxlabel">detailBoxLabel: “Carteira e provisões”</span>
+<div class="card">
+  <table>
+    <thead><tr><th>Item (R$ mi)</th><th>Antes</th><th>Recessão</th></tr></thead>
+    <tbody>
+      <tr><td>Carteira de crédito</td><td>20.000</td><td>20.000</td></tr>
+      <tr><td>NPL (estoque)</td><td>800</td><td>1.800</td></tr>
+      <tr><td>Provisão (cobertura 60%)</td><td>480</td><td>1.080</td></tr>
+      <tr><td><strong>Provisão adicional (PDD no resultado)</strong></td><td colspan="2"><strong>+600</strong></td></tr>
+    </tbody>
+    <tfoot></tfoot>
+  </table>
+  <p class="small">A PDD adicional bate no resultado e, por consequência, no capital (gancho com o módulo de regulação de capital, S6).</p>
+</div>
+
+<h4><span class="etapa-tag">Etapa 1</span> Leitura — crédito problemático <span class="small">(20 pts)</span></h4>
+<p><strong>Prompt:</strong> De quanto é o aumento do estoque de NPL com a recessão?</p>
+<div class="opt correct"><span class="otext">A) +R$ 1.000 mi</span> <span class="badge">✓ Correto</span>
+  <div class="mem">NPL antes = 4% × 20.000 = 800; na recessão = 9% × 20.000 = 1.800; aumento = 1.800 − 800 = <strong>R$ 1.000 mi</strong>.</div></div>
+<div class="opt err"><span class="otext">B) +R$ 1.800 mi</span> <span class="badge">✗</span>
+  <div class="mem">Erro: confundiu o estoque pós-recessão (1.800) com o aumento. Aumento = 1.800 − 800 = 1.000.</div></div>
+<div class="opt err"><span class="otext">C) +R$ 500 mi</span> <span class="badge">✗</span>
+  <div class="mem">Erro: usou metade da variação. Δ = (9% − 4%) × 20.000 = 5% × 20.000 = 1.000.</div></div>
+<div class="opt err"><span class="otext">D) +R$ 2.600 mi</span> <span class="badge">✗</span>
+  <div class="mem">Erro: somou as taxas (9% + 4%). Usar a diferença (5 p.p.): Δ = 1.000.</div></div>
+
+<h4><span class="etapa-tag">Etapa 2</span> Mecanismo — por que a provisão dispara <span class="small">(20 pts)</span></h4>
+<p><strong>Prompt:</strong> Por que a recessão dispara a provisão?</p>
+<div class="opt correct"><span class="otext">A) Sobe a PD (mais defaults) e a LGD (garantias valem menos) → a perda esperada salta → a PDD bate no resultado e no capital.</span> <span class="badge">✓ Correto</span>
+  <div class="mem">A recessão move as duas alavancas da PE: mais inadimplência (PD) e menor recuperação das garantias (LGD).</div></div>
+<div class="opt err"><span class="otext">B) Só a PD muda; a LGD é fixa.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: na recessão o valor das garantias cai, elevando também a LGD.</div></div>
+<div class="opt err"><span class="otext">C) A provisão sobe porque a carteira cresceu.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: a carteira é estável (20.000); o que sobe é a inadimplência, não o tamanho.</div></div>
+<div class="opt err"><span class="otext">D) A provisão não afeta o capital.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: a PDD reduz o resultado e, por consequência, o capital.</div></div>
+
+<h4><span class="etapa-tag">Etapa 3</span> Síntese — provisão adicional <span class="small">(20 pts)</span></h4>
+<p><strong>Prompt:</strong> Qual a provisão adicional necessária?</p>
+<div class="opt correct"><span class="otext">A) R$ 600 mi</span> <span class="badge">✓ Correto</span>
+  <div class="mem">ΔPDD = (NPL_pós − NPL_pré) × cobertura = (1.800 − 800) × 60% = 1.000 × 60% = <strong>R$ 600 mi</strong>.</div></div>
+<div class="opt err"><span class="otext">B) R$ 1.000 mi</span> <span class="badge">✗</span>
+  <div class="mem">Erro: não aplicou a cobertura (60%). Provisão adicional = 1.000 × 60% = 600.</div></div>
+<div class="opt err"><span class="otext">C) R$ 1.080 mi</span> <span class="badge">✗</span>
+  <div class="mem">Erro: 1.080 é o estoque de provisão pós-recessão; o adicional é 1.080 − 480 = 600.</div></div>
+<div class="opt err"><span class="otext">D) R$ 480 mi</span> <span class="badge">✗</span>
+  <div class="mem">Erro: 480 é a provisão antes da recessão; o adicional é 600.</div></div>
+
+<h4>Encruzilhada <span class="small">(decisão · 0 pts)</span></h4>
+<p><strong>Prompt:</strong> Qual alavanca de damage control acionar?</p>
+<div class="branch">
+  <h5>Caminho A — Apertar originação + intensificar cobrança</h5>
+  <div class="deltas"><span class="delta pos">Estanca o fluxo novo</span><span class="delta neu">Recuperação gradual</span><span class="delta risk">Pró-cíclico / sufoca bons tomadores</span></div>
+  <p class="small">Trade-off: defende o balanço organicamente, mas o aperto excessivo aprofunda a recessão e perde bons clientes.</p>
+</div>
+<div class="branch">
+  <h5>Caminho B — Reestruturar/renegociar em escala</h5>
+  <div class="deltas"><span class="delta pos">Cura parte da NPL</span><span class="delta pos">Alivia provisão</span><span class="delta risk">Pode só adiar a perda</span></div>
+  <p class="small">Trade-off: dá fôlego ao tomador e reduz a NPL, mas vira <em>extend-and-pretend</em> se ele não recupera.</p>
+</div>
+<div class="branch">
+  <h5>Caminho C — Vender a carteira de NPL (distressed / FIDC NPL)</h5>
+  <div class="deltas"><span class="delta pos">Limpa o balanço já</span><span class="delta neg">Realiza perda com desconto</span><span class="delta neu">Caixa imediato</span></div>
+  <p class="small">Trade-off: tira o problema do balanço e libera gestão, mas vende a um forte desconto sobre o valor de face.</p>
+</div>
+
+<h4>Reflexão — risco residual <span class="small">(25 pts)</span></h4>
+<p><strong>Prompt:</strong> Qual o risco residual das alavancas de damage control?</p>
+<div class="opt correct"><span class="otext">A) Reestruturar pode virar extend-and-pretend se o tomador não recupera; vender NPL realiza a perda barata; e apertar demais a originação aprofunda a própria recessão.</span> <span class="badge">✓ Correto</span>
+  <div class="mem">Cada alavanca tem um custo escondido: adiamento, desconto na venda, ou pró-ciclicidade.</div></div>
+<div class="opt err"><span class="otext">B) Nenhum: reestruturar resolve a inadimplência.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: pode só adiar a perda se o tomador não recupera.</div></div>
+<div class="opt err"><span class="otext">C) Vender NPL recupera o valor de face.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: a venda é com forte desconto — realiza a perda.</div></div>
+<div class="opt err"><span class="otext">D) Apertar a originação não tem efeito colateral.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: aperto excessivo é pró-cíclico e sufoca bons tomadores.</div></div>
+
+<hr class="soft">
+
+<!-- ============================ S8.4 ============================ -->
+<h2 id="s84">Cenário S8.4 — Carteira Espelho <span class="pill avanc" style="vertical-align:middle">Avançado</span></h2>
+
+<div class="scenario-head adv">
+  <div class="code">S8.4 · Carteira Espelho · Avançado · 24 min</div>
+  <h3>Concentração: a perda que a PE não enxerga</h3>
+  <p><strong>Blurb (card):</strong> Duas carteiras, mesma perda esperada, riscos opostos. Por que a concentração torna uma delas muito mais perigosa — e o que fazer a respeito?</p>
+  <div class="qkey"><strong>Pergunta-chave:</strong> por que duas carteiras com a mesma PE podem ter riscos muito diferentes?</div>
+</div>
+
+<h4>Contexto (narrativa)</h4>
+<div class="card">Você compara duas carteiras de <strong>R$ 5.000 mi</strong>, ambas com <em>PD</em> média <strong>4%</strong> e <em>LGD</em> <strong>50%</strong> — logo, a mesma <em>perda esperada</em>. A <strong>Carteira Diversificada</strong> tem 500 tomadores de R$ 10 mi; a <strong>Carteira Concentrada</strong> tem 10 tomadores de R$ 500 mi. Sua tarefa: mostrar que a PE é idêntica, entender por que o risco não é, e quantificar o pior caso de um único nome — para então decidir a política de concentração.</div>
+
+<h4>KeyFacts</h4>
+<div class="keyfacts">
+  <div class="kf"><div class="lbl">Tamanho (cada carteira)</div><div class="val">R$ 5.000 mi</div></div>
+  <div class="kf"><div class="lbl">PD média</div><div class="val">4%</div></div>
+  <div class="kf"><div class="lbl">LGD</div><div class="val">50%</div></div>
+  <div class="kf"><div class="lbl">Diversificada</div><div class="val">500 × R$ 10 mi</div></div>
+  <div class="kf warn"><div class="lbl">Concentrada</div><div class="val">10 × R$ 500 mi</div></div>
+</div>
+
+<h4>Comparativo de carteiras (ocultável)</h4>
+<span class="boxlabel">detailBoxLabel: “Comparativo de carteiras”</span>
+<div class="card">
+  <table>
+    <thead><tr><th>Métrica</th><th>Diversificada</th><th>Concentrada</th></tr></thead>
+    <tbody>
+      <tr><td>Nº de tomadores</td><td>500</td><td>10</td></tr>
+      <tr><td>Maior exposição</td><td>R$ 10 mi</td><td>R$ 500 mi</td></tr>
+      <tr><td>Perda esperada PE</td><td>R$ 100 mi</td><td>R$ 100 mi</td></tr>
+      <tr><td>Pior caso de 1 nome (exp × LGD)</td><td>R$ 5 mi</td><td>R$ 250 mi</td></tr>
+      <tr><td>Pior caso ÷ PE</td><td>5%</td><td><strong>2,5×</strong></td></tr>
+    </tbody>
+    <tfoot></tfoot>
+  </table>
+  <p class="small">PE = 4% × 50% × 5.000 = 100 (igual nas duas). A diferença está na perda <em>inesperada</em>, que a PE não captura.</p>
+</div>
+
+<h4><span class="etapa-tag">Etapa 1</span> Leitura — perda esperada das carteiras <span class="small">(20 pts)</span></h4>
+<p><strong>Prompt:</strong> Qual a perda esperada de cada carteira?</p>
+<div class="opt correct"><span class="otext">A) R$ 100 mi nas duas (idêntica)</span> <span class="badge">✓ Correto</span>
+  <div class="mem">PE = PD × LGD × EAD = 4% × 50% × 5.000 = <strong>R$ 100 mi</strong> — igual nas duas, pois PD, LGD e tamanho são iguais.</div></div>
+<div class="opt err"><span class="otext">B) Diversificada 100; Concentrada 250</span> <span class="badge">✗</span>
+  <div class="mem">Erro: confundiu PE com o pior caso. A PE é igual (100); 250 é a perda de um único grande nome na concentrada.</div></div>
+<div class="opt err"><span class="otext">C) R$ 200 mi cada</span> <span class="badge">✗</span>
+  <div class="mem">Erro: esqueceu a LGD. PE = 4% × 50% × 5.000 = 100 (não 4% × 5.000 = 200).</div></div>
+<div class="opt err"><span class="otext">D) Não dá para calcular a PE da concentrada</span> <span class="badge">✗</span>
+  <div class="mem">Erro: a PE calcula-se igual (PD × LGD × EAD) = 100; o que difere é a perda inesperada, não a PE.</div></div>
+
+<h4><span class="etapa-tag">Etapa 2</span> Mecanismo — mesma PE, risco diferente <span class="small">(20 pts)</span></h4>
+<p><strong>Prompt:</strong> Por que carteiras com a mesma PE têm riscos diferentes?</p>
+<div class="opt correct"><span class="otext">A) A PE é a média; ignora correlação e granularidade. A concentração eleva a perda inesperada — um único default grande é catastrófico frente à PE.</span> <span class="badge">✓ Correto</span>
+  <div class="mem">A PE mede a média esperada; a dispersão em torno dela (perda inesperada) é muito maior quando poucos nomes concentram a exposição.</div></div>
+<div class="opt err"><span class="otext">B) Não há diferença: PE igual = risco igual.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: a PE é a média; a perda inesperada (dispersão) é muito maior na concentrada.</div></div>
+<div class="opt err"><span class="otext">C) A concentrada é menos arriscada (menos nomes para monitorar).</span> <span class="badge">✗</span>
+  <div class="mem">Erro: menos nomes significa mais risco de concentração — cada default pesa muito mais.</div></div>
+<div class="opt err"><span class="otext">D) A diferença é só a LGD.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: a LGD é igual (50%); a diferença é a granularidade/concentração das exposições.</div></div>
+
+<h4><span class="etapa-tag">Etapa 3</span> Síntese — pior caso de um nome <span class="small">(20 pts)</span></h4>
+<p><strong>Prompt:</strong> Qual a perda se o maior tomador de cada carteira der default?</p>
+<div class="opt correct"><span class="otext">A) Concentrada R$ 250 mi (2,5× a PE); Diversificada R$ 5 mi (5% da PE)</span> <span class="badge">✓ Correto</span>
+  <div class="mem">Concentrada: 500 × 50% = <strong>R$ 250 mi</strong> = 2,5× a PE total (100). Diversificada: 10 × 50% = <strong>R$ 5 mi</strong> = 5% da PE.</div></div>
+<div class="opt err"><span class="otext">B) Concentrada R$ 500 mi</span> <span class="badge">✗</span>
+  <div class="mem">Erro: esqueceu a LGD. Perda = exposição × LGD = 500 × 50% = 250.</div></div>
+<div class="opt err"><span class="otext">C) Concentrada R$ 100 mi (= a PE)</span> <span class="badge">✗</span>
+  <div class="mem">Erro: o pior caso de um nome (250) excede a PE total (100) em 2,5×.</div></div>
+<div class="opt err"><span class="otext">D) Diversificada R$ 250 mi</span> <span class="badge">✗</span>
+  <div class="mem">Erro: usou a exposição da concentrada. Na diversificada o maior nome é R$ 10 mi → perda 5 mi.</div></div>
+
+<h4>Encruzilhada <span class="small">(decisão · 0 pts)</span></h4>
+<p><strong>Prompt:</strong> Que política adotar para a Carteira Concentrada?</p>
+<div class="branch">
+  <h5>Caminho A — Aceitar a concentração pela margem</h5>
+  <div class="deltas"><span class="delta pos">Relação e receita altas</span><span class="delta risk">Cauda perigosa</span></div>
+  <p class="small">Trade-off: grandes clientes trazem margem e relacionamento, mas um único default ameaça o resultado do ano.</p>
+</div>
+<div class="branch">
+  <h5>Caminho B — Impor limites e diversificar</h5>
+  <div class="deltas"><span class="delta pos">Corta a perda inesperada</span><span class="delta neu">Granularidade maior</span><span class="delta neg">Pode expulsar bons negócios</span></div>
+  <p class="small">Trade-off: limites de single-name e setoriais reduzem a cauda, mas podem afastar relações rentáveis.</p>
+</div>
+<div class="branch">
+  <h5>Caminho C — Transferir a concentração (seguro/sindicalização/securitização)</h5>
+  <div class="deltas"><span class="delta pos">Mantém o cliente</span><span class="delta pos">Reduz a cauda</span><span class="delta neu">Custo do hedge</span></div>
+  <p class="small">Trade-off: divide ou segura a exposição sem perder a relação, ao custo do prêmio/deságio da transferência.</p>
+</div>
+
+<h4>Reflexão — risco residual <span class="small">(25 pts)</span></h4>
+<p><strong>Prompt:</strong> Qual o limite da diversificação?</p>
+<div class="opt correct"><span class="otext">A) Diversificar elimina o risco idiossincrático, não o sistêmico — uma recessão ampla atinge todos juntos (volta ao S8.3); e limites rígidos podem tirar o banco de bons negócios.</span> <span class="badge">✓ Correto</span>
+  <div class="mem">Granularidade protege de um default isolado, mas não de um choque correlacionado que eleva a PD de toda a carteira.</div></div>
+<div class="opt err"><span class="otext">B) Nenhum: diversificar elimina todo o risco.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: elimina o idiossincrático, não o sistêmico (recessão ampla).</div></div>
+<div class="opt err"><span class="otext">C) Concentração não tem relação com recessão.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: na recessão (risco sistêmico) até a diversificada sofre; a concentração agrava.</div></div>
+<div class="opt err"><span class="otext">D) Limites de concentração não têm custo.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: podem expulsar relações rentáveis (custo de oportunidade).</div></div>
+
+<hr class="soft">
+
+<!-- ============================ ANEXO ============================ -->
+<h2 id="anexo"><span class="num">Anexo</span> — exemplo de <code>scenarios-s8.ts</code> (S8.1 tipado)</h2>
+<p>Objeto canônico do cenário S8.1. Os demais seguem a mesma forma; o conteúdo completo está nas seções acima.</p>
+<pre><code>import type { Scenario } from "@/types/scenario";
+
+const s8_1: Scenario = {
+  id: "s8-1", code: "S8.1", order: 1,
+  title: "Alto risco × baixo risco: preço e gestão diferenciados",
+  protagonist: "Crédito Alfa",
+  difficulty: "intermediario", estMinutes: 20,
+  blurb: "Dois pedidos de mesmo valor, perfis de risco opostos. Como o risco muda a perda " +
+         "esperada, o preço e a forma de gerir cada um?",
+  archetype: "Diferenciação de risco — perda esperada no nível do empréstimo",
+  context:
+    "Você é analista de crédito do &lt;strong&gt;Crédito Alfa&lt;/strong&gt;. Dois pedidos de R$ 1.000 mil: " +
+    "o A é sólido (PD baixa, com garantia), o B é frágil (PD alta, sem garantia). A perda esperada é " +
+    "&lt;strong&gt;PE = PD × LGD × EAD&lt;/strong&gt;...",
+  keyFacts: [
+    { label: "Empréstimo A — PD", value: "1%" },
+    { label: "Empréstimo A — LGD", value: "30%" },
+    { label: "Empréstimo B — PD", value: "8%" },
+    { label: "Empréstimo B — LGD", value: "50%", tone: "warning" },
+    { label: "EAD (cada)", value: "R$ 1.000 mil" },
+    { label: "Funding (CDI)", value: "11% a.a." },
+    { label: "Opex", value: "1%" },
+    { label: "Margem-alvo", value: "2%" },
+  ],
+  detailBoxLabel: "Dados da operação",
+  details: [
+    { id: "params", title: "Parâmetros e perda esperada", columns: ["Parâmetro", "A", "B"],
+      rows: [
+        { label: "Perda esperada PE (R$ mil)", values: ["3", "40"], emphasis: true },
+        { label: "PE % (sobre EAD)", values: ["0,3%", "4,0%"] },
+      ] },
+    { id: "rate", title: "Composição da taxa", columns: ["Item", "A", "B"],
+      rows: [
+        { label: "Taxa mínima", values: ["14,3%", "18,0%"], emphasis: true },
+      ] },
+  ],
+  etapas: [
+    { id: "e1", label: "Leitura — perda esperada", points: 20,
+      prompt: "Qual a perda esperada (PE) do Empréstimo B?",
+      options: [
+        { id: "a", text: "R$ 40 mil", correct: true,
+          feedback: "PE = 8% × 50% × 1.000 = &lt;strong&gt;R$ 40 mil&lt;/strong&gt; (PE% = 4,0%)." },
+        { id: "b", text: "R$ 80 mil", correct: false,
+          feedback: "Erro: esqueceu a LGD (PD × EAD). PE = 8% × 50% × 1.000 = 40." },
+        { id: "c", text: "R$ 5 mil", correct: false,
+          feedback: "Erro: usou a PD de A (1%). Com 8%: 8% × 50% × 1.000 = 40." },
+        { id: "d", text: "R$ 3 mil", correct: false,
+          feedback: "Erro: essa é a PE de A (1% × 30% × 1.000). A de B é 40." },
+      ] },
+    /* e2 (mecanismo), e3 (taxas 14,3% / 18,0%) — ver seção S8.1 */
+  ],
+  encruzilhada: {
+    prompt: "Como tratar o Empréstimo B (alto risco)?",
+    branches: [
+      { id: "A", title: "Precificar alto e emprestar sem garantia",
+        summary: "Captura margem, carrega a cauda.",
+        resultado: {
+          headline: "Margem alta, cauda exposta",
+          caption: "Preço cobre a média, não o evento extremo.",
+          metrics: [
+            { label: "Taxa", value: "18%", tone: "positive" },
+            { label: "LGD", value: "50%", tone: "risk" },
+            { label: "Perda inesperada", value: "Alta", tone: "risk" },
+          ],
+          explanation: "Sem mitigantes, a perda inesperada fica por conta do capital.",
+        } },
+      /* B (colateral, LGD→25%, taxa 16%), C (recusar) — ver seção S8.1 */
+    ],
+  },
+  reflexao: {
+    points: 25,
+    prompt: "Mesmo precificando a PE, qual risco residual permanece?",
+    options: [
+      { id: "a", correct: true,
+        text: "A PE é a média (já no preço); o perigo é a perda inesperada (cauda), coberta por " +
+              "capital e monitoramento.",
+        feedback: "Precificar a média não protege de um default acima do esperado." },
+      /* b, c, d incorretas — ver seção S8.1 */
+    ],
+  },
+  maxScore: 85,
+};
+
+export const scenariosS8: Scenario[] = [s8_1 /*, s8_2, s8_3, s8_4 */];</code></pre>
+
+<p class="small" style="margin-top:30px;color:var(--muted)">Fim da especificação · Módulo S8 — Gestão de Crédito · Laboratório de Tesouraria de Empresas</p>
+
+</div>
+</body>
+</html>

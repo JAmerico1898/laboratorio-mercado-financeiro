@@ -1,6 +1,6 @@
 export default function OpeningHero() {
   return (
-    <section className="relative px-6 pt-16 pb-12 md:pt-24 md:pb-16 overflow-hidden">
+    <section className="relative bg-surface px-6 pt-16 pb-12 md:pt-24 md:pb-16 overflow-hidden">
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-5 gap-12 items-center">
         <div className="z-10 lg:col-span-2">
           {/* Module badge */}

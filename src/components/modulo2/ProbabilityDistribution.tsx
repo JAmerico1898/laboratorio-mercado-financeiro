@@ -3,9 +3,9 @@ import dynamic from "next/dynamic";
 const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
 
 const DARK_LAYOUT = {
-  paper_bgcolor: "#191c1f",
-  plot_bgcolor: "#191c1f",
-  font: { color: "#e1e2e7" },
+  paper_bgcolor: "#ffffff",
+  plot_bgcolor: "#ffffff",
+  font: { color: "#191c1d" },
   margin: { l: 60, r: 30, t: 50, b: 50 },
 };
 
@@ -26,7 +26,7 @@ export default function ProbabilityDistribution({
           type: "histogram" as const,
           x: probabilities,
           nbinsx: 30,
-          marker: { color: "#60a5fa" },
+          marker: { color: "#00314a" },
           name: "Probabilidades",
           showlegend: false,
         } as any,
@@ -35,18 +35,18 @@ export default function ProbabilityDistribution({
         ...DARK_LAYOUT,
         title: {
           text: "Distribuição de Probabilidades de Inadimplência",
-          font: { color: "#e1e2e7", size: 14 },
+          font: { color: "#191c1d", size: 14 },
         },
         xaxis: {
           title: { text: "Probabilidade de Inadimplência" },
           range: [0, 1],
-          gridcolor: "#2a2d31",
-          zerolinecolor: "#2a2d31",
+          gridcolor: "#bfc9c4",
+          zerolinecolor: "#bfc9c4",
         },
         yaxis: {
           title: { text: "Frequência" },
-          gridcolor: "#2a2d31",
-          zerolinecolor: "#2a2d31",
+          gridcolor: "#bfc9c4",
+          zerolinecolor: "#bfc9c4",
         },
         shapes: [
           // Green region (APROVAR)
@@ -58,7 +58,7 @@ export default function ProbabilityDistribution({
             x1: cutoff,
             y0: 0,
             y1: 1,
-            fillcolor: "rgba(78, 222, 163, 0.15)",
+            fillcolor: "rgba(0, 107, 95, 0.15)",
             line: { width: 0 },
             layer: "below" as const,
           },
@@ -71,7 +71,7 @@ export default function ProbabilityDistribution({
             x1: 1,
             y0: 0,
             y1: 1,
-            fillcolor: "rgba(239, 68, 68, 0.15)",
+            fillcolor: "rgba(220, 38, 38, 0.12)",
             line: { width: 0 },
             layer: "below" as const,
           },
@@ -84,7 +84,7 @@ export default function ProbabilityDistribution({
             x1: cutoff,
             y0: 0,
             y1: 1,
-            line: { color: "#ef4444", width: 2, dash: "dash" as const },
+            line: { color: "#dc2626", width: 2, dash: "dash" as const },
           },
         ],
         annotations: [
@@ -95,7 +95,7 @@ export default function ProbabilityDistribution({
             yref: "paper" as const,
             text: "APROVAR",
             showarrow: false,
-            font: { color: "#4edea3", size: 14, family: "Manrope" },
+            font: { color: "#006b5f", size: 14, family: "Manrope" },
             yanchor: "bottom" as const,
           },
           {
@@ -105,7 +105,7 @@ export default function ProbabilityDistribution({
             yref: "paper" as const,
             text: "NEGAR",
             showarrow: false,
-            font: { color: "#ef4444", size: 14, family: "Manrope" },
+            font: { color: "#dc2626", size: 14, family: "Manrope" },
             yanchor: "bottom" as const,
           },
         ],

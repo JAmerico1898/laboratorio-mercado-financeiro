@@ -24,9 +24,13 @@ export default async function ModuloPage({ params }: Props) {
   const { id } = await params;
 
   if (id === "1") redirect("/modulo/1");
-  if (id === "3") redirect("/modulo/3");
-  if (id === "4") redirect("/modulo/4");
-  if (id === "6") redirect("/modulo/6");
+  // Módulo 3 (FIDC antigo) foi removido; FIDC agora vive em /modulo/7.
+  if (id === "3") redirect("/modulo/7");
+  // Módulos 4 (BaaS) e 5 (Tokenização) foram removidos; consolidados em /modulo/9.
+  if (id === "4") redirect("/modulo/9");
+  if (id === "5") redirect("/modulo/9");
+  // Módulo 6 (Regulação Bancária antigo) foi removido; consolidado em /modulo/8.
+  if (id === "6") redirect("/modulo/8");
 
   const mod = modules.find((m) => m.id === Number(id));
 

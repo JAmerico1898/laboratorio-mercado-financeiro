@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Especificação — Módulo Regulação Bancária (S6) · Laboratório de Tesouraria de Empresas</title>
+<style>
+  :root{
+    --bg:#f6f7f8; --card:#ffffff; --border:#e3e7ea; --radius:15px;
+    --navy:#103049; --teal:#1c8c6b; --teal-dark:#176f55;
+    --keyfact:#eaf3ee; --ok-bg:#e9f6ef; --ok-border:#bfe6d2;
+    --current:#dcebf8; --risk:#b23a2e; --rust:#c2592e;
+    --ink:#1f2a30; --muted:#5b6b73; --code-bg:#0f2230; --code-ink:#d6e6f2;
+    --mint:#d8f0e4;
+    --serif:Georgia,"Iowan Old Style","Times New Roman",serif;
+    --sans:"Segoe UI",-apple-system,"Helvetica Neue",Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+    font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:980px;margin:0 auto;padding:0 22px 120px}
+  header.top{background:var(--navy);color:#fff;padding:46px 22px 38px;margin-bottom:34px}
+  header.top .inner{max-width:980px;margin:0 auto}
+  header.top .eyebrow{font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+    color:#9ec7e0;font-weight:700;margin-bottom:14px}
+  header.top h1{font-family:var(--serif);font-size:38px;line-height:1.12;margin:0 0 12px;font-weight:700}
+  header.top p{margin:0;color:#cfe0ec;max-width:760px;font-size:16px}
+  header.top .meta{margin-top:20px;display:flex;flex-wrap:wrap;gap:10px}
+  header.top .meta span{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);
+    padding:6px 12px;border-radius:999px;font-size:13px}
+  h2{font-family:var(--serif);font-size:26px;color:var(--navy);margin:48px 0 6px;
+    padding-bottom:8px;border-bottom:2px solid var(--border)}
+  h2 .num{color:var(--teal);font-size:18px;font-weight:700;font-family:var(--sans)}
+  h3{font-family:var(--serif);font-size:20px;color:var(--navy);margin:30px 0 8px}
+  h4{font-size:15px;color:var(--teal-dark);margin:22px 0 6px;letter-spacing:.02em;
+    text-transform:uppercase;font-weight:700}
+  p{margin:10px 0}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:5px 0}
+  strong{color:var(--navy)}
+  em{color:var(--teal-dark);font-style:italic}
+  a{color:var(--teal-dark)}
+  .lead{font-size:17px;color:#33424a}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+    padding:22px 24px;margin:16px 0}
+  .toc{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+    padding:18px 22px;margin:6px 0 10px}
+  .toc ol{columns:2;column-gap:34px;margin:6px 0 0;padding-left:20px}
+  .toc a{text-decoration:none}
+  .toc a:hover{text-decoration:underline}
+  code{background:#eef1f3;border:1px solid #e0e5e8;border-radius:5px;padding:1px 6px;
+    font-family:"SF Mono",Menlo,Consolas,monospace;font-size:13.5px;color:#0c3b54}
+  pre{background:var(--code-bg);color:var(--code-ink);border-radius:12px;padding:18px 20px;
+    overflow:auto;font-family:"SF Mono",Menlo,Consolas,monospace;font-size:13px;line-height:1.65}
+  pre code{background:none;border:none;color:inherit;padding:0}
+  .pill{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.08em;
+    text-transform:uppercase;padding:4px 11px;border-radius:999px}
+  .pill.inter{background:var(--mint);color:var(--teal-dark)}
+  .pill.avanc{background:var(--navy);color:#fff}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14.5px;background:#fff;
+    border:1px solid var(--border);border-radius:10px;overflow:hidden}
+  th,td{text-align:left;padding:10px 13px;border-bottom:1px solid var(--border);vertical-align:top}
+  th{background:#f0f3f5;color:var(--navy);font-weight:700;font-size:12.5px;
+    letter-spacing:.04em;text-transform:uppercase}
+  tr:last-child td{border-bottom:none}
+  .keyfacts{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:11px;margin:14px 0}
+  .kf{background:var(--keyfact);border:1px solid #d3e6da;border-radius:12px;padding:13px 15px}
+  .kf .lbl{font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:#5c7a6c;font-weight:700}
+  .kf .val{font-size:17px;font-weight:800;color:var(--navy);margin-top:3px}
+  .kf.warn .val{color:var(--rust)}
+  .chip-global{display:flex;align-items:center;gap:12px;background:var(--navy);color:#fff;
+    border-radius:12px;padding:13px 18px;margin:14px 0;font-weight:600}
+  .chip-global .tag{background:var(--teal);border-radius:8px;padding:3px 10px;font-size:11px;
+    letter-spacing:.08em;text-transform:uppercase;font-weight:800}
+  .opt{border:1px solid var(--border);border-radius:12px;padding:12px 15px;margin:9px 0;background:#fff}
+  .opt.correct{border-color:var(--ok-border);background:var(--ok-bg)}
+  .opt .otext{font-weight:600;color:var(--navy)}
+  .opt .mem{margin-top:7px;font-size:14px;color:#3a4850}
+  .opt.correct .badge{color:var(--teal-dark);font-weight:800}
+  .opt.err .badge{color:var(--risk);font-weight:800}
+  .mem-ok{background:var(--ok-bg);border:1px solid var(--ok-border);border-left:4px solid var(--teal);
+    border-radius:10px;padding:13px 16px;margin:10px 0;font-size:14.5px}
+  .mem-err{background:#fbeeec;border:1px solid #f0cfc9;border-left:4px solid var(--risk);
+    border-radius:10px;padding:11px 15px;margin:8px 0;font-size:14px}
+  .branch{border:1px solid var(--border);border-radius:12px;padding:15px 18px;margin:11px 0;background:#fff}
+  .branch h5{margin:0 0 4px;font-size:16px;color:var(--navy);font-family:var(--serif)}
+  .deltas{display:flex;flex-wrap:wrap;gap:8px;margin:9px 0}
+  .delta{font-size:12.5px;font-weight:700;padding:5px 11px;border-radius:8px}
+  .delta.pos{background:#e9f6ef;color:var(--teal-dark)}
+  .delta.neg{background:#fbeeec;color:var(--risk)}
+  .delta.neu{background:#eef1f3;color:#44525a}
+  .delta.risk{background:#fbeeec;color:var(--risk);border:1px dashed #e3b4ac}
+  .note{background:#fff8f0;border:1px solid #f0ddc2;border-left:4px solid var(--rust);
+    border-radius:10px;padding:12px 16px;margin:12px 0;font-size:14.5px}
+  .note strong{color:var(--rust)}
+  .scenario-head{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+    padding:20px 24px;margin:18px 0 6px;border-top:5px solid var(--teal)}
+  .scenario-head.adv{border-top-color:var(--navy)}
+  .scenario-head .code{font-size:12px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--muted);font-weight:700}
+  .scenario-head h3{margin:6px 0 8px}
+  .qkey{background:#eef5f1;border-radius:8px;padding:8px 13px;font-size:14px;margin:8px 0;
+    border:1px solid #d7e8df}
+  .swatch{display:inline-flex;align-items:center;gap:8px;margin:4px 12px 4px 0;font-size:13px}
+  .swatch i{width:20px;height:20px;border-radius:5px;border:1px solid rgba(0,0,0,.1);display:inline-block}
+  .etapa-tag{display:inline-block;background:var(--navy);color:#fff;font-size:11px;font-weight:800;
+    border-radius:6px;padding:3px 9px;letter-spacing:.05em;margin-right:8px}
+  .small{font-size:13.5px;color:var(--muted)}
+  hr.soft{border:none;border-top:1px solid var(--border);margin:30px 0}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="inner">
+    <div class="eyebrow">Especificação técnica · Para construção via Claude Code</div>
+    <h1>Módulo S6 — Regulação Bancária</h1>
+    <p>Novo módulo do <strong style="color:#fff">Laboratório de Tesouraria de Empresas</strong>: quatro cenários interativos sobre <em style="color:#bfe6d2">regulação de capital bancário</em>, no mesmo padrão pedagógico do cenário-referência “Indústria Alfa”. O aluno escolhe opções, o app valida e mostra a memória de cálculo; tudo que resolve cada etapa está em KeyFacts; o volumoso (BP/DRE) fica em demonstrações ocultáveis.</p>
+    <div class="meta">
+      <span>4 cenários · S6.1 a S6.4</span>
+      <span>Pontuação /85</span>
+      <span>Next.js (App Router) + TypeScript</span>
+      <span>Renderização data-driven (<code style="color:#cfe0ec;background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.2)">scenarios.ts</code>)</span>
+      <span>Idioma pt-BR</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+<div class="toc">
+  <strong style="color:var(--navy)">Sumário</strong>
+  <ol>
+    <li><a href="#visao">Visão geral do módulo</a></li>
+    <li><a href="#arcabouco">Arcabouço de capital (regra única)</a></li>
+    <li><a href="#ia">Arquitetura de informação e rotas</a></li>
+    <li><a href="#estados">Máquina de estados</a></li>
+    <li><a href="#componentes">Componentes de UI</a></li>
+    <li><a href="#modelo">Modelo de dados (TypeScript)</a></li>
+    <li><a href="#pontuacao">Pontuação e persistência</a></li>
+    <li><a href="#design">Sistema de design (tokens)</a></li>
+    <li><a href="#convencoes">Convenções de conteúdo</a></li>
+    <li><a href="#qa">Checklist de QA</a></li>
+    <li><a href="#s61">S6.1 — Banco Crescente (template canônico)</a></li>
+    <li><a href="#s62">S6.2 — Banco Atlântico</a></li>
+    <li><a href="#s63">S6.3 — Banco Meridiano</a></li>
+    <li><a href="#s64">S6.4 — Banco Horizonte</a></li>
+    <li><a href="#anexo">Anexo — exemplo de <code>scenarios.ts</code></a></li>
+  </ol>
+</div>
+
+<!-- ============================ 1 ============================ -->
+<h2 id="visao"><span class="num">1.</span> Visão geral do módulo</h2>
+<p class="lead">O módulo <strong>Regulação Bancária</strong> isola, em quatro casos, os principais motores do <strong>Índice de Basileia (IB = PR / RWA)</strong>. Cada cenário foca um único eixo; juntos cobrem o tema com progressão de dificuldade.</p>
+
+<table>
+  <thead><tr><th>Código</th><th>Banco fictício</th><th>Eixo isolado</th><th>O que move o IB</th><th>Dificuldade</th><th>Tempo</th></tr></thead>
+  <tbody>
+    <tr><td><strong>S6.1</strong></td><td>Banco Crescente S.A.</td><td>Crescimento orgânico</td><td>Denominador ↑ (nova originação)</td><td><span class="pill inter">Intermediário</span></td><td>20 min</td></tr>
+    <tr><td><strong>S6.2</strong></td><td>Banco Atlântico S.A.</td><td>Perda na carteira</td><td>Numerador ↓ (capital absorve a perda)</td><td><span class="pill inter">Intermediário</span></td><td>22 min</td></tr>
+    <tr><td><strong>S6.3</strong></td><td>Banco Meridiano S.A.</td><td>Estratégia de risco dos ativos</td><td>Denominador definido pelo FPR escolhido</td><td><span class="pill avanc">Avançado</span></td><td>25 min</td></tr>
+    <tr><td><strong>S6.4</strong></td><td>Banco Horizonte S.A.</td><td>Migração de rating</td><td>Denominador ↑ na carteira existente</td><td><span class="pill avanc">Avançado</span></td><td>25 min</td></tr>
+  </tbody>
+</table>
+
+<p>A grade do módulo (cards estilo S1.x) e a página de cada cenário replicam exatamente o layout do cenário-referência: header com <code>← Início</code>, contador <strong>PONTUAÇÃO X / 85</strong>, breadcrumb <code>Código · Banco · Dificuldade</code>, barra de progresso, box <strong>CONTEXTO</strong> com narrativa + tiles de KeyFact + box ocultável <strong>DEMONSTRAÇÕES FINANCEIRAS</strong> (botão “+”).</p>
+
+<!-- ============================ 2 ============================ -->
+<h2 id="arcabouco"><span class="num">2.</span> Arcabouço de capital — regra única</h2>
+<p>Para fins didáticos, o módulo adota um <strong>requisito de capital único e igual para todos os bancos</strong>, sem decompor em Capital Principal / Nível I / ACP e sem Razão de Alavancagem:</p>
+
+<div class="chip-global"><span class="tag">Requisito</span> Índice de Basileia &nbsp;<strong style="color:#fff">IB = PR / RWA ≥ 10,5%</strong></div>
+
+<ul>
+  <li><strong>PR</strong> = Patrimônio de Referência (capital regulatório); no módulo, simplificado como ≈ Patrimônio Líquido do banco.</li>
+  <li><strong>RWA</strong> = ativos ponderados pelo risco = Σ (exposição × FPR).</li>
+  <li><strong>FPR</strong> = fator de ponderação de risco por classe de ativo.</li>
+  <li>Banco com IB ≥ 10,5% está <em>compliant</em>; abaixo disso, em <strong>descumprimento</strong> (sujeito a plano de regularização / restrição a dividendos).</li>
+</ul>
+
+<p><strong>Exibição da regra (decisão de produto):</strong> a regra aparece nos <u>dois</u> lugares —</p>
+<ol>
+  <li><strong>Chip global fixo</strong> (<code>GlobalRuleChip</code>): faixa navy sempre visível no topo de cada cenário, idêntica ao chip acima (“Requisito · IB = PR/RWA ≥ 10,5%”).</li>
+  <li><strong>KeyFact destacado</strong> em cada cenário: um tile “REQUISITO DE CAPITAL · IB ≥ 10,5%” entre os KeyFacts, para autossuficiência da etapa.</li>
+</ol>
+
+<div class="note"><strong>Rigor normativo:</strong> 10,5% e os FPR usados são uma <em>simplificação ilustrativa</em> de Basileia III / Resoluções CMN-BCB, calibrada para ensino. Não tratar como dispositivo normativo vigente; se o curso exigir aderência exata, marcar “verificar” e conferir os percentuais atuais antes de publicar.</div>
+
+<!-- ============================ 3 ============================ -->
+<h2 id="ia"><span class="num">3.</span> Arquitetura de informação e rotas</h2>
+<p>Seguir o padrão de rotas já existente no app (App Router). Sugestão:</p>
+<pre><code>app/
+ └─ modulo-6/
+     ├─ page.tsx            // grade de cenários do módulo (cards S6.1–S6.4)
+     └─ [scenarioId]/
+         └─ page.tsx        // jornada de um cenário (máquina de estados)
+data/
+ └─ scenarios-s6.ts         // conteúdo tipado dos 4 cenários (fonte única)
+components/                  // reaproveitar os componentes existentes do app</code></pre>
+<ul>
+  <li><code>scenarioId</code> = <code>"s6-1" | "s6-2" | "s6-3" | "s6-4"</code>.</li>
+  <li>A grade (<code>modulo-6/page.tsx</code>) mapeia o array de cenários para <code>ScenarioCard</code>. <strong>Nenhum texto hard-coded</strong> em componente — tudo vem de <code>scenarios-s6.ts</code>.</li>
+  <li>O card do módulo na home (grade de módulos) recebe: ícone (sugestão: prédio/colunas, estilo bancário), título <strong>“Regulação Bancária”</strong>, descrição: “Índice de Basileia, RWA e FPR — como crescimento, perdas, estratégia de risco e migração de rating movem o capital.”, progresso <code>0/4 concluídos</code>.</li>
+</ul>
+
+<!-- ============================ 4 ============================ -->
+<h2 id="estados"><span class="num">4.</span> Máquina de estados (jornada do cenário)</h2>
+<pre><code>card → contexto → etapas (3, sequenciais) → encruzilhada → resultado(caminho) → reflexão → conclusão</code></pre>
+<ol>
+  <li><strong>contexto</strong> — narrativa com termos destacados + KeyFacts + demonstrações ocultáveis.</li>
+  <li><strong>etapas</strong> — 3 múltiplas escolhas com <strong>revelação progressiva</strong>: a Etapa N+1 só abre após acerto da Etapa N. Cada opção exibe memória de cálculo (verde se certa, vermelha se errada). Erro não pontua e permite nova tentativa. Pontua na <strong>1ª seleção correta</strong>.</li>
+  <li><strong>encruzilhada</strong> — 3 cards de decisão (A/B/C); <em>não há “certo”</em>. Escolher leva ao resultado correspondente. 0 pontos.</li>
+  <li><strong>resultado(caminho)</strong> — headline + caption + tiles de variação (deltas) + explicação do trade-off.</li>
+  <li><strong>reflexão</strong> — 1 MC sobre o risco residual / o que o caminho NÃO resolveu (25 pts).</li>
+  <li><strong>conclusão</strong> — “PONTUAÇÃO FINAL X / 85” + “Tentar outro cenário” / “Finalizar e voltar”.</li>
+</ol>
+<p class="small">Navegação permitida: “← Etapa anterior” e troca de caminho na encruzilhada. A barra de progresso reflete as 3 etapas (como na referência); a transição 0/85 → 60/85 (fim das etapas) → 85/85 (após reflexão) deve bater.</p>
+
+<!-- ============================ 5 ============================ -->
+<h2 id="componentes"><span class="num">5.</span> Componentes de UI</h2>
+<table>
+  <thead><tr><th>Componente</th><th>Função</th></tr></thead>
+  <tbody>
+    <tr><td><code>ScoreHeader</code></td><td>Barra superior: botão “← Início”, label “PONTUAÇÃO”, contador <code>score/85</code> com mini-barra de preenchimento.</td></tr>
+    <tr><td><code>GlobalRuleChip</code></td><td>Faixa navy fixa: “Requisito · IB = PR/RWA ≥ 10,5%”. Presente em todos os cenários.</td></tr>
+    <tr><td><code>Breadcrumb</code></td><td><code>código · banco · &lt;pílula dificuldade&gt;</code>.</td></tr>
+    <tr><td><code>ProgressBar</code></td><td>3 segmentos (etapas); o segmento ativo em rust <code>#c2592e</code>.</td></tr>
+    <tr><td><code>ContextPanel</code></td><td>Box CONTEXTO: narrativa (HTML inline restrito) + grade de KeyFacts + <code>StatementBox</code>.</td></tr>
+    <tr><td><code>KeyFactTile</code></td><td>Tile verde-claro: label (uppercase) + valor (peso forte). Tom <code>warning</code> deixa o valor em rust.</td></tr>
+    <tr><td><code>StatementBox</code></td><td>Box ocultável “DEMONSTRAÇÕES FINANCEIRAS” com botão “+” (expande/colapsa). Contém tabelas (BP, DRE e, quando houver, tabela de FPR/buckets).</td></tr>
+    <tr><td><code>EtapaBlock</code></td><td>Título “Etapa N — &lt;label&gt;”, prompt e lista de <code>OptionButton</code>. Revelação progressiva.</td></tr>
+    <tr><td><code>OptionButton</code></td><td>Opção clicável. Estado: neutro / selecionada-atual (azul <code>#dcebf8</code>, tag “RESPOSTA ATUAL”) / correta (verde) / errada (vermelha). Ao clicar, expande <code>FeedbackBox</code>.</td></tr>
+    <tr><td><code>FeedbackBox</code></td><td>Memória de cálculo. Verde (<code>#e9f6ef</code>/borda <code>#bfe6d2</code>) no acerto; vermelha no erro. Sempre com a conta (fórmula + números).</td></tr>
+    <tr><td><code>Encruzilhada</code></td><td>3 <code>BranchCard</code> (A/B/C) com título + resumo; clicar abre <code>ResultadoPanel</code>.</td></tr>
+    <tr><td><code>ResultadoPanel</code></td><td>Headline + caption + grade de <code>DeltaTile</code> + explicação do trade-off.</td></tr>
+    <tr><td><code>DeltaTile</code></td><td>Tile de variação. Tom: positive (teal), negative/risk (vermelho), neutral (cinza).</td></tr>
+    <tr><td><code>ReflexaoBlock</code></td><td>1 MC (mesmo padrão de <code>EtapaBlock</code>), vale 25 pts.</td></tr>
+    <tr><td><code>Conclusao</code></td><td>“PONTUAÇÃO FINAL X / 85” + ações “Tentar outro cenário” / “Finalizar e voltar”.</td></tr>
+  </tbody>
+</table>
+
+<!-- ============================ 6 ============================ -->
+<h2 id="modelo"><span class="num">6.</span> Modelo de dados (TypeScript)</h2>
+<p>Esqueleto tipado; <code>scenarios-s6.ts</code> exporta <code>Scenario[]</code>. Strings de conteúdo aceitam HTML inline restrito (<code>&lt;strong&gt;</code>, <code>&lt;em&gt;</code>, <code>&lt;br&gt;</code>) e devem ser sanitizadas na renderização.</p>
+<pre><code>interface KeyFact { label: string; value: string; tone?: "default" | "positive" | "warning"; }
+
+interface Statement {
+  id: string; title: string; columns: string[];
+  rows: { label: string; values: string[]; emphasis?: boolean }[];
+  note?: string;
+}
+
+interface Option {
+  id: string; text: string; correct: boolean;
+  feedback: string;            // memória de cálculo (acerto OU erro), SEMPRE com a conta
+}
+
+interface Etapa {
+  id: string; label: string; prompt: string;
+  options: Option[];           // 4 opções, 1 correta
+  points: number;              // 20
+}
+
+interface DeltaMetric { label: string; value: string; tone: "positive" | "negative" | "neutral" | "risk"; }
+
+interface Resultado { headline: string; caption: string; metrics: DeltaMetric[]; explanation: string; }
+
+interface Branch { id: "A" | "B" | "C"; title: string; summary: string; resultado: Resultado; }
+
+interface Reflexao { prompt: string; options: Option[]; points: number; } // 25
+
+interface Scenario {
+  id: string;                  // "s6-1"
+  code: string;                // "S6.1"
+  order: number;
+  title: string;
+  bank: string;                // "Banco Crescente S.A."
+  difficulty: "intermediario" | "avancado";
+  estMinutes: number;
+  blurb: string;               // texto do card na grade
+  archetype: string;           // eixo isolado
+  context: string;             // narrativa do CONTEXTO
+  keyFacts: KeyFact[];         // inclui o tile "REQUISITO · IB ≥ 10,5%"
+  statements: Statement[];     // BP, DRE e (S6.3/S6.4) tabela de FPR/buckets
+  etapas: Etapa[];             // 3
+  encruzilhada: { prompt: string; branches: Branch[] };
+  reflexao: Reflexao;
+  maxScore: number;            // 85
+}
+
+// Constante global reutilizada pelo GlobalRuleChip e por um KeyFact:
+export const CAPITAL_RULE = { label: "Requisito de capital", value: "IB = PR/RWA ≥ 10,5%" };</code></pre>
+
+<!-- ============================ 7 ============================ -->
+<h2 id="pontuacao"><span class="num">7.</span> Pontuação e persistência</h2>
+<ul>
+  <li><strong>3 etapas × 20 + reflexão 25 = 85.</strong> Encruzilhada = decisão (0 pts).</li>
+  <li>Pontua na <strong>1ª seleção correta</strong> de cada etapa/reflexão; tentativas erradas anteriores não descontam, mas não readicionam pontos.</li>
+  <li>Estado por cenário: <code>{ phase, currentEtapaIndex, answers, chosenBranch, score, completed }</code>.</li>
+  <li>Persistir em <code>localStorage</code> por cenário (chave por <code>scenarioId</code>). Permitir “← Etapa anterior” e troca de caminho na encruzilhada.</li>
+  <li>O progresso do módulo (<code>x/4 concluídos</code>) deriva de <code>completed</code> de cada cenário.</li>
+</ul>
+
+<!-- ============================ 8 ============================ -->
+<h2 id="design"><span class="num">8.</span> Sistema de design (tokens)</h2>
+<p>Reutilizar o design system do app. Tokens de referência/fallback:</p>
+<div class="card">
+  <div class="swatch"><i style="background:#f6f7f8"></i> Fundo <code>#f6f7f8</code></div>
+  <div class="swatch"><i style="background:#103049"></i> Navy (títulos/botões) <code>#103049</code></div>
+  <div class="swatch"><i style="background:#1c8c6b"></i> Teal (acento/acertos) <code>#1c8c6b</code></div>
+  <div class="swatch"><i style="background:#eaf3ee"></i> KeyFact tile <code>#eaf3ee</code></div>
+  <div class="swatch"><i style="background:#e9f6ef;border-color:#bfe6d2"></i> Feedback correto <code>#e9f6ef</code>/<code>#bfe6d2</code></div>
+  <div class="swatch"><i style="background:#dcebf8"></i> Resposta atual <code>#dcebf8</code></div>
+  <div class="swatch"><i style="background:#b23a2e"></i> Risco/negativo <code>#b23a2e</code></div>
+  <div class="swatch"><i style="background:#c2592e"></i> Progresso (rust) <code>#c2592e</code></div>
+</div>
+<ul>
+  <li>Cards brancos, borda <code>#e3e7ea</code>, raio 14–16px.</li>
+  <li>Badge <strong>INTERMEDIÁRIO</strong> = pílula verde-menta; <strong>AVANÇADO</strong> = pílula navy.</li>
+  <li>Display serifado forte nos títulos; sans humanista no corpo; números em peso forte.</li>
+</ul>
+
+<!-- ============================ 9 ============================ -->
+<h2 id="convencoes"><span class="num">9.</span> Convenções de conteúdo</h2>
+<ul>
+  <li><strong>Autossuficiência:</strong> tudo que resolve as etapas está nos KeyFacts; o volumoso (BP/DRE, tabelas de FPR/buckets) vai nas demonstrações ocultáveis.</li>
+  <li><strong>Memória de cálculo SEMPRE com a conta</strong> (fórmula + números). No acerto, reforça o conceito; no erro, aponta o equívoco específico. Cada opção incorreta tem sua “memória de erro”.</li>
+  <li><strong>FPR — abordagem mista:</strong> S6.1 e S6.2 usam o RWA/FPR médio diretamente (sem tabela por classe); S6.3 e S6.4 expõem <strong>tabela de FPR por classe</strong> e exigem que o aluno compute <code>RWA = Σ exposição × FPR</code>.</li>
+  <li><strong>Destaques:</strong> <code>&lt;strong&gt;</code> para números-chave; <code>&lt;em&gt;</code>/teal para conceitos.</li>
+  <li>Números internamente consistentes e implementáveis literalmente (valores em R$ milhões).</li>
+</ul>
+
+<!-- ============================ 10 ============================ -->
+<h2 id="qa"><span class="num">10.</span> Checklist de QA</h2>
+<ul>
+  <li>Os KeyFacts bastam para resolver todas as etapas? O resto está ocultável?</li>
+  <li>Cada etapa tem 4 opções plausíveis, 1 correta e memória com a conta (inclusive nas erradas)?</li>
+  <li>Os 3 caminhos da encruzilhada levam a resultados realmente diferentes (deltas e trade-offs distintos)?</li>
+  <li>A pontuação soma 85 (3×20 + 25)? A transição 0 → 60 → 85 confere?</li>
+  <li>Todos os bancos <strong>partem com IB ≥ 10,5%</strong> (compliant) — o choque/decisão é que derruba o índice?</li>
+  <li>Chip global presente e KeyFact da regra em todos os cenários?</li>
+  <li>Há progressão de dificuldade (S6.1/S6.2 intermediário → S6.3/S6.4 avançado)?</li>
+</ul>
+
+<hr class="soft">
+
+<!-- ============================ S6.1 ============================ -->
+<h2 id="s61"><span class="num">11.</span> Cenário S6.1 — Banco Crescente <span class="pill inter" style="vertical-align:middle">Intermediário · template canônico</span></h2>
+<p class="small">Este cenário é o <strong>template canônico</strong>: vem com as 4 opções por etapa e a memória de erro de cada incorreta. Os demais cenários (S6.2–S6.4) seguem a mesma estrutura.</p>
+
+<div class="scenario-head">
+  <div class="code">S6.1 · Banco Crescente S.A. · Intermediário · 20 min</div>
+  <h3>Crescimento orgânico corrói o colchão de capital</h3>
+  <p><strong>Blurb (card):</strong> O Banco Crescente vem expandindo a carteira de crédito a 25% ao ano. Apesar de lucrativo, o CFO teme que o ritmo esteja consumindo o Índice de Basileia. Sua tarefa: medir o IB atual, entender o que o derruba e projetar onde ele termina o ano.</p>
+  <div class="qkey"><strong>Pergunta-chave:</strong> por que o crescimento orgânico consome capital mesmo com o banco dando lucro?</div>
+</div>
+
+<h4>Contexto (narrativa)</h4>
+<div class="card">Você assumiu a <strong>tesouraria do Banco Crescente S.A.</strong>, um banco médio que cresce a carteira de crédito a <strong>~25% ao ano</strong>. O banco é lucrativo (lucro líquido de <strong>R$ 150 milhões</strong>) e distribui <strong>40% em dividendos</strong>. Ainda assim, o CFO está inquieto: o <em>colchão de capital</em> vem encolhendo. Você recebe o BP e a DRE e precisa diagnosticar se o plano de crescimento mantém o banco acima do requisito de capital — e, se não, o que fazer.</div>
+
+<h4>KeyFacts</h4>
+<div class="keyfacts">
+  <div class="kf"><div class="lbl">Patrimônio de Referência (PR)</div><div class="val">R$ 1.200 M</div></div>
+  <div class="kf"><div class="lbl">RWA atual</div><div class="val">R$ 10.000 M</div></div>
+  <div class="kf"><div class="lbl">Crescimento do RWA (plano)</div><div class="val">+25%</div></div>
+  <div class="kf"><div class="lbl">Lucro líquido do ano</div><div class="val">R$ 150 M</div></div>
+  <div class="kf"><div class="lbl">Payout de dividendos</div><div class="val">40%</div></div>
+  <div class="kf"><div class="lbl">Lucro retido</div><div class="val">R$ 90 M</div></div>
+  <div class="kf warn"><div class="lbl">Requisito de capital</div><div class="val">IB ≥ 10,5%</div></div>
+</div>
+
+<h4>Demonstrações financeiras (ocultável)</h4>
+<div class="card">
+  <table>
+    <thead><tr><th>Balanço patrimonial (R$ M)</th><th>Valor</th></tr></thead>
+    <tbody>
+      <tr><td>Caixa e equivalentes</td><td>800</td></tr>
+      <tr><td>Títulos e valores mobiliários</td><td>3.000</td></tr>
+      <tr><td>Carteira de crédito bruta</td><td>9.500</td></tr>
+      <tr><td>(–) Provisão para perdas (PDD)</td><td>(300)</td></tr>
+      <tr><td>Carteira de crédito líquida</td><td>9.200</td></tr>
+      <tr><td>Imobilizado e outros ativos</td><td>1.000</td></tr>
+      <tr><td><strong>Total do ativo</strong></td><td><strong>14.000</strong></td></tr>
+      <tr><td>Depósitos</td><td>8.000</td></tr>
+      <tr><td>Captações no mercado</td><td>4.000</td></tr>
+      <tr><td>Outros passivos</td><td>800</td></tr>
+      <tr><td>Patrimônio líquido (≈ PR)</td><td><strong>1.200</strong></td></tr>
+      <tr><td><strong>Total do passivo + PL</strong></td><td><strong>14.000</strong></td></tr>
+    </tbody>
+  </table>
+  <table>
+    <thead><tr><th>DRE do exercício (R$ M)</th><th>Valor</th></tr></thead>
+    <tbody>
+      <tr><td>Receita de intermediação financeira</td><td>2.000</td></tr>
+      <tr><td>Despesa de captação</td><td>(1.100)</td></tr>
+      <tr><td>Margem financeira</td><td>900</td></tr>
+      <tr><td>Despesa de PDD</td><td>(200)</td></tr>
+      <tr><td>Receita de serviços e tarifas</td><td>300</td></tr>
+      <tr><td>Despesas administrativas</td><td>(800)</td></tr>
+      <tr><td>Resultado antes de impostos</td><td>200</td></tr>
+      <tr><td>IR / CSLL</td><td>(50)</td></tr>
+      <tr><td><strong>Lucro líquido</strong></td><td><strong>150</strong></td></tr>
+      <tr><td>Dividendos (40%)</td><td>(60)</td></tr>
+      <tr><td><strong>Lucro retido</strong></td><td><strong>90</strong></td></tr>
+    </tbody>
+    <tfoot></tfoot>
+  </table>
+  <p class="small">RWA total = R$ 10.000 M (dado). No nível intermediário não é necessário decompor por classe de FPR.</p>
+</div>
+
+<h4><span class="etapa-tag">Etapa 1</span> Leitura — IB atual <span class="small">(20 pts)</span></h4>
+<p><strong>Prompt:</strong> Qual é o Índice de Basileia atual do Banco Crescente?</p>
+<div class="opt correct"><span class="otext">A) 12,0%</span> <span class="badge">✓ Correto</span>
+  <div class="mem">IB = PR / RWA = 1.200 / 10.000 = <strong>12,0%</strong>. Acima do requisito de 10,5% → o banco parte saudável, com colchão de 1,5 p.p.</div></div>
+<div class="opt err"><span class="otext">B) 8,0%</span> <span class="badge">✗</span>
+  <div class="mem">Erro: usou o caixa (800) no numerador. O capital regulatório é o PR (≈ PL = 1.200), não o caixa. IB = 1.200/10.000 = 12,0%.</div></div>
+<div class="opt err"><span class="otext">C) 10,5%</span> <span class="badge">✗</span>
+  <div class="mem">Erro: 10,5% é o <em>requisito</em>, não o índice do banco. Calcule PR/RWA = 1.200/10.000 = 12,0%.</div></div>
+<div class="opt err"><span class="otext">D) 15,0%</span> <span class="badge">✗</span>
+  <div class="mem">Erro: o denominador é o RWA (10.000), não os TVM (3.000) nem a carteira. IB = 1.200/10.000 = 12,0%.</div></div>
+
+<h4><span class="etapa-tag">Etapa 2</span> Mecanismo — o que derruba o IB <span class="small">(20 pts)</span></h4>
+<p><strong>Prompt:</strong> Executando o plano de crescer +25% o RWA financiado só com lucro retido, o que acontece com o IB?</p>
+<div class="opt correct"><span class="otext">A) O RWA cresce 25% enquanto o capital cresce só 7,5% — o IB cai porque o denominador cresce mais que o numerador.</span> <span class="badge">✓ Correto</span>
+  <div class="mem">ΔRWA = +25%. Capital gerado internamente = lucro retido / PR = 90/1.200 = <strong>7,5%</strong>. Como 25% &gt; 7,5%, o numerador não acompanha o denominador → IB cai.</div></div>
+<div class="opt err"><span class="otext">B) O IB sobe: mais carteira gera mais lucro e mais capital.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: o lucro retido (90) é muito menor que o aumento do RWA (+2.500). O capital não acompanha; o IB cai.</div></div>
+<div class="opt err"><span class="otext">C) O IB fica estável: o lucro retido cobre o crescimento.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: 90 de capital novo contra 2.500 de RWA novo — não cobre. O IB cai.</div></div>
+<div class="opt err"><span class="otext">D) Depende só do payout; com 40% de retenção o índice se mantém.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: o payout é 40%, logo retém-se 60% (R$ 90). Mesmo assim 90 ≪ 2.500 de RWA novo; o payout não muda a aritmética a favor.</div></div>
+
+<h4><span class="etapa-tag">Etapa 3</span> Síntese — IB projetado <span class="small">(20 pts)</span></h4>
+<p><strong>Prompt:</strong> Qual o IB projetado ao fim do ano se o plano de crescimento for executado como está?</p>
+<div class="opt correct"><span class="otext">A) 10,3% — abaixo de 10,5% (descumprimento).</span> <span class="badge">✓ Correto</span>
+  <div class="mem">PR projetado = 1.200 + 90 = <strong>1.290</strong>. RWA projetado = 10.000 × 1,25 = <strong>12.500</strong>. IB = 1.290/12.500 = <strong>10,3%</strong> → abaixo do requisito de 10,5%: o banco entra em descumprimento.</div></div>
+<div class="opt err"><span class="otext">B) 12,0% — inalterado.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: não atualizou o RWA. Com RWA 12.500 e PR 1.290, o IB cai para 10,3%.</div></div>
+<div class="opt err"><span class="otext">C) 9,3%</span> <span class="badge">✗</span>
+  <div class="mem">Erro: cresceu o RWA mas esqueceu o lucro retido no PR. PR = 1.290 (não 1.200). IB = 1.290/12.500 = 10,3%.</div></div>
+<div class="opt err"><span class="otext">D) 10,1%</span> <span class="badge">✗</span>
+  <div class="mem">Erro: reteve 40% do lucro (R$ 60) em vez de 60%. Payout de 40% ⇒ retenção de 60% (R$ 90). PR = 1.290; IB = 10,3%.</div></div>
+
+<h4>Encruzilhada <span class="small">(decisão · 0 pts)</span></h4>
+<p><strong>Prompt:</strong> O conselho precisa definir a estratégia diante da projeção de descumprimento. Qual caminho seguir?</p>
+
+<div class="branch">
+  <h5>Caminho A — Manter o ritmo de +25% ao ano</h5>
+  <p class="small">Resultado · headline: “Crescimento máximo, capital furado”</p>
+  <div class="deltas">
+    <span class="delta risk">IB ano 1: 10,3%</span><span class="delta risk">ano 2: ~9,0%</span><span class="delta risk">ano 3: ~7,9%</span>
+    <span class="delta pos">Carteira +95% em 3 anos</span><span class="delta risk">Descumprimento recorrente</span>
+  </div>
+  <p class="small">Trade-off: maximiza crescimento de curto prazo, mas o IB despenca a cada ciclo — descumprimento estrutural, plano de regularização e provável restrição a dividendos.</p>
+</div>
+<div class="branch">
+  <h5>Caminho B — Calibrar o crescimento à geração de capital</h5>
+  <p class="small">Resultado · headline: “Disciplina de capital, crescimento modesto”. Ex.: crescer só +20% → IB = 1.290/12.000 = 10,8%.</p>
+  <div class="deltas">
+    <span class="delta pos">IB ~10,8% (folga)</span><span class="delta neu">Carteira +20% (em vez de +25%)</span><span class="delta neg">Market share cede</span>
+  </div>
+  <p class="small">Trade-off: preserva o IB acima de 10,5%, mas cresce abaixo do potencial e perde margem/participação.</p>
+</div>
+<div class="branch">
+  <h5>Caminho C — Captar capital para sustentar +25%/ano</h5>
+  <p class="small">Resultado · headline: “Crescimento sustentado, acionista diluído”.</p>
+  <div class="deltas">
+    <span class="delta pos">IB mantido ~10,5–11%</span><span class="delta neg">Capital novo ~R$ 200–300 M/ano</span><span class="delta risk">Diluição recorrente</span>
+  </div>
+  <p class="small">Trade-off: sustenta crescimento e IB, mas exige captações sucessivas (diluição/custo de capital a cada rodada).</p>
+</div>
+
+<h4>Reflexão — risco residual <span class="small">(25 pts)</span></h4>
+<p><strong>Prompt:</strong> Mesmo que o banco capte capital agora (caminho C), qual risco residual permanece?</p>
+<div class="opt correct"><span class="otext">A) Enquanto a geração interna de capital (7,5%) ficar abaixo do crescimento do RWA (25%), o banco precisará captar repetidamente — é estrutural, não pontual.</span> <span class="badge">✓ Correto</span>
+  <div class="mem">O crescimento sustentável de ativos sem perder capital ≈ ROE × retenção. Enquanto o crescimento do RWA superar a geração de capital, o IB tende a cair a cada ciclo — a captação resolve um ano, não o descasamento.</div></div>
+<div class="opt err"><span class="otext">B) Nenhum: uma vez capitalizado, o IB fica permanentemente resolvido.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: a captação cobre um exercício; o descasamento entre crescimento e geração de capital recorre.</div></div>
+<div class="opt err"><span class="otext">C) O único risco é o custo da dívida subir.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: o risco central é de capital regulatório, não de custo de funding isolado.</div></div>
+<div class="opt err"><span class="otext">D) O risco é o payout cair.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: reduzir payout ajuda, mas mesmo com retenção total (150) &lt; 2.500 de RWA novo — não resolve o descasamento.</div></div>
+
+<hr class="soft">
+
+<!-- ============================ S6.2 ============================ -->
+<h2 id="s62">Cenário S6.2 — Banco Atlântico <span class="pill inter" style="vertical-align:middle">Intermediário</span></h2>
+
+<div class="scenario-head">
+  <div class="code">S6.2 · Banco Atlântico S.A. · Intermediário · 22 min</div>
+  <h3>Perda na carteira: desalavancar ou capitalizar</h3>
+  <p><strong>Blurb (card):</strong> Uma exposição setorial concentrada se deteriora e o Banco Atlântico reconhece R$ 600 M de provisão adicional. O IB fura o requisito. Sua tarefa: ver onde a perda bate, e dimensionar cada alavanca de recomposição.</p>
+  <div class="qkey"><strong>Pergunta-chave:</strong> a perda atinge o numerador ou o denominador do IB, e como recompor?</div>
+</div>
+
+<h4>Contexto (narrativa)</h4>
+<div class="card">O <strong>Banco Atlântico S.A.</strong> tinha exposição concentrada em um setor que entrou em crise. Auditoria e área de risco determinam o reconhecimento de <strong>R$ 600 milhões de PDD adicional</strong> no resultado. As exposições foram <em>provisionadas</em>, mas <strong>não baixadas</strong> (seguem no balanço). O banco partia confortável (IB de 12,0%). Sua tarefa: medir o IB após o choque, identificar o componente atingido e dimensionar quanto seria preciso em cada alavanca isolada para voltar a 10,5%.</div>
+
+<h4>KeyFacts</h4>
+<div class="keyfacts">
+  <div class="kf"><div class="lbl">PR (capital) inicial</div><div class="val">R$ 2.400 M</div></div>
+  <div class="kf"><div class="lbl">RWA</div><div class="val">R$ 20.000 M</div></div>
+  <div class="kf warn"><div class="lbl">PDD adicional (no resultado)</div><div class="val">R$ 600 M</div></div>
+  <div class="kf"><div class="lbl">Status das exposições</div><div class="val">Provisionadas, não baixadas</div></div>
+  <div class="kf warn"><div class="lbl">Requisito de capital</div><div class="val">IB ≥ 10,5%</div></div>
+</div>
+
+<h4>Demonstrações financeiras (ocultável)</h4>
+<div class="card">
+  <table>
+    <thead><tr><th>Balanço patrimonial (R$ M)</th><th>Pós-choque</th></tr></thead>
+    <tbody>
+      <tr><td>Caixa e equivalentes</td><td>3.000</td></tr>
+      <tr><td>Títulos e valores mobiliários</td><td>5.000</td></tr>
+      <tr><td>Carteira de crédito bruta</td><td>19.000</td></tr>
+      <tr><td>(–) PDD total</td><td>(1.200)</td></tr>
+      <tr><td>Carteira líquida</td><td>17.800</td></tr>
+      <tr><td>Outros ativos</td><td>1.800</td></tr>
+      <tr><td><strong>Total do ativo</strong></td><td><strong>27.600</strong></td></tr>
+      <tr><td>Depósitos</td><td>16.000</td></tr>
+      <tr><td>Captações no mercado</td><td>8.000</td></tr>
+      <tr><td>Outros passivos</td><td>1.800</td></tr>
+      <tr><td>Patrimônio líquido (≈ PR pós-perda)</td><td><strong>1.800</strong></td></tr>
+      <tr><td><strong>Total do passivo + PL</strong></td><td><strong>27.600</strong></td></tr>
+    </tbody>
+  </table>
+  <table>
+    <thead><tr><th>DRE — efeito do choque (R$ M)</th><th>Valor</th></tr></thead>
+    <tbody>
+      <tr><td>Margem financeira</td><td>1.500</td></tr>
+      <tr><td>Despesa de PDD (recorrente)</td><td>(400)</td></tr>
+      <tr><td><strong>Despesa de PDD adicional (choque)</strong></td><td><strong>(600)</strong></td></tr>
+      <tr><td>Receita de serviços</td><td>500</td></tr>
+      <tr><td>Despesas administrativas</td><td>(900)</td></tr>
+      <tr><td>Resultado do período</td><td>100</td></tr>
+    </tbody>
+    <tfoot></tfoot>
+  </table>
+  <p class="small">RWA estável em R$ 20.000 M: provisionar não baixa a exposição. PR pós-choque = 2.400 − 600 = 1.800.</p>
+</div>
+
+<h4><span class="etapa-tag">Etapa 1</span> Leitura — IB pós-perda <span class="small">(20 pts)</span></h4>
+<p><strong>Prompt:</strong> Após reconhecer R$ 600 M de PDD adicional, qual o IB do Banco Atlântico?</p>
+<div class="opt correct"><span class="otext">A) 9,0%</span> <span class="badge">✓ Correto</span>
+  <div class="mem">A PDD reduz o resultado e, por consequência, o capital: PR = 2.400 − 600 = <strong>1.800</strong>. IB = 1.800/20.000 = <strong>9,0%</strong> → abaixo de 10,5%.</div></div>
+<div class="opt err"><span class="otext">B) 12,0%</span> <span class="badge">✗</span>
+  <div class="mem">Erro: não deduziu a perda. A PDD adicional reduz o capital; PR cai para 1.800, IB = 9,0%.</div></div>
+<div class="opt err"><span class="otext">C) 7,0%</span> <span class="badge">✗</span>
+  <div class="mem">Erro: deduziu a perda também do RWA. A perda atinge o capital, não o RWA; PR 1.800 / RWA 20.000 = 9,0%.</div></div>
+<div class="opt err"><span class="otext">D) 11,0%</span> <span class="badge">✗</span>
+  <div class="mem">Erro: deduziu só metade da PDD. Toda a PDD de 600 reduz o capital; PR 1.800; IB = 9,0%.</div></div>
+
+<h4><span class="etapa-tag">Etapa 2</span> Mecanismo — componente atingido <span class="small">(20 pts)</span></h4>
+<p><strong>Prompt:</strong> A perda de crédito derruba o IB atingindo qual componente?</p>
+<div class="opt correct"><span class="otext">A) O numerador (capital/PR), via resultado; o RWA fica estável porque as exposições foram provisionadas, não baixadas.</span> <span class="badge">✓ Correto</span>
+  <div class="mem">PDD é despesa → reduz lucro → reduz PL/PR (numerador). Exposições provisionadas continuam no balanço → RWA estável.</div></div>
+<div class="opt err"><span class="otext">B) O denominador (RWA), porque a carteira encolhe.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: provisionar não baixa a exposição; o RWA permanece em 20.000. O atingido é o capital.</div></div>
+<div class="opt err"><span class="otext">C) Ambos igualmente.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: o efeito imediato é no capital; o RWA só cairia com baixa (write-off) ou venda da exposição.</div></div>
+<div class="opt err"><span class="otext">D) Nenhum: PDD é conta de resultado e não afeta o capital.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: o resultado compõe o capital (via lucros/prejuízos acumulados); a PDD o reduz.</div></div>
+
+<h4><span class="etapa-tag">Etapa 3</span> Síntese — alavancas de recomposição <span class="small">(20 pts)</span></h4>
+<p><strong>Prompt:</strong> Para voltar a cumprir 10,5%, quanto o banco precisa em CADA alavanca isolada?</p>
+<div class="opt correct"><span class="otext">A) Capital: injetar R$ 300 M; OU desalavancar: reduzir o RWA em ≈ R$ 2.857 M.</span> <span class="badge">✓ Correto</span>
+  <div class="mem">Capital → PR ≥ 0,105 × 20.000 = 2.100; déficit = 2.100 − 1.800 = <strong>R$ 300 M</strong>. Desalavancagem → RWA ≤ 1.800/0,105 = 17.143; corte = 20.000 − 17.143 ≈ <strong>R$ 2.857 M</strong>.</div></div>
+<div class="opt err"><span class="otext">B) Capital: R$ 600 M; desalavancar: R$ 600 M.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: R$ 600 era a perda. O déficit para 10,5% é R$ 300 M (capital) ou ≈ R$ 2.857 M (RWA).</div></div>
+<div class="opt err"><span class="otext">C) Capital: R$ 300 M; desalavancar: R$ 300 M.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: o corte de RWA não é igual ao aporte. RWA ≤ 1.800/0,105 → corte ≈ R$ 2.857 M.</div></div>
+<div class="opt err"><span class="otext">D) Capital: R$ 2.100 M; desalavancar: R$ 17.143 M.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: confundiu o nível-alvo (PR 2.100; RWA 17.143) com o ajuste necessário (déficit 300; corte 2.857).</div></div>
+
+<h4>Encruzilhada <span class="small">(decisão · 0 pts)</span></h4>
+<p><strong>Prompt:</strong> Como recompor o IB?</p>
+<div class="branch">
+  <h5>Caminho A — Capitalizar (chamada de capital / oferta)</h5>
+  <div class="deltas"><span class="delta pos">IB 9,0% → 10,5%</span><span class="delta pos">Balanço preservado</span><span class="delta neg">Diluição</span><span class="delta risk">Depende do apetite do mercado</span></div>
+  <p class="small">Trade-off: restaura o IB sem encolher o banco, mas dilui acionistas em um momento ruim e depende de demanda por capital.</p>
+</div>
+<div class="branch">
+  <h5>Caminho B — Desalavancar (vender ativos de risco)</h5>
+  <div class="deltas"><span class="delta pos">IB → 10,5%</span><span class="delta neg">Carteira −2.857</span><span class="delta neg">Receita futura ↓</span><span class="delta risk">Fire sale realiza perda</span></div>
+  <p class="small">Trade-off: reduz o RWA rápido e sem capital novo, mas vende barato e encolhe a geração de receita.</p>
+</div>
+<div class="branch">
+  <h5>Caminho C — Híbrido (capital parcial + corte de RWA de pior RAROC)</h5>
+  <p class="small">Ex.: R$ 150 M de capital → PR 1.950; RWA ≤ 1.950/0,105 = 18.571 → cortar ≈ R$ 1.429 M.</p>
+  <div class="deltas"><span class="delta pos">IB → 10,5%</span><span class="delta neu">Diluição menor</span><span class="delta pos">Carteira otimizada</span><span class="delta risk">Execução complexa</span></div>
+  <p class="small">Trade-off: equilibra diluição e encolhimento, mas exige seletividade e é mais lento.</p>
+</div>
+
+<h4>Reflexão — risco residual <span class="small">(25 pts)</span></h4>
+<p><strong>Prompt:</strong> Qual risco residual as alavancas de recomposição NÃO resolvem?</p>
+<div class="opt correct"><span class="otext">A) Se a causa (concentração setorial) persistir, recompor capital não evita um 2º choque; e desalavancar vendendo os ativos líquidos de baixo risco piora a densidade de RWA do que sobra.</span> <span class="badge">✓ Correto</span>
+  <div class="mem">A recomposição corrige o índice, não a origem da perda. Vender o que é líquido e de baixo risco deixa a carteira mais arriscada na média (densidade de RWA maior).</div></div>
+<div class="opt err"><span class="otext">B) Nenhum: recompor o IB encerra o problema.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: a fonte da perda (concentração) segue ativa.</div></div>
+<div class="opt err"><span class="otext">C) O risco é só de liquidez.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: o risco central é a recorrência da perda de crédito por concentração.</div></div>
+<div class="opt err"><span class="otext">D) Desalavancar sempre melhora a qualidade da carteira.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: se vender o que é líquido e de baixo risco, sobra o pior — a densidade de RWA piora.</div></div>
+
+<hr class="soft">
+
+<!-- ============================ S6.3 ============================ -->
+<h2 id="s63">Cenário S6.3 — Banco Meridiano <span class="pill avanc" style="vertical-align:middle">Avançado</span></h2>
+
+<div class="scenario-head adv">
+  <div class="code">S6.3 · Banco Meridiano S.A. · Avançado · 25 min</div>
+  <h3>Estratégia de risco dos ativos e RAROC</h3>
+  <p><strong>Blurb (card):</strong> Com R$ 1.000 M de capital, o Banco Meridiano escolhe como alocar R$ 10.000 M entre duas estratégias — uma conservadora, outra agressiva. Mais risco rende mais? Sua tarefa: computar o RWA por classe de FPR e comparar o retorno sobre o capital regulatório.</p>
+  <div class="qkey"><strong>Pergunta-chave:</strong> mais risco (FPR maior) significa melhor retorno?</div>
+</div>
+
+<h4>Contexto (narrativa)</h4>
+<div class="card">O <strong>Banco Meridiano S.A.</strong> tem <strong>R$ 1.000 milhões de capital (PR)</strong> e precisa decidir como alocar <strong>R$ 10.000 milhões</strong> de exposição. A diretoria avalia duas carteiras: a <em>conservadora</em> (Estratégia A), com mais títulos públicos e imobiliário, e a <em>agressiva</em> (Estratégia B), pesada em corporativo e exposições de maior risco. Cada classe de ativo tem um <em>fator de ponderação de risco (FPR)</em> próprio. Sua tarefa: computar o RWA de cada estratégia e decidir qual entrega melhor retorno sobre o capital regulatório.</div>
+
+<h4>KeyFacts</h4>
+<div class="keyfacts">
+  <div class="kf"><div class="lbl">Capital disponível (PR)</div><div class="val">R$ 1.000 M</div></div>
+  <div class="kf"><div class="lbl">Exposição a alocar</div><div class="val">R$ 10.000 M</div></div>
+  <div class="kf"><div class="lbl">Margem líquida — Estratégia A</div><div class="val">R$ 200 M</div></div>
+  <div class="kf"><div class="lbl">Margem líquida — Estratégia B</div><div class="val">R$ 350 M</div></div>
+  <div class="kf warn"><div class="lbl">Requisito de capital</div><div class="val">IB ≥ 10,5%</div></div>
+</div>
+
+<h4>Demonstrações financeiras (ocultável) — tabela de FPR e composição</h4>
+<div class="card">
+  <table>
+    <thead><tr><th>Classe de ativo</th><th>FPR (ilustrativo · verificar)</th></tr></thead>
+    <tbody>
+      <tr><td>Títulos públicos federais (TPF)</td><td>0%</td></tr>
+      <tr><td>Crédito imobiliário residencial</td><td>50%</td></tr>
+      <tr><td>Crédito varejo / PME</td><td>75%</td></tr>
+      <tr><td>Crédito corporativo</td><td>100%</td></tr>
+      <tr><td>Exposições de maior risco (subordinado / inadimplente)</td><td>150%</td></tr>
+    </tbody>
+  </table>
+  <table>
+    <thead><tr><th>Composição (R$ M)</th><th>Estratégia A (conservadora)</th><th>Estratégia B (agressiva)</th></tr></thead>
+    <tbody>
+      <tr><td>TPF (0%)</td><td>4.000</td><td>2.000</td></tr>
+      <tr><td>Imobiliário residencial (50%)</td><td>2.000</td><td>—</td></tr>
+      <tr><td>Corporativo (100%)</td><td>4.000</td><td>6.000</td></tr>
+      <tr><td>Maior risco (150%)</td><td>—</td><td>2.000</td></tr>
+      <tr><td><strong>Exposição total</strong></td><td><strong>10.000</strong></td><td><strong>10.000</strong></td></tr>
+      <tr><td><strong>RWA</strong></td><td><strong>5.000</strong></td><td><strong>9.000</strong></td></tr>
+      <tr><td>Margem líquida</td><td>200</td><td>350</td></tr>
+    </tbody>
+  </table>
+  <p class="small">RWA = Σ exposição × FPR. A: 4.000×0% + 2.000×50% + 4.000×100% = 5.000. B: 2.000×0% + 6.000×100% + 2.000×150% = 9.000.</p>
+</div>
+
+<h4><span class="etapa-tag">Etapa 1</span> Leitura — RWA da Estratégia A <span class="small">(20 pts)</span></h4>
+<p><strong>Prompt:</strong> Usando a tabela de FPR, qual o RWA da Estratégia A?</p>
+<div class="opt correct"><span class="otext">A) R$ 5.000 M</span> <span class="badge">✓ Correto</span>
+  <div class="mem">RWA = Σ exposição × FPR = 4.000×0% + 2.000×50% + 4.000×100% = 0 + 1.000 + 4.000 = <strong>5.000</strong>.</div></div>
+<div class="opt err"><span class="otext">B) R$ 10.000 M</span> <span class="badge">✗</span>
+  <div class="mem">Erro: somou a exposição sem ponderar. O TPF entra com 0% e o imobiliário com 50%. RWA = 5.000.</div></div>
+<div class="opt err"><span class="otext">C) R$ 4.000 M</span> <span class="badge">✗</span>
+  <div class="mem">Erro: esqueceu o imobiliário (2.000×50% = 1.000). RWA = 5.000.</div></div>
+<div class="opt err"><span class="otext">D) R$ 6.000 M</span> <span class="badge">✗</span>
+  <div class="mem">Erro: usou 100% no imobiliário. O FPR residencial é 50% (2.000×50% = 1.000). RWA = 5.000.</div></div>
+
+<h4><span class="etapa-tag">Etapa 2</span> Mecanismo — por que B consome mais capital <span class="small">(20 pts)</span></h4>
+<p><strong>Prompt:</strong> Por que a Estratégia B consome mais capital que a A, com a mesma exposição nominal de R$ 10.000 M?</p>
+<div class="opt correct"><span class="otext">A) B aloca em classes de FPR maior → RWA maior → capital exigido (10,5% × RWA) maior.</span> <span class="badge">✓ Correto</span>
+  <div class="mem">Capital exigido = 10,5% × RWA. RWA_B (9.000) &gt; RWA_A (5.000) → exigência B = 945 &gt; A = 525, mesmo com exposição bruta igual.</div></div>
+<div class="opt err"><span class="otext">B) Porque B tem mais ativos, não mais risco.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: a exposição bruta é igual (10.000). O que difere é o FPR (risco), que eleva o RWA.</div></div>
+<div class="opt err"><span class="otext">C) Porque o capital exigido depende da exposição bruta, não do RWA.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: o requisito incide sobre o RWA (ponderado), não sobre a exposição bruta.</div></div>
+<div class="opt err"><span class="otext">D) B não consome mais capital; consome igual.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: RWA_B 9.000 vs RWA_A 5.000 → exigências diferentes (945 vs 525).</div></div>
+
+<h4><span class="etapa-tag">Etapa 3</span> Síntese — RAROC <span class="small">(20 pts)</span></h4>
+<p><strong>Prompt:</strong> Qual estratégia tem melhor retorno sobre o capital regulatório?</p>
+<div class="opt correct"><span class="otext">A) A: 38,1% vs B: 37,0% — a conservadora rende (um pouco) mais por unidade de capital.</span> <span class="badge">✓ Correto</span>
+  <div class="mem">RAROC = margem / (10,5% × RWA). A = 200/525 = <strong>38,1%</strong>; B = 350/945 = <strong>37,0%</strong>. A margem nominal de B é maior (350), mas consome tanto capital que o retorno ajustado fica abaixo.</div></div>
+<div class="opt err"><span class="otext">B) B, porque tem maior margem (350 &gt; 200).</span> <span class="badge">✗</span>
+  <div class="mem">Erro: margem nominal ≠ retorno sobre capital. B consome 945 de capital vs 525 de A.</div></div>
+<div class="opt err"><span class="otext">C) Empatam.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: 38,1% ≠ 37,0%; A leva por ~1,1 p.p.</div></div>
+<div class="opt err"><span class="otext">D) A, com 4,0%.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: usou a exposição (5.000) no denominador. O denominador é o capital exigido (10,5%×RWA = 525). RAROC_A = 38,1%.</div></div>
+
+<h4>Encruzilhada <span class="small">(decisão · 0 pts)</span></h4>
+<p><strong>Prompt:</strong> Que estratégia de balanço adotar?</p>
+<div class="branch">
+  <h5>Caminho A — Carteira conservadora</h5>
+  <div class="deltas"><span class="delta pos">IB 20,0%</span><span class="delta neu">Margem R$ 200 M</span><span class="delta risk">Capital ocioso / ROE baixo</span></div>
+  <p class="small">Trade-off: muito colchão e segurança, mas subutiliza o capital — custo de oportunidade alto.</p>
+</div>
+<div class="branch">
+  <h5>Caminho B — Carteira agressiva</h5>
+  <div class="deltas"><span class="delta neu">IB 11,1% (apertado)</span><span class="delta pos">Margem R$ 350 M</span><span class="delta risk">Pouco colchão p/ choques</span><span class="delta neg">RAROC 37,0%</span></div>
+  <p class="small">Trade-off: maior margem nominal, mas pouco buffer e retorno sobre capital pior que a conservadora.</p>
+</div>
+<div class="branch">
+  <h5>Caminho C — Otimização por RAROC</h5>
+  <p class="small">Selecionar, dentro de cada classe, os ativos de melhor retorno/RWA, sem rótulo “conservador/agressivo”.</p>
+  <div class="deltas"><span class="delta pos">RAROC ↑</span><span class="delta pos">IB equilibrado</span><span class="delta risk">Exige modelo e disciplina</span></div>
+  <p class="small">Trade-off: melhor uso do capital, porém depende de capacidade de precificar risco e governança.</p>
+</div>
+
+<h4>Reflexão — risco residual <span class="small">(25 pts)</span></h4>
+<p><strong>Prompt:</strong> Qual risco residual a otimização por RAROC NÃO elimina?</p>
+<div class="opt correct"><span class="otext">A) O FPR padronizado não captura o risco econômico real (concentração, correlações); um portfólio “ótimo” pelo RAROC regulatório ainda pode ser arriscado de fato.</span> <span class="badge">✓ Correto</span>
+  <div class="mem">O FPR é uma proxy regulatória, não a perda esperada/inesperada real. Otimizar contra a proxy não elimina o risco que ela subestima.</div></div>
+<div class="opt err"><span class="otext">B) Nenhum: maximizar RAROC elimina o risco.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: o RAROC usa FPR padronizado, proxy imperfeita do risco.</div></div>
+<div class="opt err"><span class="otext">C) Só falta considerar liquidez.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: liquidez importa, mas o ponto central é o descolamento entre FPR e risco real.</div></div>
+<div class="opt err"><span class="otext">D) O risco é o IB ficar alto demais.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: IB alto não é risco; o risco é o FPR subestimar perdas.</div></div>
+
+<hr class="soft">
+
+<!-- ============================ S6.4 ============================ -->
+<h2 id="s64">Cenário S6.4 — Banco Horizonte <span class="pill avanc" style="vertical-align:middle">Avançado</span></h2>
+
+<div class="scenario-head adv">
+  <div class="code">S6.4 · Banco Horizonte S.A. · Avançado · 25 min</div>
+  <h3>Migração de rating: o RWA que cresce sozinho</h3>
+  <p><strong>Blurb (card):</strong> Uma recessão rebaixa os tomadores do Banco Horizonte. Sem originar crédito novo e sem baixar nada, o IB despenca. Sua tarefa: computar o RWA por bucket de rating antes e depois e explicar por que o índice piora “sozinho”.</p>
+  <div class="qkey"><strong>Pergunta-chave:</strong> o IB pode piorar sem crescer o balanço e sem perda realizada?</div>
+</div>
+
+<h4>Contexto (narrativa)</h4>
+<div class="card">O <strong>Banco Horizonte S.A.</strong> partia confortável (IB de 13,0%). Uma recessão deteriora a qualidade dos tomadores da carteira <em>já existente</em>: parte das exposições sofre <em>downgrade</em> e migra para <em>buckets</em> de rating de FPR mais alto. O banco <strong>não originou crédito novo</strong> e <strong>ainda não baixou nada</strong> (não há perda realizada). Sua tarefa: computar o RWA por bucket antes e depois da migração, e mostrar por que o IB cai mesmo com capital e exposição total inalterados.</div>
+
+<h4>KeyFacts</h4>
+<div class="keyfacts">
+  <div class="kf"><div class="lbl">PR (capital)</div><div class="val">R$ 1.300 M</div></div>
+  <div class="kf"><div class="lbl">Exposição da carteira corporativa</div><div class="val">R$ 10.000 M</div></div>
+  <div class="kf"><div class="lbl">Demais RWA (fora a carteira)</div><div class="val">R$ 2.000 M</div></div>
+  <div class="kf"><div class="lbl">Origina crédito novo?</div><div class="val">Não</div></div>
+  <div class="kf"><div class="lbl">Perda já realizada?</div><div class="val">Não (sem write-off)</div></div>
+  <div class="kf warn"><div class="lbl">Requisito de capital</div><div class="val">IB ≥ 10,5%</div></div>
+</div>
+
+<h4>Demonstrações financeiras (ocultável) — buckets de rating × FPR</h4>
+<div class="card">
+  <table>
+    <thead><tr><th>Bucket de rating</th><th>FPR</th><th>Exposição ANTES (R$ M)</th><th>Exposição DEPOIS (R$ M)</th></tr></thead>
+    <tbody>
+      <tr><td>AA – A</td><td>50%</td><td>5.000</td><td>1.000</td></tr>
+      <tr><td>BBB – BB</td><td>100%</td><td>4.000</td><td>4.000</td></tr>
+      <tr><td>B e abaixo</td><td>150%</td><td>1.000</td><td>5.000</td></tr>
+      <tr><td><strong>Exposição total da carteira</strong></td><td></td><td><strong>10.000</strong></td><td><strong>10.000</strong></td></tr>
+      <tr><td><strong>RWA da carteira</strong></td><td></td><td><strong>8.000</strong></td><td><strong>12.000</strong></td></tr>
+      <tr><td>+ demais RWA</td><td></td><td>2.000</td><td>2.000</td></tr>
+      <tr><td><strong>RWA total</strong></td><td></td><td><strong>10.000</strong></td><td><strong>14.000</strong></td></tr>
+    </tbody>
+  </table>
+  <p class="small">A migração move R$ 4.000 M de AA–A (50%) para B e abaixo (150%); a exposição total não muda (sem nova originação). RWA carteira antes = 5.000×50% + 4.000×100% + 1.000×150% = 8.000; depois = 1.000×50% + 4.000×100% + 5.000×150% = 12.000.</p>
+</div>
+
+<h4><span class="etapa-tag">Etapa 1</span> Leitura — IB antes da recessão <span class="small">(20 pts)</span></h4>
+<p><strong>Prompt:</strong> Qual o IB do Banco Horizonte ANTES da recessão?</p>
+<div class="opt correct"><span class="otext">A) 13,0%</span> <span class="badge">✓ Correto</span>
+  <div class="mem">RWA carteira = 5.000×50% + 4.000×100% + 1.000×150% = 2.500 + 4.000 + 1.500 = 8.000; RWA total = 8.000 + 2.000 = <strong>10.000</strong>; IB = 1.300/10.000 = <strong>13,0%</strong>.</div></div>
+<div class="opt err"><span class="otext">B) 10,8%</span> <span class="badge">✗</span>
+  <div class="mem">Erro: usou FPR 100% para todos os buckets. Cada bucket tem o seu (50/100/150%). RWA carteira = 8.000; IB = 13,0%.</div></div>
+<div class="opt err"><span class="otext">C) 16,3%</span> <span class="badge">✗</span>
+  <div class="mem">Erro: esqueceu os demais R$ 2.000 M de RWA. RWA total = 10.000; IB = 13,0%.</div></div>
+<div class="opt err"><span class="otext">D) 7,6%</span> <span class="badge">✗</span>
+  <div class="mem">Erro: aplicou 150% à carteira inteira. Só o bucket B– tem 150%. RWA carteira = 8.000; IB = 13,0%.</div></div>
+
+<h4><span class="etapa-tag">Etapa 2</span> Mecanismo — por que o IB piora “sozinho” <span class="small">(20 pts)</span></h4>
+<p><strong>Prompt:</strong> O banco não originou crédito nem baixou nada. Por que mesmo assim o IB piora?</p>
+<div class="opt correct"><span class="otext">A) Os tomadores sofrem downgrade → exposições migram para buckets de FPR maior → o RWA sobe sem mudar capital nem exposição total.</span> <span class="badge">✓ Correto</span>
+  <div class="mem">RWA = Σ exposição × FPR. A exposição total (10.000) é a mesma, mas o mix migra para FPR maior (mais 150%, menos 50%) → RWA ↑ → IB ↓. Capital (1.300) inalterado.</div></div>
+<div class="opt err"><span class="otext">B) Porque o capital cai com a recessão.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: ainda não há perda realizada; o PR segue 1.300. O que muda é o RWA (denominador).</div></div>
+<div class="opt err"><span class="otext">C) Porque a carteira encolhe.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: a exposição total é a mesma (10.000); muda a ponderação de risco, não o tamanho.</div></div>
+<div class="opt err"><span class="otext">D) Porque o requisito de 10,5% sobe na recessão.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: no arcabouço simplificado o requisito é fixo em 10,5%; o que muda é o RWA do banco.</div></div>
+
+<h4><span class="etapa-tag">Etapa 3</span> Síntese — IB após a migração <span class="small">(20 pts)</span></h4>
+<p><strong>Prompt:</strong> Qual o IB APÓS a migração de rating?</p>
+<div class="opt correct"><span class="otext">A) 9,3% — abaixo de 10,5%.</span> <span class="badge">✓ Correto</span>
+  <div class="mem">RWA carteira pós = 1.000×50% + 4.000×100% + 5.000×150% = 500 + 4.000 + 7.500 = 12.000; RWA total = 12.000 + 2.000 = <strong>14.000</strong>; IB = 1.300/14.000 = <strong>9,3%</strong>.</div></div>
+<div class="opt err"><span class="otext">B) 13,0% — inalterado.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: não atualizou o mix. A migração eleva o RWA para 14.000; IB cai para 9,3%.</div></div>
+<div class="opt err"><span class="otext">C) 10,8%</span> <span class="badge">✗</span>
+  <div class="mem">Erro: esqueceu o bucket B– a 150% (5.000×150% = 7.500, não 5.000). RWA total 14.000; IB 9,3%.</div></div>
+<div class="opt err"><span class="otext">D) 7,9%</span> <span class="badge">✗</span>
+  <div class="mem">Erro: contou exposição em dobro. A exposição total segue 10.000; RWA 14.000; IB 9,3%.</div></div>
+
+<h4>Encruzilhada <span class="small">(decisão · 0 pts)</span></h4>
+<p><strong>Prompt:</strong> Como reagir à queda do IB causada pela migração?</p>
+<div class="branch">
+  <h5>Caminho A — Reforçar capital</h5>
+  <p class="small">Para IB ≥ 10,5% com RWA 14.000: PR ≥ 0,105×14.000 = 1.470 → injetar R$ 170 M.</p>
+  <div class="deltas"><span class="delta pos">IB 9,3% → 10,5%</span><span class="delta neg">Diluição</span><span class="delta risk">Capitaliza em mercado ruim</span></div>
+  <p class="small">Trade-off: restaura o índice rápido, mas levanta capital no pior momento do ciclo.</p>
+</div>
+<div class="branch">
+  <h5>Caminho B — Reduzir RWA migrando o mix</h5>
+  <p class="small">RWA total ≤ 1.300/0,105 = 12.381 → cortar ≈ R$ 1.619 M de RWA (reduzir o bucket 150%).</p>
+  <div class="deltas"><span class="delta pos">IB → 10,5%</span><span class="delta neg">Receita ↓</span><span class="delta risk">Realiza preços ruins</span></div>
+  <p class="small">Trade-off: dispensa capital novo, mas vende exatamente o que o mercado também quer evitar.</p>
+</div>
+<div class="branch">
+  <h5>Caminho C — Gerir ativamente o rating</h5>
+  <p class="small">Renegociar / recuperar exposições deterioradas para reverter parte da migração.</p>
+  <div class="deltas"><span class="delta pos">Custo baixo</span><span class="delta risk">Depende do ciclo</span><span class="delta risk">IB segue apertado no intervalo</span></div>
+  <p class="small">Trade-off: mais barato, mas demora e deixa o banco descumprindo enquanto a recuperação não vem.</p>
+</div>
+
+<h4>Reflexão — risco residual <span class="small">(25 pts)</span></h4>
+<p><strong>Prompt:</strong> Qual risco residual permanece mesmo após recompor o RWA (caminho B)?</p>
+<div class="opt correct"><span class="otext">A) A migração de FPR é antecipatória: atrás dela vem a perda realizada, que aí sim drena o capital (como no caso Atlântico). Recompor RWA não impede a chegada da perda, e nova deterioração gera novas migrações.</span> <span class="badge">✓ Correto</span>
+  <div class="mem">O downgrade sinaliza perda esperada futura; ela ainda não atingiu o capital. Ajustar o RWA melhora o índice hoje, mas não impede que a perda, ao se realizar, derrube o PR amanhã.</div></div>
+<div class="opt err"><span class="otext">B) Nenhum: ajustar o RWA encerra o problema.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: a migração sinaliza perdas futuras que ainda não atingiram o capital.</div></div>
+<div class="opt err"><span class="otext">C) O risco é só de marcação a mercado dos TPF.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: o risco central é a perda de crédito iminente sinalizada pelo downgrade.</div></div>
+<div class="opt err"><span class="otext">D) Recompor RWA também recompõe o capital.</span> <span class="badge">✗</span>
+  <div class="mem">Erro: reduzir RWA melhora o índice, mas não cria capital; se a perda se realizar, o PR cai.</div></div>
+
+<hr class="soft">
+
+<!-- ============================ ANEXO ============================ -->
+<h2 id="anexo"><span class="num">Anexo</span> — exemplo de <code>scenarios-s6.ts</code> (S6.1 tipado)</h2>
+<p>Objeto canônico do cenário S6.1, no formato esperado pelo renderizador data-driven. Os demais cenários seguem a mesma forma; o conteúdo completo está nas seções acima.</p>
+<pre><code>import type { Scenario } from "@/types/scenario";
+
+export const CAPITAL_RULE = { label: "Requisito de capital", value: "IB = PR/RWA ≥ 10,5%" } as const;
+
+const s6_1: Scenario = {
+  id: "s6-1", code: "S6.1", order: 1,
+  title: "Crescimento orgânico corrói o colchão de capital",
+  bank: "Banco Crescente S.A.",
+  difficulty: "intermediario", estMinutes: 20,
+  blurb: "O Banco Crescente expande a carteira a 25% ao ano. Apesar de lucrativo, o IB " +
+         "vem encolhendo. Meça o índice, entenda o que o derruba e projete onde ele termina o ano.",
+  archetype: "Crescimento orgânico — denominador (RWA) cresce mais que o capital",
+  context:
+    "Você assumiu a tesouraria do &lt;strong&gt;Banco Crescente S.A.&lt;/strong&gt;, que cresce a carteira " +
+    "a &lt;strong&gt;~25% ao ano&lt;/strong&gt;. O banco é lucrativo (lucro de &lt;strong&gt;R$ 150 M&lt;/strong&gt;) e " +
+    "distribui &lt;strong&gt;40%&lt;/strong&gt; em dividendos, mas o &lt;em&gt;colchão de capital&lt;/em&gt; encolhe...",
+  keyFacts: [
+    { label: "PR (capital)", value: "R$ 1.200 M" },
+    { label: "RWA atual", value: "R$ 10.000 M" },
+    { label: "Crescimento do RWA", value: "+25%" },
+    { label: "Lucro líquido", value: "R$ 150 M" },
+    { label: "Payout", value: "40%" },
+    { label: "Lucro retido", value: "R$ 90 M", tone: "positive" },
+    { label: CAPITAL_RULE.label, value: CAPITAL_RULE.value, tone: "warning" },
+  ],
+  statements: [
+    { id: "bp", title: "Balanço patrimonial (R$ M)", columns: ["Conta", "Valor"],
+      rows: [
+        { label: "Caixa e equivalentes", values: ["800"] },
+        { label: "Títulos e valores mobiliários", values: ["3.000"] },
+        { label: "Carteira de crédito líquida", values: ["9.200"] },
+        { label: "Patrimônio líquido (≈ PR)", values: ["1.200"], emphasis: true },
+        /* ...demais linhas... */
+      ] },
+    { id: "dre", title: "DRE do exercício (R$ M)", columns: ["Conta", "Valor"],
+      rows: [
+        { label: "Margem financeira", values: ["900"] },
+        { label: "Lucro líquido", values: ["150"], emphasis: true },
+        { label: "Lucro retido", values: ["90"], emphasis: true },
+      ], note: "RWA total = R$ 10.000 M (dado)." },
+  ],
+  etapas: [
+    { id: "e1", label: "Leitura — IB atual", points: 20,
+      prompt: "Qual é o Índice de Basileia atual do Banco Crescente?",
+      options: [
+        { id: "a", text: "12,0%", correct: true,
+          feedback: "IB = PR/RWA = 1.200/10.000 = &lt;strong&gt;12,0%&lt;/strong&gt;. Acima de 10,5% → parte saudável." },
+        { id: "b", text: "8,0%", correct: false,
+          feedback: "Erro: usou o caixa no numerador. O capital é o PR (≈ PL = 1.200). IB = 12,0%." },
+        { id: "c", text: "10,5%", correct: false,
+          feedback: "Erro: 10,5% é o requisito, não o índice. IB = 1.200/10.000 = 12,0%." },
+        { id: "d", text: "15,0%", correct: false,
+          feedback: "Erro: o denominador é o RWA (10.000), não os TVM. IB = 12,0%." },
+      ] },
+    /* e2, e3 análogos — ver seção S6.1 */
+  ],
+  encruzilhada: {
+    prompt: "O conselho precisa definir a estratégia diante da projeção de descumprimento.",
+    branches: [
+      { id: "A", title: "Manter o ritmo de +25%/ano",
+        summary: "Crescimento máximo, capital furado.",
+        resultado: {
+          headline: "Crescimento máximo, capital furado",
+          caption: "O IB despenca a cada ciclo.",
+          metrics: [
+            { label: "IB ano 1", value: "10,3%", tone: "risk" },
+            { label: "IB ano 3", value: "~7,9%", tone: "risk" },
+            { label: "Carteira 3 anos", value: "+95%", tone: "positive" },
+          ],
+          explanation: "Descumprimento estrutural; plano de regularização e restrição a dividendos.",
+        } },
+      /* B, C análogos */
+    ],
+  },
+  reflexao: {
+    points: 25,
+    prompt: "Mesmo capitalizando agora (caminho C), qual risco residual permanece?",
+    options: [
+      { id: "a", correct: true,
+        text: "Enquanto a geração de capital (7,5%) ficar abaixo do crescimento do RWA (25%), " +
+              "será preciso captar repetidamente — é estrutural.",
+        feedback: "Crescimento sustentável ≈ ROE × retenção; a captação resolve um ano, não o descasamento." },
+      /* b, c, d incorretas — ver seção S6.1 */
+    ],
+  },
+  maxScore: 85,
+};
+
+export const scenariosS6: Scenario[] = [s6_1 /*, s6_2, s6_3, s6_4 */];</code></pre>
+
+<p class="small" style="margin-top:30px;color:var(--muted)">Fim da especificação · Módulo S6 — Regulação Bancária · Laboratório de Tesouraria de Empresas</p>
+
+</div>
+</body>
+</html>

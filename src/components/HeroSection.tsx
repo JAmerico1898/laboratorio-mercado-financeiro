@@ -1,6 +1,6 @@
 export default function HeroSection() {
   return (
-    <header className="relative w-full overflow-hidden cyber-river px-4 sm:px-6 pt-12 pb-12 md:pt-20 md:pb-16">
+    <header className="relative w-full overflow-hidden bg-surface px-4 sm:px-6 pt-12 pb-12 md:pt-20 md:pb-16">
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-5 gap-10 lg:gap-12 items-center">
         <div className="z-10 lg:col-span-2 text-center lg:text-left">
           <h1 className="font-headline text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight leading-[1.05] text-primary [hyphens:none]">

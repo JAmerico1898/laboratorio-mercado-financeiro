@@ -21,31 +21,31 @@ export const modules: ModuleInfo[] = [
     icon: "security",
   },
   {
-    id: 3,
-    title: "Fundos de Direitos Creditórios (FIDC)",
+    id: 7,
+    title: "FIDC",
     description:
-      "Estruturação e gestão de um dos veículos mais dinâmicos de securitização do mercado.",
-    icon: "account_balance_wallet",
+      "Cinco casos aplicados de securitização: subordinação, concentração cedente × sacado e descasamento de indexador.",
+    icon: "account_tree",
   },
   {
-    id: 4,
-    title: "Banking as a Service (BaaS)",
+    id: 9,
+    title: "BaaS e Tokenização",
     description:
-      "A revolução da infraestrutura bancária modular e o futuro das Fintechs no Brasil.",
-    icon: "hub",
+      "Revenue sharing de BaaS, ganhos de embedded finance, custo de funding tokenizado e liquidação atômica (DvP, T+0).",
+    icon: "lan",
   },
   {
-    id: 5,
-    title: "Tokenização de Ativos",
-    description:
-      "Transformando ativos reais em digitais através de blockchain e contratos inteligentes.",
-    icon: "currency_bitcoin",
-  },
-  {
-    id: 6,
+    id: 8,
     title: "Regulação Bancária",
     description:
-      "O arcabouço normativo do Bacen e CVM para o novo ecossistema financeiro digital.",
-    icon: "gavel",
+      "Índice de Basileia, RWA e FPR: como crescimento, perdas, estratégia de risco e migração de rating movem o capital.",
+    icon: "account_balance",
+  },
+  {
+    id: 10,
+    title: "Gestão de Crédito",
+    description:
+      "Perda esperada, apetite de risco por cenário, recessão na carteira e concentração — gestão de crédito do empréstimo ao portfólio.",
+    icon: "credit_score",
   },
 ];

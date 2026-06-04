@@ -59,7 +59,7 @@ export default function ControlBar({
             onClick={() => onModeChange("single")}
             className={`px-3 py-1.5 text-sm transition-colors ${
               mode === "single"
-                ? "bg-primary-container text-[#111417] font-semibold"
+                ? "bg-primary-container text-on-primary font-semibold"
                 : "text-outline"
             }`}
           >
@@ -70,7 +70,7 @@ export default function ControlBar({
             onClick={() => onModeChange("comparison")}
             className={`px-3 py-1.5 text-sm transition-colors ${
               mode === "comparison"
-                ? "bg-primary-container text-[#111417] font-semibold"
+                ? "bg-primary-container text-on-primary font-semibold"
                 : "text-outline"
             }`}
           >
@@ -151,7 +151,7 @@ export default function ControlBar({
           type="button"
           onClick={onLoad}
           disabled={loading}
-          className={`bg-primary-container text-[#111417] font-semibold px-4 py-1.5 rounded-md text-sm transition-opacity ${
+          className={`bg-primary-container text-on-primary font-semibold px-4 py-1.5 rounded-md text-sm transition-opacity ${
             loading ? "opacity-50 cursor-not-allowed" : "hover:opacity-90"
           }`}
         >

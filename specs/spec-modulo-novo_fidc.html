@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Especificação — Módulo FIDC · Laboratório de Tesouraria de Empresas</title>
+<style>
+  :root{
+    --bg:#f6f7f8; --surface:#fff; --ink:#16242f; --muted:#5d6b75; --faint:#8c98a1;
+    --navy:#103049; --teal:#1c8c6b; --teal-soft:#eaf3ee; --line:#e3e7ea;
+    --code-bg:#0e1b25; --code-ink:#dbe7ef; --warn:#b23a2e; --rust:#c2592e;
+    --ok-bg:#e9f6ef; --ok-line:#bfe6d2; --ok-ink:#1c7a57;
+    --cur-bg:#dcebf8; --cur-line:#9cc4ec; --cur-ink:#2a6fb0;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:16px/1.65 ui-sans-serif,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+  .wrap{max-width:980px;margin:0 auto;padding:48px 28px 120px}
+  h1{font-size:30px;line-height:1.2;margin:0 0 6px;letter-spacing:-.01em}
+  h2{font-size:22px;margin:48px 0 12px;padding-top:14px;border-top:2px solid var(--navy);letter-spacing:-.01em}
+  h3{font-size:18px;margin:30px 0 8px;color:var(--navy)}
+  h4{font-size:15px;margin:20px 0 6px;color:var(--navy)}
+  p,li{color:var(--ink)}
+  code{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:.9em;
+    background:#eef1f3;padding:1px 5px;border-radius:4px}
+  pre{background:var(--code-bg);color:var(--code-ink);border-radius:10px;padding:16px 18px;
+    overflow:auto;font-size:13px;line-height:1.6}
+  pre code{background:none;padding:0;color:inherit}
+  table{border-collapse:collapse;width:100%;margin:12px 0;font-size:14px}
+  th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+  th{background:#eef1f3;font-weight:600}
+  tr:nth-child(even) td{background:#fafbfc}
+  .lead{font-size:18px;color:var(--muted);margin:0 0 22px}
+  .meta{font-size:13px;color:var(--faint);margin:0 0 30px}
+  .tag{display:inline-block;background:var(--teal-soft);color:var(--teal);border:1px solid #cde6db;
+    border-radius:999px;padding:2px 10px;font-size:12px;font-weight:600;letter-spacing:.02em}
+  .tag.adv{background:#e7edf2;color:var(--navy);border-color:#c9d6df}
+  .kicker{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);font-weight:700;margin:0 0 4px}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin:16px 0}
+  .callout{border-left:4px solid var(--teal);background:#f1f8f5;border-radius:0 10px 10px 0;padding:12px 16px;margin:14px 0}
+  .callout.warn{border-color:var(--warn);background:#fbf0ee}
+  .ok{background:var(--ok-bg);border:1px solid var(--ok-line);border-radius:10px;padding:12px 16px;margin:8px 0;color:#15543d}
+  .correct{font-weight:700;color:var(--ok-ink)}
+  .wrong{color:var(--warn);font-weight:600}
+  .toc{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 22px;margin:24px 0 8px}
+  .toc ol{margin:6px 0 0;padding-left:22px}
+  .toc a{color:var(--navy);text-decoration:none}
+  .toc a:hover{text-decoration:underline}
+  .pill{display:inline-block;background:#eef1f3;border-radius:6px;padding:1px 7px;font-size:12px;color:var(--muted)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .scn{border:1px solid var(--line);border-radius:16px;background:var(--surface);padding:26px 26px 30px;margin:22px 0}
+  .scn h3{margin-top:0}
+  .num{color:var(--teal);font-weight:700}
+  .small{font-size:13px;color:var(--muted)}
+  hr{border:0;border-top:1px solid var(--line);margin:28px 0}
+  .badge-ok{color:var(--ok-ink);font-weight:700}
+  .opt{display:block;border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin:6px 0;font-size:14px}
+  .opt.is-correct{border-color:var(--ok-line);background:var(--ok-bg)}
+  ul.tight,ol.tight{margin:6px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<p class="kicker">Especificação técnica · módulo de cenários</p>
+<h1>Módulo FIDC — Estruturas de Securitização e Tesouraria</h1>
+<p class="lead">Capítulo interativo de cenários para o <strong>Laboratório de Tesouraria de Empresas</strong>, nos moldes do módulo existente (ex.: “Indústria Alfa — diagnóstico do capital de giro”).</p>
+<p class="meta">Documento de especificação para implementação via Claude Code · Stack-alvo: <strong>React / Next.js</strong> · 5 cenários com ramificação completa · datasets fictícios com demonstrações ocultáveis · idioma da interface: pt-BR.</p>
+
+<div class="callout">Este documento descreve <strong>o que</strong> construir e <strong>com quais conteúdos</strong>. O visual e os componentes devem <strong>reutilizar o sistema de design e os componentes já existentes no app</strong> (os mesmos dos prints). Os tokens da seção 8 servem como referência/fallback caso algum não exista ainda.</div>
+
+<div class="toc">
+<p class="kicker" style="margin-bottom:8px">Sumário</p>
+<ol>
+<li><a href="#s1">Visão geral e objetivos pedagógicos</a></li>
+<li><a href="#s2">Stack e integração ao app existente</a></li>
+<li><a href="#s3">Arquitetura de informação e rotas</a></li>
+<li><a href="#s4">Fluxo do usuário (máquina de estados)</a></li>
+<li><a href="#s5">Inventário de componentes</a></li>
+<li><a href="#s6">Modelo de dados (tipos TypeScript)</a></li>
+<li><a href="#s7">Pontuação, estado e persistência</a></li>
+<li><a href="#s8">Sistema de design (tokens de referência)</a></li>
+<li><a href="#s9">Convenções de conteúdo e acessibilidade</a></li>
+<li><a href="#s10">Os 5 cenários (conteúdo completo)</a></li>
+<li><a href="#s11">Critérios de aceite / QA</a></li>
+<li><a href="#s12">Glossário</a></li>
+</ol>
+</div>
+
+<!-- ============================================================= -->
+<h2 id="s1">1. Visão geral e objetivos pedagógicos</h2>
+<p>O módulo ensina, por meio de casos aplicados, como empresas e bancos usam <strong>FIDCs</strong> (Fundos de Investimento em Direitos Creditórios) para financiar carteiras de recebíveis, e como o desenho do fundo (cedente, sacado, subordinação, indexadores) determina onde o risco se aloca. Cada cenário reproduz a mesma jornada do módulo existente: contexto rico → etapas de diagnóstico → encruzilhada de decisão com resultados divergentes → reflexão → conclusão pontuada.</p>
+<p>Ao final, o aluno deve saber: (i) o ciclo de caixa da originação até a cessão; (ii) o efeito da subordinação no caixa, no giro de capital e no desreconhecimento; (iii) como os eixos <em>cedente</em> e <em>sacado</em> (mono/multi) deslocam o risco; e (iv) como descasamentos de indexador (PRÉ × CDI) são resolvidos dentro do fundo.</p>
+
+<table>
+<thead><tr><th>ID</th><th>Cenário</th><th>Arquétipo</th><th>Dificuldade</th><th>Tempo</th><th>Foco didático</th></tr></thead>
+<tbody>
+<tr><td>S5.1</td><td>Credenciadora PagSeg — antecipação e subordinação</td><td>mono cedente / multi sacado</td><td>Intermediário</td><td>~20 min</td><td>Ciclo de caixa, split sênior/subordinada, os dois “R$ 1,00”, desreconhecimento</td></tr>
+<tr><td>S5.2</td><td>Risco sacado — FIDC Fornecedores VarejoMax</td><td>multi cedente / mono sacado</td><td>Intermediário</td><td>~22 min</td><td>Concentração de crédito, reverse factoring, limites do colchão</td></tr>
+<tr><td>S5.3</td><td>FIDC aberto — Securitiza Multicedente</td><td>multi cedente / multi sacado</td><td>Avançado</td><td>~25 min</td><td>Diversificação dupla, risco de lastro/fraude, limites de concentração</td></tr>
+<tr><td>S5.4</td><td>Bilateral — FIDC Energia PPA Único</td><td>mono cedente / mono sacado</td><td>Avançado</td><td>~22 min</td><td>Concentração máxima, subordinação cosmética contra risco mono-nome</td></tr>
+<tr><td>S5.5</td><td>Banco restrito por capital — Banco Direto</td><td>originate-to-distribute</td><td>Avançado</td><td>~25 min</td><td>Alívio de RWA, descasamento PRÉ × CDI, breakeven de CDI</td></tr>
+</tbody>
+</table>
+<p class="small">Observação: S5.1–S5.4 percorrem os quatro quadrantes da matriz cedente × sacado; S5.5 é o caso especial do banco com descasamento de indexador. A ordem e os nomes fictícios podem ser ajustados; a lógica de cálculo de cada um está fixada na seção 10.</p>
+
+<!-- ============================================================= -->
+<h2 id="s2">2. Stack e integração ao app existente</h2>
+<ul>
+<li><strong>Framework:</strong> Next.js (App Router) + React + TypeScript, igual ao app atual.</li>
+<li><strong>Estilo:</strong> reutilizar a solução de estilo já usada (Tailwind e/ou CSS Modules) e os componentes compartilhados (botões, cards, badges, accordion). Não introduzir nova biblioteca de UI.</li>
+<li><strong>Integração:</strong> o módulo é um “capítulo” a mais. Deve aparecer no índice/menu de módulos do laboratório como os demais e respeitar o mesmo layout de página (cabeçalho, breadcrumb, contador de pontuação).</li>
+<li><strong>Conteúdo data-driven:</strong> toda a renderização parte de um arquivo de dados tipado (<code>scenarios.ts</code>). Nenhum texto de cenário deve ficar hard-coded em componentes — os componentes são genéricos e recebem os dados por props.</li>
+<li><strong>Sem dependências de rede:</strong> os datasets são estáticos no bundle. Nenhuma chamada externa.</li>
+</ul>
+
+<!-- ============================================================= -->
+<h2 id="s3">3. Arquitetura de informação e rotas</h2>
+<table>
+<thead><tr><th>Rota</th><th>Página</th><th>Conteúdo</th></tr></thead>
+<tbody>
+<tr><td><code>/modulos/fidc</code></td><td>Grade de cenários</td><td>Título do módulo + grid de 5 <code>ScenarioCard</code> (reproduz a “Image 1”).</td></tr>
+<tr><td><code>/modulos/fidc/[scenarioId]</code></td><td>Player do cenário</td><td>Máquina de estados completa (contexto → etapas → encruzilhada → resultado → reflexão → conclusão).</td></tr>
+</tbody>
+</table>
+<p class="small">Ajustar o prefixo de rota ao padrão do app (ex.: <code>/laboratorio/...</code>). <code>scenarioId</code> ∈ {<code>s5-1</code>,<code>s5-2</code>,<code>s5-3</code>,<code>s5-4</code>,<code>s5-5</code>}.</p>
+
+<!-- ============================================================= -->
+<h2 id="s4">4. Fluxo do usuário (máquina de estados)</h2>
+<p>O player de cada cenário é uma máquina de estados com revelação progressiva (uma fase de cada vez, conteúdo anterior permanece visível e rolável, como nos prints):</p>
+<pre><code>context  →  etapas (etapa 1 … N, sequenciais)  →  encruzilhada  →  resultado(branch)  →  reflexao  →  conclusao</code></pre>
+<h4>Regras de transição</h4>
+<ol class="tight">
+<li><strong>context:</strong> mostra narrativa + KeyFacts + demonstrações ocultáveis. Botão não é necessário; a Etapa 1 já aparece abaixo (como na “Image 2 → 3”).</li>
+<li><strong>etapas:</strong> a Etapa <code>n+1</code> só é revelada após a Etapa <code>n</code> ser <strong>respondida corretamente</strong>. Selecionar qualquer opção mostra a memória de cálculo daquela opção (verde se correta, vermelha se incorreta). Opção incorreta não avança nem pontua; permite nova tentativa. Opção correta fixa a pontuação da etapa e revela a próxima.</li>
+<li><strong>encruzilhada:</strong> revelada após a última etapa correta. Mostra 3 cards de decisão (A/B/C). Escolher um card é uma <strong>decisão</strong> (não há resposta “certa”), leva ao <code>resultado</code> daquele caminho.</li>
+<li><strong>resultado:</strong> página com headline + tiles de variação (deltas) + explicação detalhada do caminho escolhido. Botão “Continuar para reflexão”.</li>
+<li><strong>reflexao:</strong> 1 questão de múltipla escolha que testa o entendimento do trade-off do caminho escolhido. Pontua.</li>
+<li><strong>conclusao:</strong> feedback final + “PONTUAÇÃO FINAL X / 85” + botões “Tentar outro cenário” e “Finalizar e voltar”.</li>
+</ol>
+<div class="callout">O usuário pode <strong>voltar uma etapa</strong> (botão “← Etapa anterior”, ver “Image 7/8”) e pode <strong>trocar de caminho</strong> na encruzilhada antes de concluir (refaz o resultado). A barra de etapas no topo (3–4 segmentos) preenche em <span class="pill">rust</span> conforme avança.</div>
+
+<!-- ============================================================= -->
+<h2 id="s5">5. Inventário de componentes</h2>
+<p>Componentes genéricos e data-driven. Nomes sugeridos (ajustar à convenção do repo):</p>
+<table>
+<thead><tr><th>Componente</th><th>Papel (referência no print)</th></tr></thead>
+<tbody>
+<tr><td><code>ScenarioGrid</code> / <code>ScenarioCard</code></td><td>Grade de cenários (Image 1): badge de dificuldade, ID + tempo, título, blurb, botão “Iniciar cenário”.</td></tr>
+<tr><td><code>ScenarioHeader</code></td><td>Topo do player: “← Início”, breadcrumb (<code>S5.1 · Nome · Dificuldade</code>), título, <code>ScoreHeader</code> e <code>StepProgress</code> (Image 2/7).</td></tr>
+<tr><td><code>ScoreHeader</code></td><td>“PONTUAÇÃO X / 85” + barra fina à direita.</td></tr>
+<tr><td><code>StepProgress</code></td><td>Barra segmentada de progresso de fases (preenchimento rust).</td></tr>
+<tr><td><code>ContextPanel</code></td><td>Box “CONTEXTO” com narrativa e termos destacados (Image 2).</td></tr>
+<tr><td><code>KeyFactsGrid</code> / <code>KeyFactTile</code></td><td>Grade de fatos-chave: label em maiúsculas + valor em destaque (Image 2). Tom opcional (neutro/positivo/alerta).</td></tr>
+<tr><td><code>CollapsibleStatements</code> (Accordion) / <code>StatementTable</code></td><td>Box “DEMONSTRAÇÕES FINANCEIRAS” com “+” no canto, recolhido por padrão; expande tabelas grandes (Image 2/3 com o “+”).</td></tr>
+<tr><td><code>EtapaCard</code></td><td>Rótulo “Etapa N — …”, enunciado e lista de <code>OptionButton</code> (Image 3).</td></tr>
+<tr><td><code>OptionButton</code></td><td>Opção clicável; estados: padrão, “RESPOSTA ATUAL” (azul), correta (verde), incorreta (vermelha) (Image 4).</td></tr>
+<tr><td><code>FeedbackBox</code></td><td>Box “✓ Correto” (verde) ou incorreto, com a memória de cálculo (HTML rico, termos em negrito) (Image 4/5/6).</td></tr>
+<tr><td><code>EncruzilhadaPanel</code> / <code>BranchCard</code></td><td>“ENCRUZILHADA — Escolha sua decisão”: 3 cards A/B/C com letra circulada, título e descrição (Image 6).</td></tr>
+<tr><td><code>ResultadoPanel</code> / <code>DeltaTile</code></td><td>“RESULTADO”: headline + caption + tiles de variação (verde positivo, vermelho risco) + explicação (Image 7).</td></tr>
+<tr><td><code>ReflexaoCard</code></td><td>“REFLEXÃO”: questão final de MC + feedback (Image 8/9).</td></tr>
+<tr><td><code>ConclusaoPanel</code></td><td>“CENÁRIO CONCLUÍDO”: pontuação final + “Tentar outro cenário” / “Finalizar e voltar” (Image 9).</td></tr>
+</tbody>
+</table>
+
+<!-- ============================================================= -->
+<h2 id="s6">6. Modelo de dados (tipos TypeScript)</h2>
+<p>Arquivo <code>data/fidc/scenarios.ts</code> exportando <code>const scenarios: Scenario[]</code>. Strings de conteúdo aceitam <strong>HTML inline restrito</strong> (apenas <code>&lt;strong&gt;</code>, <code>&lt;em&gt;</code>, <code>&lt;br&gt;</code>) renderizado de forma segura (sanitizado).</p>
+<pre><code>type Difficulty = "intermediario" | "avancado";
+type Tone = "default" | "positive" | "warning";
+type DeltaTone = "positive" | "negative" | "neutral" | "risk";
+
+interface KeyFact { label: string; value: string; tone?: Tone; }
+
+interface StatementRow { label: string; values: string[]; emphasis?: boolean; }
+interface Statement {
+  id: string;
+  title: string;            // "Balanço Patrimonial", "DRE", "Regulamento do FIDC", "Carteira", ...
+  columns: string[];        // cabeçalho da tabela
+  rows: StatementRow[];
+  note?: string;            // nota de rodapé opcional
+}
+
+interface Option {
+  id: string;
+  text: string;             // enunciado da opção
+  correct: boolean;
+  feedback: string;         // MEMÓRIA DE CÁLCULO (HTML inline restrito); explica por que certo/errado
+}
+
+interface Etapa {
+  id: string;               // "etapa-1"
+  label: string;            // "Etapa 1 — Liquidez e prazos médios"
+  prompt: string;           // enunciado da questão
+  options: Option[];        // 4 opções; exatamente 1 com correct:true
+  points: number;           // padrão 20
+}
+
+interface DeltaMetric { label: string; value: string; tone: DeltaTone; }
+
+interface Resultado {
+  headline: string;         // "Subordinação a 20% manteve o giro, mas..."
+  caption: string;          // "Caminho B: ..."
+  metrics: DeltaMetric[];   // tiles de variação
+  explanation: string;      // memória detalhada do caminho (HTML inline restrito)
+}
+
+interface Branch {
+  id: "A" | "B" | "C";
+  title: string;            // "Cenário A — ..."
+  summary: string;          // descrição do card (HTML inline restrito)
+  resultado: Resultado;
+}
+
+interface Reflexao {
+  prompt: string;
+  options: Option[];        // 4 opções; 1 correta
+  points: number;           // padrão 25
+}
+
+interface Scenario {
+  id: string;               // "s5-1"
+  code: string;             // "S5.1"
+  order: number;
+  title: string;
+  difficulty: Difficulty;
+  estMinutes: number;
+  blurb: string;            // texto do card na grade
+  archetype: string;        // "mono cedente / multi sacado"
+  context: string;          // narrativa do box CONTEXTO (HTML inline restrito)
+  keyFacts: KeyFact[];
+  statements: Statement[];  // ocultáveis (accordion)
+  etapas: Etapa[];          // 3 etapas
+  encruzilhada: { prompt: string; branches: Branch[] };  // 3 branches
+  reflexao: Reflexao;
+  maxScore: number;         // 85
+}</code></pre>
+
+<!-- ============================================================= -->
+<h2 id="s7">7. Pontuação, estado e persistência</h2>
+<ul class="tight">
+<li><strong>Distribuição:</strong> 3 etapas × <span class="num">20</span> = 60 + reflexão <span class="num">25</span> = <strong>85</strong>. A encruzilhada é decisão (0 pontos). Confere com os prints (0/85 no início, 60/85 no resultado, 85/85 na conclusão).</li>
+<li><strong>Regra:</strong> pontua na <em>primeira</em> seleção correta de cada etapa/reflexão. Seleção incorreta mostra a memória de cálculo do erro, não pontua e permite nova tentativa (sem penalidade por padrão; deixar penalidade configurável por flag).</li>
+<li><strong>Estado do player (React):</strong> <code>{ phase, currentEtapaIndex, answers: Record&lt;etapaId, optionId&gt;, chosenBranch, score, completed }</code>.</li>
+<li><strong>Persistência:</strong> <code>localStorage</code> por <code>scenarioId</code> para retomar (chave <code>fidc:progress:&lt;id&gt;</code>) e marcar concluído na grade. Integrar ao store de progresso do app se existir.</li>
+<li><strong>Reset:</strong> “Tentar outro cenário” reinicia o estado do cenário atual ao reentrar.</li>
+</ul>
+
+<!-- ============================================================= -->
+<h2 id="s8">8. Sistema de design (tokens de referência)</h2>
+<p>Reutilizar os tokens do app. Caso precise de fallback, estes são os valores observados nos prints:</p>
+<table>
+<thead><tr><th>Uso</th><th>Referência</th></tr></thead>
+<tbody>
+<tr><td>Fundo da página / superfícies</td><td>cinza muito claro (~<code>#f6f7f8</code>) / cards brancos, borda <code>~#e3e7ea</code>, raio 14–16px, sombra suave</td></tr>
+<tr><td>Títulos / botões primários (navy)</td><td><code>~#103049</code> (botões “Iniciar cenário”, “Finalizar e voltar”)</td></tr>
+<tr><td>Acento / links / acertos (teal)</td><td><code>~#1c8c6b</code>; termos destacados no contexto e na memória de cálculo</td></tr>
+<tr><td>Badge INTERMEDIÁRIO</td><td>pílula verde-menta (fundo <code>~#a9e8d0</code>, texto teal escuro)</td></tr>
+<tr><td>Badge AVANÇADO</td><td>pílula navy (fundo navy, texto claro)</td></tr>
+<tr><td>KeyFact tiles</td><td>fundo verde-claro <code>~#eaf3ee</code>, label maiúsculo cinza, valor em navy/teal forte</td></tr>
+<tr><td>Feedback correto</td><td>fundo <code>~#e9f6ef</code>, borda <code>~#bfe6d2</code>, “✓ Correto” em verde</td></tr>
+<tr><td>Resposta atual (selecionada)</td><td>fundo azul-claro <code>~#dcebf8</code>, borda azul, rótulo “RESPOSTA ATUAL”</td></tr>
+<tr><td>Risco / valores negativos</td><td>vermelho/rust <code>~#b23a2e</code> (ex.: “RISCO RESIDUAL — Alto”)</td></tr>
+<tr><td>Barra de progresso de etapas</td><td>segmentos, preenchimento rust <code>~#c2592e</code></td></tr>
+<tr><td>Tipografia</td><td>display serifado forte para títulos (manter o do app); sans humanista para corpo; valores numéricos em peso forte</td></tr>
+</tbody>
+</table>
+
+<!-- ============================================================= -->
+<h2 id="s9">9. Convenções de conteúdo e acessibilidade</h2>
+<ul class="tight">
+<li><strong>Destaques no contexto:</strong> usar <code>&lt;strong&gt;</code> para números-chave e <code>&lt;em&gt;</code>/teal para conceitos. Padrão visual igual à “Image 2”.</li>
+<li><strong>Memória de cálculo:</strong> sempre mostrar a fórmula e a conta, não só o conceito (ver exemplos da seção 10). Em acerto, reforçar o conceito; em erro, apontar o equívoco específico.</li>
+<li><strong>KeyFacts = autossuficiência:</strong> tudo que é necessário para resolver as etapas deve estar nos KeyFacts em destaque; o que é volumoso (BP, DRE, regulamento, carteira) vai nas demonstrações ocultáveis.</li>
+<li><strong>Acessibilidade:</strong> opções como <code>button</code>/<code>radio</code> com <code>aria</code>; foco visível; contraste AA; accordion com <code>aria-expanded</code>; navegação por teclado; <code>prefers-reduced-motion</code> respeitado nas transições.</li>
+<li><strong>Responsivo:</strong> grade de cards 2-col → 1-col; KeyFacts 4→2→1; tabelas com scroll horizontal no mobile.</li>
+</ul>
+
+<!-- ============================================================= -->
+<h2 id="s10">10. Os 5 cenários (conteúdo completo)</h2>
+<p class="small">Cada cenário abaixo traz: contexto, KeyFacts, demonstrações ocultáveis, 3 etapas (com a opção correta marcada e a memória de cálculo), a encruzilhada com 3 caminhos e seus resultados, e a reflexão. Os números são internamente consistentes e podem ser implementados literalmente.</p>
+
+<!-- ====================== S5.1 ====================== -->
+<div class="scn" id="s5-1">
+<p><span class="tag">Intermediário</span> <span class="small">· S5.1 · ~20 min · mono cedente / multi sacado</span></p>
+<h3>S5.1 — Credenciadora PagSeg: antecipação, cessão e a economia da subordinação</h3>
+
+<h4>Contexto</h4>
+<p class="small">Você é analista de tesouraria da <strong>PagSeg Adquirência S.A.</strong>, credenciadora de cartões. A empresa antecipa recebíveis aos lojistas e financia essa operação cedendo os recebíveis a um <strong>FIDC mono cedente / multi sacado</strong>. O CFO quer entender quanto caixa a estrutura realmente devolve e qual o efeito da subordinação retida.</p>
+
+<h4>KeyFacts</h4>
+<table>
+<thead><tr><th>Label</th><th>Valor</th><th>Tom</th></tr></thead>
+<tbody>
+<tr><td>ESTRUTURA</td><td>FIDC mono cedente / multi sacado</td><td>default</td></tr>
+<tr><td>RECEBÍVEL (FACE, D+30)</td><td>R$ 97,50 / unidade</td><td>default</td></tr>
+<tr><td>ANTECIPAÇÃO PAGA AO LOJISTA</td><td>R$ 95,50</td><td>default</td></tr>
+<tr><td>PREÇO DE CESSÃO AO FIDC</td><td>R$ 96,50</td><td>default</td></tr>
+<tr><td>SUBORDINAÇÃO RETIDA</td><td>20%</td><td>warning</td></tr>
+<tr><td>VOLUME MENSAL ANTECIPADO</td><td>R$ 800 M</td><td>default</td></tr>
+<tr><td>DEVEDOR DO RECEBÍVEL</td><td>arranjo / emissores (pulverizado)</td><td>positive</td></tr>
+<tr><td>RETENÇÃO DA SUBORDINADA</td><td>pela própria PagSeg (cedente)</td><td>default</td></tr>
+</tbody>
+</table>
+
+<h4>Demonstrações ocultáveis</h4>
+<p class="small"><strong>Statement 1 — “Fluxo de uma operação (por recebível)”</strong></p>
+<table>
+<thead><tr><th>Etapa do fluxo</th><th>Valor (R$)</th></tr></thead>
+<tbody>
+<tr><td>Compra no crédito (face bruta)</td><td>100,00</td></tr>
+<tr><td>MDR retido no arranjo</td><td>(2,50)</td></tr>
+<tr><td>Recebível do lojista (face, D+30)</td><td>97,50</td></tr>
+<tr><td>Antecipação paga ao lojista (hoje)</td><td>95,50</td></tr>
+<tr><td>Preço de cessão ao FIDC (hoje)</td><td>96,50</td></tr>
+</tbody>
+</table>
+<p class="small"><strong>Statement 2 — “Estrutura de cotas do FIDC (por R$ 96,50 de PL)”</strong></p>
+<table>
+<thead><tr><th>Cota</th><th>%</th><th>Valor (R$)</th><th>Detentor</th></tr></thead>
+<tbody>
+<tr><td>Sênior</td><td>80%</td><td>77,20</td><td>investidores</td></tr>
+<tr><td>Subordinada</td><td>20%</td><td>19,30</td><td>PagSeg (cedente)</td></tr>
+</tbody>
+</table>
+
+<h4>Etapa 1 — Caixa novo na cessão <span class="small">(20 pts)</span></h4>
+<p><em>Com subordinação de 20% e preço de cessão de R$ 96,50, quanto de caixa novo (de terceiros) a PagSeg recupera por recebível cedido?</em></p>
+<div class="opt">R$ 96,50 — o preço integral de cessão</div>
+<div class="opt is-correct">R$ 77,20 — apenas a fatia sênior <span class="badge-ok">✓</span></div>
+<div class="opt">R$ 19,30 — apenas a subordinada</div>
+<div class="opt">R$ 95,50 — o valor pago ao lojista</div>
+<div class="ok"><span class="correct">Correto.</span> Dos R$ 96,50, só a <strong>cota sênior (80% × 96,50 = R$ 77,20)</strong> é caixa de terceiros. Os 20% (R$ 19,30) a PagSeg integraliza como <strong>cota subordinada retida</strong> — é dinheiro dela voltando ao fundo. <em>Caixa novo recuperado ≈ R$ 77,20, não os R$ 96,50 cheios.</em></div>
+<p class="small"><strong>Memórias de erro:</strong> 96,50 — ignora que 20% é capital próprio retido; 19,30 — confunde a parte retida com o caixa recebido; 95,50 — é o desembolso da antecipação, não o caixa da cessão.</p>
+
+<h4>Etapa 2 — Capital efetivamente comprometido <span class="small">(20 pts)</span></h4>
+<p><em>A PagSeg pagou R$ 95,50 ao lojista e recuperou R$ 77,20 de caixa sênior. Qual o capital líquido que permanece comprometido na operação?</em></p>
+<div class="opt">R$ 19,30 — exatamente a subordinada</div>
+<div class="opt is-correct">R$ 18,30 — caixa líquido comprometido (95,50 − 77,20) <span class="badge-ok">✓</span></div>
+<div class="opt">R$ 1,00 — apenas a margem</div>
+<div class="opt">R$ 0 — o capital girou integralmente</div>
+<div class="ok"><span class="correct">Correto.</span> Fluxo da operação: <strong>−95,50</strong> (lojista) <strong>+77,20</strong> (sênior) = <strong>−R$ 18,30</strong> de caixa comprometido, <em>mais</em> a cota subordinada de R$ 19,30 que ela carrega. A diferença (19,30 − 18,30 = R$ 1,00) é exatamente a <strong>margem de cessão já realizada</strong> (96,50 − 95,50). O capital preso por operação ≈ o tamanho da subordinação.</div>
+
+<h4>Etapa 3 — Os dois “R$ 1,00” <span class="small">(20 pts)</span></h4>
+<p><em>A margem de cessão (96,50 − 95,50 = R$ 1,00) é repartida com a cota sênior?</em></p>
+<div class="opt">Sim — o sênior recebe parte dessa margem como remuneração</div>
+<div class="opt is-correct">Não — essa margem é 100% da PagSeg; o sênior é pago pelo <em>carrego</em> (97,50 − 96,50), não por ela <span class="badge-ok">✓</span></div>
+<div class="opt">Sim — é dela que sai todo o rendimento do fundo</div>
+<div class="opt">Não — porque o sênior não tem remuneração</div>
+<div class="ok"><span class="correct">Correto.</span> São <strong>dois R$ 1,00 distintos</strong> que coincidem nos números: <strong>(A) margem de cessão</strong> = preço − custo = 96,50 − 95,50, realizada no t0, 100% da cedente; <strong>(B) carrego do fundo</strong> = face − preço = 97,50 − 96,50, ganho do t0 ao D+30, que é repartido — <strong>sênior (yield) primeiro, subordinada (residual) depois</strong>. O sênior é pago a partir de (B), nunca de (A). O deságio bruto total (97,50 − 95,50 = R$ 2,00) divide-se em: margem A (1,00, PagSeg) + yield sênior (X, de B) + residual subordinada (1,00 − X, PagSeg).</div>
+
+<h4>Encruzilhada — Defina o nível de subordinação</h4>
+<p class="small"><em>Cada nível equilibra giro de capital, custo do sênior e tratamento contábil de forma diferente.</em></p>
+<div class="grid2">
+<div class="card"><strong>A — Subordinação 10%</strong><br><span class="small">Reter menos: cada R$ 1 de capital sustenta R$ 10 de carteira (alavancagem 10×). Mais giro, mais volume.</span></div>
+<div class="card"><strong>B — Subordinação 20%</strong><br><span class="small">Equilíbrio: alavancagem 5×; colchão confortável para o sênior.</span></div>
+<div class="card"><strong>C — Subordinação 35%</strong><br><span class="small">Reter mais: sênior muito seguro e barato, porém alavancagem ~2,9× e risco contábil.</span></div>
+</div>
+<h4>Resultados (por caminho)</h4>
+<p class="small"><strong>Caminho A (10%):</strong> headline “Giro máximo, sênior mais caro e colchão fino”. Tiles — Alavancagem: <span class="num">10×</span> (positivo); Caixa recuperado/un.: <span class="num">R$ 86,85</span> (90%×96,50, positivo); Custo do sênior: <span style="color:var(--warn)">↑ maior</span> (risco); Desreconhecimento: provável OK (neutro). Explicação: mais volume, mas o sênior exige prêmio por colchão menor; sensível a um pico de perdas.</p>
+<p class="small"><strong>Caminho B (20%):</strong> headline “Equilíbrio entre giro e proteção”. Tiles — Alavancagem: <span class="num">5×</span>; Caixa recuperado/un.: <span class="num">R$ 77,20</span>; Custo do sênior: médio; Desreconhecimento: OK. Explicação: padrão de mercado para recebível de cartão pulverizado.</p>
+<p class="small"><strong>Caminho C (35%):</strong> headline “Sênior barato, mas capital travado e risco contábil”. Tiles — Alavancagem: <span class="num">2,9×</span> (negativo); Caixa recuperado/un.: <span class="num">R$ 62,73</span> (negativo); Custo do sênior: baixo (positivo); Desreconhecimento: <span style="color:var(--warn)">em risco</span> (risk). Explicação: reter risco demais pode impedir a transferência substancial e manter o ativo no balanço.</p>
+
+<h4>Reflexão <span class="small">(25 pts)</span></h4>
+<p><em>Qual o maior risco de reter subordinação alta demais (caminho C)?</em></p>
+<div class="opt is-correct">Impedir o desreconhecimento contábil — o ativo permanece no balanço e o alívio de capital desaparece <span class="badge-ok">✓</span></div>
+<div class="opt">O sênior fica caro demais</div>
+<div class="opt">O lojista deixa de antecipar</div>
+<div class="opt">Nenhum — quanto mais subordinação, sempre melhor</div>
+<div class="ok"><span class="correct">Correto.</span> Subordinação muito alta significa <strong>reter substancialmente os riscos e benefícios</strong> — o que pode descaracterizar a venda definitiva (<em>true sale</em>), obrigando a manter o recebível no balanço. Some o alívio de capital que motivou a estrutura, além de travar mais caixa (menor giro). Existe um ponto ótimo: subordinação suficiente para baratear o sênior, baixa o bastante para desreconhecer.</div>
+</div>
+<!-- /S5.1 -->
+
+<!-- ====================== S5.2 ====================== -->
+<div class="scn" id="s5-2">
+<p><span class="tag">Intermediário</span> <span class="small">· S5.2 · ~22 min · multi cedente / mono sacado</span></p>
+<h3>S5.2 — Risco sacado: FIDC Fornecedores VarejoMax</h3>
+
+<h4>Contexto</h4>
+<p class="small">A <strong>VarejoMax S.A.</strong> é uma grande varejista (o <strong>sacado-âncora</strong>). Cerca de <strong>120 fornecedores</strong> cedem a um FIDC os recebíveis que têm a receber da VarejoMax — um arranjo de <em>reverse factoring</em>. Você analisa onde está, de fato, o risco do fundo.</p>
+
+<h4>KeyFacts</h4>
+<table>
+<thead><tr><th>Label</th><th>Valor</th><th>Tom</th></tr></thead>
+<tbody>
+<tr><td>ESTRUTURA</td><td>multi cedente / mono sacado</td><td>default</td></tr>
+<tr><td>SACADO ÚNICO</td><td>VarejoMax S.A.</td><td>warning</td></tr>
+<tr><td>RATING DO SACADO</td><td>AA− (escala nacional)</td><td>positive</td></tr>
+<tr><td>Nº DE CEDENTES (FORNECEDORES)</td><td>~120</td><td>default</td></tr>
+<tr><td>PRAZO MÉDIO</td><td>60 dias</td><td>default</td></tr>
+<tr><td>SÊNIOR</td><td>CDI + 3%</td><td>default</td></tr>
+<tr><td>SUBORDINAÇÃO</td><td>8%</td><td>default</td></tr>
+<tr><td>CONFIRMAÇÃO DO SACADO</td><td>sim (reverse factoring confirmado)</td><td>positive</td></tr>
+<tr><td>CONCENTRAÇÃO DE CRÉDITO</td><td>100% no sacado</td><td>warning</td></tr>
+</tbody>
+</table>
+
+<h4>Demonstrações ocultáveis</h4>
+<p class="small"><strong>Statement 1 — “Regulamento (limites e gatilhos)”:</strong> limite por cedente 5%; sem limite por sacado (mono); gatilho de amortização antecipada se o rating do sacado cair abaixo de A−.<br>
+<strong>Statement 2 — “Carteira por cedente”:</strong> tabela com os maiores fornecedores e seus % (todos abaixo de 5%).<br>
+<strong>Statement 3 — “Perfil de crédito da VarejoMax”:</strong> alavancagem, cobertura de juros, liquidez e rating — o verdadeiro lastro do fundo.</p>
+
+<h4>Etapa 1 — Onde está o risco de crédito? <span class="small">(20 pts)</span></h4>
+<p><em>Com 120 cedentes e um único sacado, onde se concentra o risco de crédito da carteira?</em></p>
+<div class="opt is-correct">Concentrado no sacado único (VarejoMax) — diversificar cedentes <em>não</em> dilui crédito <span class="badge-ok">✓</span></div>
+<div class="opt">Diluído entre os 120 cedentes</div>
+<div class="opt">Nos fornecedores, pois são quem origina</div>
+<div class="opt">É risco de mercado, não de crédito</div>
+<div class="ok"><span class="correct">Correto.</span> Os recebíveis são todos <strong>devidos pela VarejoMax</strong>. Multiplicar cedentes dispersa a <em>originação</em>, mas o devedor final é o mesmo nome — a carteira vale o que vale o <strong>crédito do sacado-âncora</strong>. Não há diluição de crédito.</div>
+
+<h4>Etapa 2 — Efeito da confirmação (reverse factoring) <span class="small">(20 pts)</span></h4>
+<p><em>O que muda quando a VarejoMax <strong>confirma</strong> formalmente as dívidas cedidas?</em></p>
+<div class="opt is-correct">Converte o recebível em quase-crédito direto do sacado, removendo risco comercial/disputa do fornecedor <span class="badge-ok">✓</span></div>
+<div class="opt">Elimina completamente o risco de crédito</div>
+<div class="opt">Transfere o risco de volta ao fornecedor</div>
+<div class="opt">Não muda nada — confirmação é formalidade</div>
+<div class="ok"><span class="correct">Correto.</span> Com a confirmação, some o risco de o fornecedor não ter entregue/haver disputa comercial — o crédito passa a ser, em essência, uma <strong>obrigação direta da VarejoMax</strong>. O risco do fundo converge para o <strong>balanço do sacado</strong>, não para a relação fornecedor-âncora.</div>
+
+<h4>Etapa 3 — A subordinação protege contra o default do sacado? <span class="small">(20 pts)</span></h4>
+<p><em>Os 8% de subordinação protegem o sênior contra a quebra da VarejoMax?</em></p>
+<div class="opt">Sim — absorve integralmente o default do sacado</div>
+<div class="opt is-correct">Não contra o evento de crédito do sacado (sistêmico à carteira); só absorve atrasos/perdas parciais e risco dos cedentes <span class="badge-ok">✓</span></div>
+<div class="opt">Sim, em até 8% do default</div>
+<div class="opt">Sim, porque o rating é AA−</div>
+<div class="ok"><span class="correct">Correto.</span> Se a VarejoMax dá <em>default</em>, a perda atinge <strong>toda</strong> a carteira de uma vez — os 8% somem rapidamente. A subordinação cobre <strong>perdas parciais, atrasos e risco dos cedentes</strong>; contra o evento de um único devedor, o que importa é o <strong>rating do sacado</strong>, não a espessura do colchão.</div>
+
+<h4>Encruzilhada — Como tratar o risco do sacado-âncora?</h4>
+<div class="grid2">
+<div class="card"><strong>A — Aumentar subordinação para 15%</strong><br><span class="small">Mais colchão; custa retorno do sênior; não ataca o risco mono-nome.</span></div>
+<div class="card"><strong>B — Exigir confirmação + limite/cedente + gatilho de rating</strong><br><span class="small">Mitiga performance e cria porta de saída se o rating cair.</span></div>
+<div class="card"><strong>C — Contratar seguro de crédito sobre o sacado</strong><br><span class="small">Transfere o evento de default a um terceiro, com custo.</span></div>
+</div>
+<h4>Resultados (por caminho)</h4>
+<p class="small"><strong>A:</strong> headline “Mais colchão, mesmo risco de nome”. Tiles — Subordinação: <span class="num">8%→15%</span> (neutral); Retorno sênior: <span style="color:var(--warn)">↓</span> (negative); Proteção vs default do sacado: ~nenhuma (risk); Custo de capital: ↑. Explicação: subordinação absorve perdas parciais, não o evento sistêmico de um único devedor.</p>
+<p class="small"><strong>B:</strong> headline “Mitiga performance e cria porta de saída”. Tiles — Risco de disputa: ↓ (positive); Limite/cedente: 5% (positive); Gatilho de rating: ativo (positive); Risco mono-nome remanescente (risk). Explicação: melhora a qualidade e antecipa amortização se a VarejoMax for rebaixada — mas a exposição final continua sendo ao nome.</p>
+<p class="small"><strong>C:</strong> headline “Transfere o risco mono-nome (com custo)”. Tiles — Risco de crédito transferido (positive); Custo do seguro: ↓ retorno (negative); Risco de contraparte do segurador (risk); Spread líquido: ↓. Explicação: única alavanca que ataca diretamente o <em>default</em> do sacado; o preço corrói o spread.</p>
+
+<h4>Reflexão <span class="small">(25 pts)</span></h4>
+<p><em>Qual é o maior risco residual deste fundo?</em></p>
+<div class="opt is-correct">Rebaixamento/default do sacado-âncora — a diversificação de cedentes não ajuda <span class="badge-ok">✓</span></div>
+<div class="opt">Inadimplência simultânea dos 120 fornecedores</div>
+<div class="opt">Risco regulatório de limite de prazo</div>
+<div class="opt">Risco cambial</div>
+<div class="ok"><span class="correct">Correto.</span> É uma exposição <strong>mono-nome</strong>: tudo depende da VarejoMax honrar. Pulverizar cedentes só dispersa originação; o crédito é um só. O acompanhamento central é o <strong>rating/saúde do sacado</strong> e os gatilhos que dão saída antecipada.</div>
+</div>
+<!-- /S5.2 -->
+
+<!-- ====================== S5.3 ====================== -->
+<div class="scn" id="s5-3">
+<p><span class="tag adv">Avançado</span> <span class="small">· S5.3 · ~25 min · multi cedente / multi sacado</span></p>
+<h3>S5.3 — FIDC aberto: Securitiza Multicedente</h3>
+
+<h4>Contexto</h4>
+<p class="small">Você é o gestor de risco de um <strong>FIDC aberto</strong> de uma securitizadora que compra duplicatas de <strong>~300 cedentes</strong>, cada um com <strong>milhares de clientes (sacados)</strong>. Os dois eixos são diversificados — então onde mora o risco?</p>
+
+<h4>KeyFacts</h4>
+<table>
+<thead><tr><th>Label</th><th>Valor</th><th>Tom</th></tr></thead>
+<tbody>
+<tr><td>ESTRUTURA</td><td>multi cedente / multi sacado</td><td>default</td></tr>
+<tr><td>Nº DE CEDENTES</td><td>~300</td><td>default</td></tr>
+<tr><td>Nº DE SACADOS</td><td>~12.000</td><td>positive</td></tr>
+<tr><td>LIMITE POR CEDENTE</td><td>3%</td><td>default</td></tr>
+<tr><td>LIMITE POR SACADO</td><td>1,5%</td><td>default</td></tr>
+<tr><td>COOBRIGAÇÃO</td><td>sim (recompra pelos cedentes)</td><td>positive</td></tr>
+<tr><td>SUBORDINAÇÃO</td><td>12%</td><td>default</td></tr>
+<tr><td>SÊNIOR</td><td>110% do CDI</td><td>default</td></tr>
+<tr><td>PERDA HISTÓRICA</td><td>1,8% a.a.</td><td>default</td></tr>
+</tbody>
+</table>
+
+<h4>Demonstrações ocultáveis</h4>
+<p class="small"><strong>Statement 1 — “Regulamento”:</strong> limites por cedente/sacado, gatilhos (eventos de avaliação e de amortização antecipada), coobrigação.<br>
+<strong>Statement 2 — “Concentração da carteira”:</strong> top-10 cedentes e top-20 sacados com %.<br>
+<strong>Statement 3 — “Histórico de perdas e recompras”:</strong> série de inadimplência e recompras por coobrigação.</p>
+
+<h4>Etapa 1 — Para onde migra o risco? <span class="small">(20 pts)</span></h4>
+<p><em>Com crédito e originação diluídos, qual passa a ser o risco dominante?</em></p>
+<div class="opt is-correct">Risco operacional/originação — fraude de lastro (duplicata “fria”), cessão em duplicidade, validação heterogênea <span class="badge-ok">✓</span></div>
+<div class="opt">Risco de crédito concentrado</div>
+<div class="opt">Risco de mercado (taxa de juros)</div>
+<div class="opt">O risco simplesmente desaparece</div>
+<div class="ok"><span class="correct">Correto.</span> Diluir os dois eixos atenua crédito e originador. O que sobra é <strong>integridade do lastro</strong>: recebível inexistente, duplicata fria, dupla cessão e qualidade desigual entre 300 cedentes. É risco <strong>operacional</strong>, não de crédito de devedor real.</div>
+
+<h4>Etapa 2 — Qual controle ataca a fraude de lastro? <span class="small">(20 pts)</span></h4>
+<p><em>Que conjunto de controles endereça diretamente o risco dominante?</em></p>
+<div class="opt is-correct">Registro em registradora + verificação de lastro/custódia qualificada + limites por cedente + coobrigação <span class="badge-ok">✓</span></div>
+<div class="opt">Aumentar a subordinação</div>
+<div class="opt">Diversificar ainda mais a carteira</div>
+<div class="opt">Contratar um swap de taxa</div>
+<div class="ok"><span class="correct">Correto.</span> Fraude de lastro não se resolve com mais diversificação — recebível inexistente não “dilui”. O remédio é <strong>verificar o lastro</strong>, <strong>registrar</strong> (evita dupla cessão), <strong>limitar por cedente</strong> e ter <strong>coobrigação</strong>. Subordinação e swap atacam outros riscos.</div>
+
+<h4>Etapa 3 — Um cedente no limite comete fraude total <span class="small">(20 pts)</span></h4>
+<p><em>Um cedente no limite máximo (3%) tem todo o seu lastro fraudado. Com subordinação de 12% e perda esperada de 1,8%, o sênior é atingido?</em></p>
+<div class="opt is-correct">Não — 3% + 1,8% = 4,8% &lt; 12% de subordinação; há folga (e ainda há coobrigação) <span class="badge-ok">✓</span></div>
+<div class="opt">Sim — 3% já consome o sênior</div>
+<div class="opt">Sim — a fraude zera o fundo</div>
+<div class="opt">Não é possível calcular</div>
+<div class="ok"><span class="correct">Correto.</span> A perda do cedente fraudulento (≤ 3%) somada à perda esperada (1,8%) dá <strong>4,8%</strong>, dentro dos <strong>12% de subordinação</strong> — o sênior fica protegido. É exatamente para isso que servem o <strong>limite por cedente</strong> (limita o tamanho de uma fraude) e a <strong>coobrigação</strong> (recompra).</div>
+
+<h4>Encruzilhada — Reforçar qual controle?</h4>
+<div class="grid2">
+<div class="card"><strong>A — Apertar limite por cedente (3%→1,5%)</strong><br><span class="small">Reduz o tamanho de cada fraude; custa escala/receita.</span></div>
+<div class="card"><strong>B — Reforçar verificação de lastro + custódia + registradora</strong><br><span class="small">Ataca a causa-raiz (duplicata fria, dupla cessão).</span></div>
+<div class="card"><strong>C — Exigir coobrigação reforçada/recompra</strong><br><span class="small">Devolve o risco ao cedente — depende da solvência dele.</span></div>
+</div>
+<h4>Resultados (por caminho)</h4>
+<p class="small"><strong>A:</strong> headline “Mais diluição, menos escala”. Tiles — Limite/cedente: <span class="num">1,5%</span> (positive); Perda máx por cedente: ↓ (positive); Receita/escala: ↓ (negative); Fraude de lastro: não resolvida (risk). Explicação: diluir reduz o tamanho de uma fraude, mas não impede que ela ocorra.</p>
+<p class="small"><strong>B:</strong> headline “Ataca a causa-raiz”. Tiles — Risco de lastro: ↓↓ (positive); Cobertura por registradora (positive); Custo operacional: ↑ (negative); Risco residual: solvência do cedente (neutral). Explicação: validação + registro elimina duplicata fria e dupla cessão — o risco dominante do quadrante.</p>
+<p class="small"><strong>C:</strong> headline “Devolve o risco ao cedente”. Tiles — Recompra obrigatória (positive); Depende da solvência do cedente (risk); Risco de crédito do cedente (negative). Explicação: coobrigação só vale o quanto o cedente puder honrar — pode falhar exatamente quando mais se precisa.</p>
+
+<h4>Reflexão <span class="small">(25 pts)</span></h4>
+<p><em>Por que diversificação não substitui controle de lastro?</em></p>
+<div class="opt is-correct">A diversificação dilui o crédito de devedores reais, mas não protege contra recebível inexistente/fraudado — esse risco é operacional <span class="badge-ok">✓</span></div>
+<div class="opt">Porque diversificar aumenta o risco</div>
+<div class="opt">Porque a subordinação já cobre tudo</div>
+<div class="opt">Porque o CDI protege a carteira</div>
+<div class="ok"><span class="correct">Correto.</span> Pulverizar funciona para perdas de crédito de devedores que <em>existem</em>. Um recebível fraudado não tem contraparte para diluir — ele simplesmente não existe. Por isso o controle é <strong>verificação e registro de lastro</strong>, não diversificação.</div>
+</div>
+<!-- /S5.3 -->
+
+<!-- ====================== S5.4 ====================== -->
+<div class="scn" id="s5-4">
+<p><span class="tag adv">Avançado</span> <span class="small">· S5.4 · ~22 min · mono cedente / mono sacado</span></p>
+<h3>S5.4 — Bilateral: FIDC Energia PPA Único</h3>
+
+<h4>Contexto</h4>
+<p class="small">A <strong>Geradora Helios</strong> (cedente único) vende toda a sua energia a um <strong>único off-taker</strong> via PPA de 15 anos e cede ao FIDC os recebíveis — todos devidos por esse mesmo off-taker. É o quadrante de <strong>concentração máxima</strong>.</p>
+
+<h4>KeyFacts</h4>
+<table>
+<thead><tr><th>Label</th><th>Valor</th><th>Tom</th></tr></thead>
+<tbody>
+<tr><td>ESTRUTURA</td><td>mono cedente / mono sacado</td><td>warning</td></tr>
+<tr><td>CEDENTE ÚNICO</td><td>Geradora Helios</td><td>default</td></tr>
+<tr><td>SACADO ÚNICO (OFF-TAKER)</td><td>Distribuidora Sul</td><td>warning</td></tr>
+<tr><td>RATING DO OFF-TAKER</td><td>A (escala nacional)</td><td>default</td></tr>
+<tr><td>PRAZO DO PPA</td><td>15 anos</td><td>default</td></tr>
+<tr><td>SÊNIOR</td><td>IPCA + 7%</td><td>default</td></tr>
+<tr><td>SUBORDINAÇÃO</td><td>10%</td><td>default</td></tr>
+<tr><td>DIVERSIFICAÇÃO</td><td>nenhuma (1 cedente, 1 sacado)</td><td>warning</td></tr>
+</tbody>
+</table>
+
+<h4>Demonstrações ocultáveis</h4>
+<p class="small"><strong>Statement 1 — “Termos do PPA”:</strong> preço, volume, prazo, cláusulas de garantia/step-in.<br>
+<strong>Statement 2 — “Demonstrações do off-taker”:</strong> alavancagem, cobertura de juros, liquidez, rating — o verdadeiro lastro.<br>
+<strong>Statement 3 — “Estrutura do fundo”:</strong> cotas, conta reserva, gatilhos.</p>
+
+<h4>Etapa 1 — O FIDC equivale a quê? <span class="small">(20 pts)</span></h4>
+<p><em>Em termos de risco, a que se assemelha esse fundo?</em></p>
+<div class="opt is-correct">A uma exposição de crédito praticamente direta ao off-taker único (≈ uma debênture do off-taker) <span class="badge-ok">✓</span></div>
+<div class="opt">A uma carteira diversificada de recebíveis</div>
+<div class="opt">Ao risco operacional da geradora</div>
+<div class="opt">A um risco de mercado de energia</div>
+<div class="ok"><span class="correct">Correto.</span> Com um cedente e um sacado, o fundo é, na prática, uma <strong>exposição mono-nome ao off-taker</strong>. Não há pool a diversificar — o risco do sênior é o risco de crédito daquele único devedor.</div>
+
+<h4>Etapa 2 — A subordinação protege contra o default do off-taker? <span class="small">(20 pts)</span></h4>
+<p><em>Os 10% de subordinação protegem o sênior se o off-taker quebrar?</em></p>
+<div class="opt">Sim — protege integralmente</div>
+<div class="opt is-correct">Praticamente cosmética contra o evento mono-nome — se o off-taker quebra, a carteira falha de uma vez; só absorve atrasos/perdas parciais <span class="badge-ok">✓</span></div>
+<div class="opt">Sim, em até 10% do default</div>
+<div class="opt">Sim, por causa do prazo de 15 anos</div>
+<div class="ok"><span class="correct">Correto.</span> O <em>default</em> do único devedor é uma perda <strong>sistêmica à carteira inteira</strong> — estoura os 10% imediatamente. A subordinação só ajuda em <strong>atrasos e perdas parciais</strong>. Contra o evento mono-nome, o remédio seria diversificação (que não existe aqui).</div>
+
+<h4>Etapa 3 — Qual rating precifica o sênior? <span class="small">(20 pts)</span></h4>
+<p><em>Que rating é o relevante para o spread do sênior?</em></p>
+<div class="opt is-correct">O do off-taker — não há diversificação que melhore; o sênior precifica perto do crédito dele <span class="badge-ok">✓</span></div>
+<div class="opt">O da geradora cedente</div>
+<div class="opt">Uma média ponderada cedente/sacado</div>
+<div class="opt">O rating do administrador do fundo</div>
+<div class="ok"><span class="correct">Correto.</span> Como toda a carteira depende de um nome, o sênior tende a precificar <strong>próximo ao crédito do off-taker</strong>. Não há pulverização que “suba” a qualidade — é exposição direta a uma única contraparte.</div>
+
+<h4>Encruzilhada — Como mitigar a concentração?</h4>
+<div class="grid2">
+<div class="card"><strong>A — Conta reserva + step-in/garantia do off-taker</strong><br><span class="small">Mitiga liquidez/atraso e melhora recuperação; não cobre o default.</span></div>
+<div class="card"><strong>B — Seguro de crédito sobre o off-taker</strong><br><span class="small">Transfere o evento de default, com custo e risco de contraparte.</span></div>
+<div class="card"><strong>C — Reestruturar para multi-sacado (mercado livre)</strong><br><span class="small">Vender energia a vários off-takers — ataca a concentração na origem.</span></div>
+</div>
+<h4>Resultados (por caminho)</h4>
+<p class="small"><strong>A:</strong> headline “Protege liquidez, não o evento de crédito”. Tiles — Conta reserva (positive); Cobre atrasos (positive); Default do off-taker: ainda exposto (risk); Custo de carrego (negative). Explicação: melhora recuperação e fluxo, mas a perda final ainda depende do nome.</p>
+<p class="small"><strong>B:</strong> headline “Transfere o default (com custo)”. Tiles — Evento de crédito coberto (positive); Prêmio do seguro (negative); Risco do segurador (risk). Explicação: única que ataca o evento mono-nome diretamente; preço relevante porque é concentrado.</p>
+<p class="small"><strong>C:</strong> headline “Ataca a concentração na origem”. Tiles — De mono → multi sacado (positive); Risco de crédito diluído (positive); Complexidade comercial/operacional: ↑ (negative); Prazo de implementação (neutral). Explicação: estruturalmente a melhor — transforma o quadrante; mas exige mudar o modelo de venda de energia.</p>
+
+<h4>Reflexão <span class="small">(25 pts)</span></h4>
+<p><em>Por que subordinação ≠ proteção contra risco mono-nome?</em></p>
+<div class="opt is-correct">A subordinação absorve perdas parciais até um limite; o default do único devedor é uma perda sistêmica que estoura o colchão de uma vez — o remédio seria diversificação <span class="badge-ok">✓</span></div>
+<div class="opt">Porque subordinação não existe em mono-sacado</div>
+<div class="opt">Porque o rating A elimina o risco</div>
+<div class="opt">Porque o PPA garante 15 anos de pagamento</div>
+<div class="ok"><span class="correct">Correto.</span> Subordinação e diversificação são alavancas distintas: a primeira absorve perdas até um teto; a segunda decide se a perda é idiossincrática (tolerável) ou sistêmica a um nome (fatal). Em mono-sacado, mais subordinação não resolve — falta o que diversificar.</div>
+</div>
+<!-- /S5.4 -->
+
+<!-- ====================== S5.5 ====================== -->
+<div class="scn" id="s5-5">
+<p><span class="tag adv">Avançado</span> <span class="small">· S5.5 · ~25 min · originate-to-distribute (descasamento PRÉ × CDI)</span></p>
+<h3>S5.5 — Banco restrito por capital: Banco Direto</h3>
+
+<h4>Contexto</h4>
+<p class="small">O <strong>Banco Direto</strong> origina crédito <strong>PRÉ-fixado</strong> (consignado/CDC) mas tem <strong>PR baixo</strong> e índice de Basileia apertado. Para crescer, cede a carteira a um FIDC e libera capital. O <strong>sênior é remunerado em CDI + taxa</strong>. Você avalia o alívio de capital e como o <strong>descasamento de indexador</strong> é resolvido dentro do fundo.</p>
+
+<h4>KeyFacts</h4>
+<table>
+<thead><tr><th>Label</th><th>Valor</th><th>Tom</th></tr></thead>
+<tbody>
+<tr><td>ESTRUTURA</td><td>originate-to-distribute (mono cedente / multi sacado)</td><td>default</td></tr>
+<tr><td>CARTEIRA</td><td>crédito PRÉ</td><td>default</td></tr>
+<tr><td>RENDIMENTO DO ATIVO (PRÉ)</td><td>30% a.a. (fixo)</td><td>positive</td></tr>
+<tr><td>CDI ATUAL</td><td>12% a.a.</td><td>default</td></tr>
+<tr><td>SÊNIOR</td><td>CDI + 4% (= 16% hoje)</td><td>default</td></tr>
+<tr><td>CUSTOS + PERDAS</td><td>6% a.a.</td><td>default</td></tr>
+<tr><td>EXCESS SPREAD</td><td>8% a.a. (= 20% − CDI)</td><td>positive</td></tr>
+<tr><td>SUBORDINAÇÃO (RETIDA PELO BANCO)</td><td>20%</td><td>warning</td></tr>
+<tr><td>ÍNDICE DE BASILEIA</td><td>11,2% (mínimo regulatório ~10,5%)</td><td>warning</td></tr>
+</tbody>
+</table>
+
+<h4>Demonstrações ocultáveis</h4>
+<p class="small"><strong>Statement 1 — “Balanço do banco (capital)”:</strong> PR, RWA da carteira, índice de Basileia antes/depois da cessão.<br>
+<strong>Statement 2 — “Composição de taxa (rate stack)”:</strong> 30% (PRÉ) = sênior (CDI+4) + custos/perdas (6%) + excess spread.<br>
+<strong>Statement 3 — “Projeção de CDI”:</strong> cenários de CDI e impacto no excess spread.<br>
+<strong>Statement 4 — “Regulamento do FIDC”:</strong> cotas, possibilidade de swap, gatilhos de amortização.</p>
+
+<h4>Etapa 1 — De onde vem o alívio de capital? <span class="small">(20 pts)</span></h4>
+<p><em>Qual parcela da estrutura efetivamente alivia o capital regulatório do banco?</em></p>
+<div class="opt is-correct">A parcela sênior colocada a investidores (o RWA sai); a subordinada retida é cara em capital e o alívio pleno exige transferência significativa de risco <span class="badge-ok">✓</span></div>
+<div class="opt">A carteira inteira, automaticamente</div>
+<div class="opt">A cota subordinada retida</div>
+<div class="opt">A redução de impostos sobre o lucro</div>
+<div class="ok"><span class="correct">Correto.</span> O alívio vem de tirar o RWA do balanço — e isso só ocorre na <strong>fatia sênior</strong> financiada por terceiros. A <strong>subordinada retida</strong> carrega peso de risco alto (ou dedução) no arcabouço de securitização, e o desreconhecimento pleno depende de <strong>transferência substancial de risco</strong> (venda definitiva).</div>
+
+<h4>Etapa 2 — Como o descasamento PRÉ × CDI é absorvido? <span class="small">(20 pts)</span></h4>
+<p><em>O ativo rende fixo (30%) e o sênior cobra CDI + 4% (flutuante). Quem absorve essa diferença dentro do fundo?</em></p>
+<div class="opt is-correct">O excess spread / cota subordinada (retida pelo banco), que flutua inversamente ao CDI; dimensionado contra um estresse de CDI <span class="badge-ok">✓</span></div>
+<div class="opt">O próprio sênior absorve</div>
+<div class="opt">O deságio de aquisição elimina o descasamento</div>
+<div class="opt">O tomador do crédito absorve</div>
+<div class="ok"><span class="correct">Correto.</span> O rendimento fixo é “fatiado” em sênior (flutuante) + custos/perdas + <strong>excess spread</strong>. Como o ativo é fixo e o sênior flutua, é o <strong>excess spread (da subordinada)</strong> que sobe e desce para fechar a conta: CDI sobe → sênior leva mais → sobra menos ao banco. A razão de subordinação é calibrada para suportar um CDI de estresse sem tocar o sênior.</div>
+
+<h4>Etapa 3 — CDI de breakeven <span class="small">(20 pts)</span></h4>
+<p><em>Com ativo a 30%, custos/perdas de 6% e sênior = CDI + 4%, em que CDI o excess spread zera?</em></p>
+<div class="opt">CDI = 12%</div>
+<div class="opt">CDI = 16%</div>
+<div class="opt is-correct">CDI = 20% <span class="badge-ok">✓</span></div>
+<div class="opt">CDI = 26%</div>
+<div class="ok"><span class="correct">Correto.</span> Excess spread = 30 − (CDI + 4) − 6 = <strong>20 − CDI</strong>; zera em <strong>CDI = 20%</strong>. Acima disso, o rendimento PRÉ não cobre mais sênior + custos e a estrutura começa a <strong>consumir a subordinação</strong>. A 12% (hoje), o colchão é de 8%.</div>
+
+<h4>Encruzilhada — Como tratar o risco de base?</h4>
+<div class="grid2">
+<div class="card"><strong>A — Swap pré × DI (hedge explícito)</strong><br><span class="small">Converte o fluxo fixo em CDI; elimina a base; custo + risco de contraparte/margem.</span></div>
+<div class="card"><strong>B — FIDC rotativo reprecificando a taxa de cessão</strong><br><span class="small">Repassa o CDI corrente às novas compras; o banco origina a taxas PRÉ mais altas.</span></div>
+<div class="card"><strong>C — Aumentar subordinação + gatilhos de amortização</strong><br><span class="small">Mais colchão e proteção; mais capital travado e menos alívio.</span></div>
+</div>
+<h4>Resultados (por caminho)</h4>
+<p class="small"><strong>A:</strong> headline “Elimina o risco de base (com custo)”. Tiles — Risco de base: ↓↓ (positive); Excess spread estabilizado (positive); Custo do swap (negative); Risco de contraparte/margem (risk). Explicação: converte o fluxo fixo em CDI, casando com o sênior; precisa estar previsto no regulamento.</p>
+<p class="small"><strong>B:</strong> headline “Reprecifica para frente”. Tiles — Spread futuro protegido (positive); Sem custo de hedge (positive); Estoque atual ainda exposto (risk); Originação a taxas ↑ (neutral). Explicação: a cada compra o fundo exige rendimento PRÉ maior conforme o CDI sobe; o banco precisa originar mais caro para continuar cedendo.</p>
+<p class="small"><strong>C:</strong> headline “Mais proteção, menos alívio”. Tiles — Subordinação: ↑ (positive); Gatilhos protegem o sênior (positive); Capital travado: ↑ (negative); Alívio de RWA: ↓ (negative). Explicação: reforça o colchão e antecipa amortização se o CDI disparar, mas consome o benefício de capital que motivou a estrutura.</p>
+
+<h4>Reflexão <span class="small">(25 pts)</span></h4>
+<p><em>O excess spread cobre o quê ao mesmo tempo?</em></p>
+<div class="opt is-correct">O risco de base (CDI) <em>e</em> as perdas de crédito — as duas brigam pelo mesmo colchão; o pior caso é CDI e inadimplência subindo juntos <span class="badge-ok">✓</span></div>
+<div class="opt">Apenas o risco de base</div>
+<div class="opt">Apenas as perdas de crédito</div>
+<div class="opt">Nada — o sênior cobre tudo</div>
+<div class="ok"><span class="correct">Correto.</span> A subordinada retida pelo banco acumula três papéis: <em>skin in the game</em> para a venda definitiva, absorção da <strong>inadimplência</strong> e absorção do <strong>descasamento de indexador</strong>. Como base e perdas consomem o mesmo excess spread, o estresse crítico é a <strong>alta simultânea</strong> de CDI e inadimplência.</div>
+</div>
+<!-- /S5.5 -->
+
+<!-- ============================================================= -->
+<h2 id="s11">11. Critérios de aceite / QA</h2>
+<ul class="tight">
+<li>Grade renderiza 5 cards com badge/ID/tempo/blurb/botão e marca os concluídos.</li>
+<li>Em cada cenário: contexto + KeyFacts + demonstrações recolhidas por padrão (expandem ao clicar no “+”).</li>
+<li>Revelação progressiva das etapas; opção correta verde + memória; incorreta vermelha + memória; permite retomar.</li>
+<li>Pontuação: 0/85 no início, 60/85 ao chegar no resultado, 85/85 ao acertar a reflexão (com escolhas corretas).</li>
+<li>Encruzilhada com 3 caminhos, cada um levando a um <code>Resultado</code> distinto (tiles + explicação).</li>
+<li>“← Etapa anterior”, troca de caminho e “Tentar outro cenário” funcionam; progresso persiste em <code>localStorage</code>.</li>
+<li>Todo o conteúdo vem de <code>scenarios.ts</code>; nenhum texto hard-coded em componente.</li>
+<li>Acessível (teclado, aria, contraste) e responsivo (2→1 col).</li>
+<li>Os números das memórias de cálculo conferem com a seção 10.</li>
+</ul>
+
+<!-- ============================================================= -->
+<h2 id="s12">12. Glossário</h2>
+<table>
+<thead><tr><th>Termo</th><th>Definição curta</th></tr></thead>
+<tbody>
+<tr><td>Cedente</td><td>Quem vende/transfere os direitos creditórios ao fundo.</td></tr>
+<tr><td>Sacado</td><td>O devedor do direito creditório (quem paga no vencimento).</td></tr>
+<tr><td>Subordinação</td><td>Cota de primeira perda; colchão que protege o sênior. Razão sub = sub / PL.</td></tr>
+<tr><td>Excess spread</td><td>Sobra do rendimento do ativo após remunerar o sênior e cobrir custos/perdas; vai à subordinada.</td></tr>
+<tr><td>Carrego</td><td>Ganho do fundo entre o preço de aquisição e a face do recebível (face − preço).</td></tr>
+<tr><td>Desreconhecimento</td><td>Saída do ativo do balanço do cedente quando há transferência substancial de riscos/benefícios.</td></tr>
+<tr><td>Reverse factoring</td><td>Antecipação a fornecedores com confirmação da dívida pelo sacado-âncora.</td></tr>
+<tr><td>Descasamento de indexador</td><td>Ativo em uma base (ex.: PRÉ) e passivo em outra (ex.: CDI+), gerando risco de base.</td></tr>
+</tbody>
+</table>
+
+</div>
+</body>
+</html>

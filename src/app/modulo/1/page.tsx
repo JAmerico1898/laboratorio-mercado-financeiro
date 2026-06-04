@@ -320,8 +320,8 @@ export default function Module1Page() {
       {/* Hero Section */}
       <OpeningHero />
 
-      {/* Interactive Tool Section */}
-      <div id="modelagem" className="scroll-mt-16">
+      {/* Interactive Tool Section — light theme island (mirrors derivativos) */}
+      <div id="modelagem" data-theme="light" className="scroll-mt-16">
         <ControlBar
           mode={mode}
           method={method}
