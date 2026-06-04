@@ -1,4 +1,4 @@
-import Link from "next/link";
+import BackToModulesLink from "@/components/BackToModulesLink";
 
 interface OpeningHeroProps {
   onStartAnalysis: () => void;
@@ -12,27 +12,14 @@ export default function OpeningHero({ onStartAnalysis }: OpeningHeroProps) {
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary/5 rounded-full blur-3xl" />
       </div>
 
-      <Link
-        href="/"
-        className="absolute top-6 left-6 text-on-surface-variant hover:text-primary-container transition-colors z-20 flex items-center gap-1 text-sm"
-        aria-label="Voltar"
-      >
-        <span className="material-symbols-outlined text-lg">arrow_back</span>
-        Voltar
-      </Link>
-
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-5 gap-12 items-center relative z-10">
         <div className="lg:col-span-2">
-          {/* Module badge */}
-          <div className="flex items-center gap-2 mb-6">
-            <span className="px-3 py-1 rounded-sm bg-surface-container-highest text-secondary text-[10px] font-bold tracking-widest uppercase">
-              Módulo 2
-            </span>
-            <div className="h-[1px] w-12 bg-outline-variant/30" />
-            <span className="text-on-surface-variant text-sm font-medium tracking-tight">
-              Análise Quantitativa de Crédito
-            </span>
-          </div>
+          <BackToModulesLink />
+
+          {/* Pre-título (categoria) */}
+          <p className="mt-6 mb-6 text-xs font-bold uppercase tracking-[0.16em] text-secondary">
+            Análise Quantitativa de Crédito
+          </p>
 
           {/* Headline */}
           <h1 className="text-5xl md:text-7xl font-extrabold tracking-tighter text-on-surface mb-8 leading-[1.1] text-glow">

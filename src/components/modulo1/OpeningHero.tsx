@@ -1,15 +1,16 @@
+import BackToModulesLink from "@/components/BackToModulesLink";
+
 export default function OpeningHero() {
   return (
     <section className="relative bg-surface px-6 pt-16 pb-12 md:pt-24 md:pb-16 overflow-hidden">
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-5 gap-12 items-center">
         <div className="z-10 lg:col-span-2">
-          {/* Module badge */}
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-container/10 border border-primary-container/20 mb-6">
-            <span className="w-2 h-2 rounded-full bg-primary-container animate-pulse" />
-            <span className="text-[10px] uppercase tracking-widest font-bold text-primary-container">
-              Módulo 01: ESTRUTURA A TERMO DE TAXAS DE JUROS
-            </span>
-          </div>
+          <BackToModulesLink />
+
+          {/* Pre-título (categoria) */}
+          <p className="mt-6 mb-6 text-xs font-bold uppercase tracking-[0.16em] text-secondary">
+            Curva de juros
+          </p>
 
           {/* Headline */}
           <h1 className="text-4xl md:text-6xl font-extrabold tracking-tighter text-primary mb-6 leading-[1.1]">

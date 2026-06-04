@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import BackToModulesLink from "@/components/BackToModulesLink";
 import type { Difficulty, Scenario } from "@/data/fidc-v2/types";
 import { DIFFICULTY_LABEL } from "@/data/fidc-v2/types";
 import { readCompletion, type CompletionRecord } from "./useFidcScenario";
@@ -34,13 +35,7 @@ export default function ScenarioGrid({ scenarios }: { scenarios: Scenario[] }) {
       <main className="mx-auto max-w-6xl px-6 pb-20 pt-12">
         {/* Header — hero de duas colunas (texto à esquerda, vídeo à direita) */}
         <header className="mb-12">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-1.5 text-sm font-semibold text-secondary hover:opacity-70"
-          >
-            <span className="material-symbols-outlined text-sm">arrow_back</span>
-            <span className="text-xs uppercase tracking-widest">Voltar aos módulos</span>
-          </Link>
+          <BackToModulesLink />
 
           <div className="mt-6 grid grid-cols-1 items-center gap-10 lg:grid-cols-5">
             <div className="lg:col-span-2">

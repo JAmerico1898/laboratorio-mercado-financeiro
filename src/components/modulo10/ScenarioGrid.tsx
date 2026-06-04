@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import BackToModulesLink from "@/components/BackToModulesLink";
 import type { Difficulty, Scenario } from "@/data/gestao-credito-cenarios/types";
 import { DIFFICULTY_LABEL } from "@/data/gestao-credito-cenarios/types";
 import { readCompletion, type CompletionRecord } from "./useRegScenario";
@@ -32,26 +33,40 @@ export default function ScenarioGrid({ scenarios }: { scenarios: Scenario[] }) {
   return (
     <div data-theme="light" className="min-h-screen bg-surface text-on-surface font-body">
       <main className="mx-auto max-w-6xl px-6 pb-20 pt-12">
-        {/* Header */}
-        <header className="mb-10">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-1.5 text-sm font-semibold text-secondary hover:opacity-70"
-          >
-            <span className="material-symbols-outlined text-sm">arrow_back</span>
-            <span className="text-xs uppercase tracking-widest">Voltar aos módulos</span>
-          </Link>
-          <p className="mt-6 text-xs font-bold uppercase tracking-[0.16em] text-secondary">
-            Módulo 10 · Gestão de Crédito
-          </p>
-          <h1 className="mt-2 font-heading text-4xl font-extrabold leading-tight text-primary sm:text-5xl">
-            Gestão de Crédito
-          </h1>
-          <p className="mt-3 max-w-2xl text-lg leading-relaxed text-on-surface-variant">
-            Quatro lentes sobre a carteira de crédito sobre um único motor (PE = PD × LGD × EAD): perda
-            esperada por empréstimo, apetite de risco por cenário macro, recessão na carteira e risco de
-            concentração — do empréstimo ao portfólio.
-          </p>
+        {/* Header — hero de duas colunas (texto à esquerda, vídeo à direita) */}
+        <header className="mb-12">
+          <BackToModulesLink />
+
+          <div className="mt-6 grid grid-cols-1 items-center gap-10 lg:grid-cols-5">
+            <div className="lg:col-span-2">
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-secondary">
+                Risco de crédito
+              </p>
+              <h1 className="mt-2 font-heading text-4xl font-extrabold leading-[1.1] tracking-tight text-primary sm:text-5xl md:text-6xl">
+                Gestão de{" "}
+                <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                  Crédito
+                </span>
+              </h1>
+              <p className="mt-6 max-w-xl border-l-2 border-primary/30 pl-4 text-lg font-light leading-relaxed text-on-surface-variant">
+                Quatro lentes sobre a carteira de crédito sobre um único motor (PE = PD × LGD × EAD): perda
+                esperada por empréstimo, apetite de risco por cenário macro, recessão na carteira e risco de
+                concentração — do empréstimo ao portfólio.
+              </p>
+            </div>
+
+            <div className="relative hidden aspect-video w-full overflow-hidden rounded-2xl border border-outline-variant/40 lg:col-span-3 lg:block">
+              <video
+                src="/videos/hero-risco-credito.mp4"
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-surface/40 via-transparent to-transparent" />
+            </div>
+          </div>
         </header>
 
         <div className="mb-8 flex items-center gap-4">
