@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import {
   ModelResults,
-  FEATURES,
+  COLUMN_LABELS,
   computeLinearCombinations,
   transform,
   predictProbability,
@@ -49,9 +49,10 @@ export default function ModelAnalysisTab({
   const { model, classificationReport, coefficientInterpretations } =
     modelResults;
 
-  // Feature label lookup
-  const featureLabel = (key: string) =>
-    FEATURES.find((f) => f.key === key)?.label ?? key;
+  // Rótulo por COLUNA do desenho — uma variável pode gerar várias colunas (as dummies de
+  // moradia, o indicador de ausência do tempo de emprego), então o lookup não pode ser
+  // feito pela lista de variáveis da interface.
+  const featureLabel = (key: string) => COLUMN_LABELS[key] ?? key;
 
   return (
     <div className="space-y-8">
