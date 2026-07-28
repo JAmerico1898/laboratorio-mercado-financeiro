@@ -5,7 +5,7 @@ import {
   ModelResults,
   ProductionResults,
   RISK_BANDS,
-} from "@/lib/credit-risk";
+} from "@/lib/credit-risk-v2";
 import ConfusionMatrixChart from "../ConfusionMatrixChart";
 import RocCurveChart from "../RocCurveChart";
 import ProbabilityDistribution from "../ProbabilityDistribution";

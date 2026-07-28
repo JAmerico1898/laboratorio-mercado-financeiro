@@ -1,5 +1,6 @@
 "use client";
 import dynamic from "next/dynamic";
+import { seededShuffle } from "@/lib/seeded-shuffle";
 const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
 
 const DARK_LAYOUT = {
@@ -31,14 +32,15 @@ export default function SigmoidChart({
   const xTheory = Array.from({ length: 300 }, (_, i) => minLC + i * step);
   const yTheory = xTheory.map(sigmoid);
 
-  // Sample up to 1000 random data points for scatter
+  // Amostra até 1000 pontos para o scatter.
+  // Usa o embaralhamento SEMEADO já existente no repositório em vez de Math.random():
+  // assim o gráfico é idêntico a cada execução — em sala, dois alunos com a mesma
+  // configuração veem a mesma figura, e comparar rodadas passa a ser legítimo.
   const maxSamples = Math.min(1000, linearCombinations.length);
-  const indices = Array.from({ length: linearCombinations.length }, (_, i) => i);
-  for (let i = indices.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [indices[i], indices[j]] = [indices[j], indices[i]];
-  }
-  const sampledIndices = indices.slice(0, maxSamples);
+  const sampledIndices = seededShuffle(
+    Array.from({ length: linearCombinations.length }, (_, i) => i),
+    `modulo2-sigmoid-${linearCombinations.length}`
+  ).slice(0, maxSamples);
 
   const scatterX0: number[] = [];
   const scatterY0: number[] = [];

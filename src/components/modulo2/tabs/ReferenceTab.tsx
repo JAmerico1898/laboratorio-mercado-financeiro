@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { CreditRecord, ModelResults, FEATURES } from "@/lib/credit-risk";
+import { CreditRecord, ModelResults, COLUMN_LABELS } from "@/lib/credit-risk-v2";
 
 interface ReferenceTabProps {
   modelResults: ModelResults;
@@ -48,8 +48,8 @@ export default function ReferenceTab({
   trainingData,
   productionData,
 }: ReferenceTabProps) {
-  const featureLabel = (key: string) =>
-    FEATURES.find((f) => f.key === key)?.label ?? key;
+  // Aqui `selectedFeatures` traz COLUNAS do desenho, não chaves de variáveis.
+  const featureLabel = (key: string) => COLUMN_LABELS[key] ?? key;
 
   // Display columns: id + selected features + loan_status
   const displayCols = useMemo(

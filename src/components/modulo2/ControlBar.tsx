@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { FeatureDefinition } from "@/lib/credit-risk";
+import { FeatureDefinitionV2, TIER_INFO } from "@/lib/credit-risk-v2";
 import { CUTOFF_MIN, CUTOFF_MAX, CUTOFF_STEP } from "@/lib/credit-risk/constants";
 
 interface ControlBarProps {
-  features: FeatureDefinition[];
+  features: FeatureDefinitionV2[];
   selectedFeatures: string[];
   onFeaturesChange: (features: string[]) => void;
   cutoff: number;
@@ -87,19 +87,37 @@ export default function ControlBar({
 
                 {showDropdown && (
                   <div className="absolute top-full left-0 mt-2 w-80 bg-surface-container-high border border-outline-variant/30 rounded-xl shadow-2xl z-50 max-h-72 overflow-y-auto">
-                    {features.map((f) => (
-                      <label
-                        key={f.key}
-                        className="flex items-center gap-3 px-4 py-2.5 hover:bg-surface-container-highest cursor-pointer text-sm"
-                      >
-                        <input
-                          type="checkbox"
-                          checked={selectedFeatures.includes(f.key)}
-                          onChange={() => toggleFeature(f.key)}
-                          className="accent-primary-container w-4 h-4"
-                        />
-                        <span className="text-on-surface">{f.label}</span>
-                      </label>
+                    {(["CORE", "MARGINAL", "NOISE"] as const).map((tier) => (
+                      <div key={tier}>
+                        <div className="px-4 pt-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-on-surface-variant/70">
+                          {TIER_INFO[tier].label}
+                          <span className="block normal-case tracking-normal font-normal text-[10px] text-on-surface-variant/50">
+                            {TIER_INFO[tier].hint}
+                          </span>
+                        </div>
+                        {features
+                          .filter((f) => f.tier === tier)
+                          .map((f) => (
+                            <label
+                              key={f.key}
+                              title={f.description}
+                              className="flex items-center gap-3 px-4 py-2.5 hover:bg-surface-container-highest cursor-pointer text-sm"
+                            >
+                              <input
+                                type="checkbox"
+                                checked={selectedFeatures.includes(f.key)}
+                                onChange={() => toggleFeature(f.key)}
+                                className="accent-primary-container w-4 h-4"
+                              />
+                              <span className="text-on-surface flex-1">{f.label}</span>
+                              {f.columns.length > 1 && (
+                                <span className="text-[10px] text-on-surface-variant/60 shrink-0">
+                                  {f.columns.length} col.
+                                </span>
+                              )}
+                            </label>
+                          ))}
+                      </div>
                     ))}
                   </div>
                 )}
@@ -109,10 +127,14 @@ export default function ControlBar({
               <div className="flex flex-wrap gap-2 flex-1">
                 {selectedFeatures.map((key) => {
                   const feat = features.find((f) => f.key === key);
+                  const chip = feat
+                    ? TIER_INFO[feat.tier].chip
+                    : "bg-primary-container/10 border-primary-container/20 text-primary-container";
                   return (
                     <span
                       key={key}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary-container/10 border border-primary-container/20 rounded-full text-xs text-primary-container"
+                      title={feat?.description}
+                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 border rounded-full text-xs ${chip}`}
                     >
                       {feat?.label ?? key}
                       <button

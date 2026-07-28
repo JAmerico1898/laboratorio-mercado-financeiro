@@ -17,7 +17,7 @@ export const modules: ModuleInfo[] = [
     id: 2,
     title: "Modelagem de Risco de Crédito",
     description:
-      "Técnicas avançadas para mensuração e mitigação de riscos em operações de crédito.",
+      "Scorecard de originação sem vazamento: nove variáveis em camadas, colinearidade na prática e o teto honesto de discriminação da base.",
     icon: "security",
   },
   {

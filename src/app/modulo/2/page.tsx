@@ -8,9 +8,7 @@ import {
   CreditRecord,
   ModelResults,
   ProductionResults,
-  DEFAULT_FEATURES,
   DEFAULT_CUTOFF,
-  FEATURES,
   CUTOFF_SCENARIOS,
   RISK_BANDS,
   loadDataset,
@@ -22,27 +20,37 @@ import {
   predictProbability,
   predictClass,
   accuracy,
-  computeLinearCombinations,
   computeConfusionMatrix,
   computeClassificationReport,
-  interpretCoefficients,
-  computeRocCurve,
   RiskBand,
   CutoffComparisonRow,
-} from "@/lib/credit-risk";
+  // específicos deste módulo
+  FEATURES_V2,
+  DEFAULT_FEATURES_V2,
+  DATASET_TRAINING_V2,
+  DATASET_PRODUCTION_V2,
+  DATASET_PRODUCTION_TRUE_V2,
+  expandColumns,
+  interpretCoefficientsV2,
+  computeRocCurveFast,
+  LR_V2_LEARNING_RATE,
+  LR_V2_MAX_ITERATIONS,
+  LR_V2_TOLERANCE,
+  LR_V2_REGULARIZATION,
+} from "@/lib/credit-risk-v2";
 
 export default function Module2Page() {
   // Data state
   const [trainingData, setTrainingData] = useState<CreditRecord[] | null>(null);
-  // Produção INPUT: testing_sample (no labels) — what the model scores
+  // Produção INPUT: testing_sample_v2 (sem rótulos) — o que o modelo pontua
   const [productionData, setProductionData] = useState<CreditRecord[] | null>(null);
-  // Produção ANSWER KEY: testing_sample_true (true labels) — used to grade
+  // Produção GABARITO: testing_sample_true_v2 (com rótulos) — usado para corrigir
   const [productionTrueData, setProductionTrueData] = useState<CreditRecord[] | null>(null);
   const [dataLoading, setDataLoading] = useState(true);
   const [dataError, setDataError] = useState<string | null>(null);
 
-  // Control state
-  const [selectedFeatures, setSelectedFeatures] = useState<string[]>(DEFAULT_FEATURES);
+  // Control state — chaves de VARIÁVEIS (não de colunas)
+  const [selectedFeatures, setSelectedFeatures] = useState<string[]>(DEFAULT_FEATURES_V2);
   const [cutoff, setCutoff] = useState(DEFAULT_CUTOFF);
 
   // Model state
@@ -62,9 +70,9 @@ export default function Module2Page() {
       try {
         setDataLoading(true);
         const [training, production, productionTrue] = await Promise.all([
-          loadDataset("training_sample.json"),
-          loadDataset("testing_sample.json"),
-          loadDataset("testing_sample_true.json"),
+          loadDataset(DATASET_TRAINING_V2),
+          loadDataset(DATASET_PRODUCTION_V2),
+          loadDataset(DATASET_PRODUCTION_TRUE_V2),
         ]);
         if (!cancelled) {
           setTrainingData(training);
@@ -74,16 +82,16 @@ export default function Module2Page() {
         }
       } catch (err) {
         if (!cancelled) {
-          setDataError(
-            err instanceof Error ? err.message : "Erro ao carregar dados"
-          );
+          setDataError(err instanceof Error ? err.message : "Erro ao carregar dados");
         }
       } finally {
         if (!cancelled) setDataLoading(false);
       }
     }
     load();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // Run model
@@ -98,11 +106,13 @@ export default function Module2Page() {
 
     setModelLoading(true);
 
-    // Use setTimeout to avoid blocking the UI thread
+    // setTimeout para não travar a thread da interface
     setTimeout(() => {
       try {
-        // Extract features from training data
-        const { X: XAll, y: yAll } = extractFeatures(trainingData, selectedFeatures);
+        // Uma variável da interface pode virar várias colunas do desenho.
+        const selectedColumns = expandColumns(selectedFeatures);
+
+        const { X: XAll, y: yAll } = extractFeatures(trainingData, selectedColumns);
 
         // Stratified train/test split
         const split = stratifiedTrainTestSplit(XAll, yAll, 0.3, 42);
@@ -112,11 +122,18 @@ export default function Module2Page() {
         const xTestStd = transform(split.xTest, stdParams);
 
         // Train model
+        // Parâmetros próprios deste módulo — ver o comentário em credit-risk-v2/constants.ts:
+        // com o lr do módulo 2 o gradiente não converge e a armadilha de colinearidade
+        // não aparece.
         const model = trainLogisticRegression(
           xTrainStd,
           split.yTrain,
-          selectedFeatures,
-          stdParams
+          selectedColumns,
+          stdParams,
+          LR_V2_LEARNING_RATE,
+          LR_V2_MAX_ITERATIONS,
+          LR_V2_TOLERANCE,
+          LR_V2_REGULARIZATION
         );
 
         // Predictions on test set
@@ -132,10 +149,10 @@ export default function Module2Page() {
         const testAccuracy = accuracy(split.yTest, testPredictions);
         const confusionMatrix = computeConfusionMatrix(split.yTest, testPredictions);
         const classificationReport = computeClassificationReport(split.yTest, testPredictions);
-        const rocData = computeRocCurve(split.yTest, testProbabilities);
-        const coefficientInterpretations = interpretCoefficients(
+        const rocData = computeRocCurveFast(split.yTest, testProbabilities);
+        const coefficientInterpretations = interpretCoefficientsV2(
           model.coefficients,
-          selectedFeatures
+          selectedColumns
         );
 
         const results: ModelResults = {
@@ -153,13 +170,10 @@ export default function Module2Page() {
 
         setModelResults(results);
 
-        // --- Production scoring ---
-        // Score the UNLABELED set (testing_sample): the model never sees outcomes.
-        const { X: XProd, ids: prodIds } = extractFeatures(
-          productionData,
-          selectedFeatures
-        );
-        // True outcomes come from testing_sample_true, joined by id (the answer key).
+        // --- Produção ---
+        // Pontua o conjunto SEM rótulos: o modelo nunca vê os desfechos.
+        const { X: XProd, ids: prodIds } = extractFeatures(productionData, selectedColumns);
+        // Os desfechos verdadeiros vêm do gabarito, unidos por id.
         const trueLabelById = new Map<number, number>(
           productionTrueData.map((r) => [r.id, r.loan_status])
         );
@@ -200,7 +214,7 @@ export default function Module2Page() {
         // Production metrics
         const prodCM = computeConfusionMatrix(yProd, prodPredictions);
         const prodReport = computeClassificationReport(yProd, prodPredictions);
-        const prodRocData = computeRocCurve(yProd, prodProbabilities);
+        const prodRocData = computeRocCurveFast(yProd, prodProbabilities);
 
         setProductionResults({
           ids: prodIds,
@@ -236,6 +250,12 @@ export default function Module2Page() {
     };
   }, [trainingData, productionData]);
 
+  // Colunas do desenho para as abas que precisam listar o que entrou no modelo.
+  const selectedColumns = useMemo(
+    () => expandColumns(selectedFeatures),
+    [selectedFeatures]
+  );
+
   return (
     <div className="min-h-screen">
       <OpeningHero onStartAnalysis={handleStartAnalysis} />
@@ -244,7 +264,7 @@ export default function Module2Page() {
         <div data-theme="light">
           <div ref={setupRef}>
             <ControlBar
-              features={FEATURES}
+              features={FEATURES_V2}
               selectedFeatures={selectedFeatures}
               onFeaturesChange={setSelectedFeatures}
               cutoff={cutoff}
@@ -264,7 +284,7 @@ export default function Module2Page() {
               modelResults={modelResults}
               productionResults={productionResults}
               cutoff={cutoff}
-              selectedFeatures={selectedFeatures}
+              selectedFeatures={selectedColumns}
               trainingData={trainingData}
               productionData={productionTrueData}
             />

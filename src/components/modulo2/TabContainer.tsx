@@ -1,6 +1,6 @@
 "use client";
 
-import { CreditRecord, ModelResults, ProductionResults } from "@/lib/credit-risk";
+import { CreditRecord, ModelResults, ProductionResults } from "@/lib/credit-risk-v2";
 import ModelAnalysisTab from "./tabs/ModelAnalysisTab";
 import ProductionTab from "./tabs/ProductionTab";
 import ReferenceTab from "./tabs/ReferenceTab";

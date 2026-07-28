@@ -21,7 +21,6 @@ export default function ProbabilityDistribution({
   return (
     <Plot
       data={[
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         {
           type: "histogram" as const,
           x: probabilities,
@@ -29,6 +28,7 @@ export default function ProbabilityDistribution({
           marker: { color: "#00314a" },
           name: "Probabilidades",
           showlegend: false,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any,
       ]}
       layout={{
