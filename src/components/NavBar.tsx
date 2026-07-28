@@ -12,7 +12,9 @@ export default function NavBar() {
 
   const filteredLinks = NAV_LINKS.filter((link) => {
     if (link.href === "/") return pathname !== "/";
-    return !pathname.startsWith(link.href);
+    // Compara por SEGMENTO de rota, não por prefixo de string: "/modulo/11" começa com
+    // "/modulo/1", o que fazia o link do módulo 1 sumir nas páginas dos módulos 10 e 11.
+    return pathname !== link.href && !pathname.startsWith(`${link.href}/`);
   });
 
   return (

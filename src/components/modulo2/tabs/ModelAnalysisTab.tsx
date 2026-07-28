@@ -7,7 +7,7 @@ import {
   computeLinearCombinations,
   transform,
   predictProbability,
-} from "@/lib/credit-risk";
+} from "@/lib/credit-risk-v2";
 import SigmoidChart from "../SigmoidChart";
 import RocCurveChart from "../RocCurveChart";
 import ConfusionMatrixChart from "../ConfusionMatrixChart";
