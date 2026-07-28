@@ -32,8 +32,7 @@ export default function OpeningHero({ onStartAnalysis }: OpeningHeroProps) {
           {/* Description with terminal accent */}
           <p className="text-lg md:text-xl text-on-surface-variant font-light leading-relaxed max-w-3xl border-l-2 border-primary-container pl-6 mb-8">
             Scorecard de originação construído sob disciplina bancária: só entram
-            variáveis conhecidas no momento do pleito. Nove variáveis, AUC de 0,73
-            — e a demonstração de por que 0,85 nesta base significa vazamento.
+            variáveis conhecidas no momento do pleito.
           </p>
 
           <button
